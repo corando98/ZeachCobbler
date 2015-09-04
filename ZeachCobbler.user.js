@@ -4,12 +4,14 @@
 // @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @version      0.28.5
+// @version      0.28.5.1
 // @description  Agario powerups
 // @author       DebugMonkey
 // @match        http://agar.io
 // @match        https://agar.io
-// @changes     0.28.0 - Revamped UI
+// @changes     0.28.5.1 - Ilboued = Added Tab Tittle Score + Firebase commit
+//
+//              0.28.0 - Revamped UI
 //                     - Stats now detects viruses being eaten
 //                   1 - Updated @updateURL and @downloadURL to not use rawgit
 //                   2 - Upgraded zoom functions
