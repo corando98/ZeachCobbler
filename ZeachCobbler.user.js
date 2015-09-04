@@ -4,12 +4,13 @@
 // @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @version      0.28.5.4
+// @version      0.28.5.5
 // @description  Agario powerups
 // @author       DebugMonkey Ilboued
 // @match        http://agar.io
 // @match        https://agar.io
 // @changes
+//              0.28.5.5 - Ilboued = Correct bug on noname at init on firebase set
 //              0.28.5.4 - Ilboued = Added Firebase information for each player
 //              0.28.5.3 - Ilboued = Added Tab Tittle Score + Firebase commit
 //
@@ -189,7 +190,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             "grazerHybridSwitch": false,
             "grazerHybridSwitchMass" : 300,
             "gridLines"         : true,
-            "autoRespawn"       : false,
+            "autoRespawn"       : true,
             "visualizeGrazing"  : true,
             "msDelayBetweenShots" : 100,
             "miniMapScale"      : false,
@@ -218,6 +219,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get posX()          {return getSelectedBlob().x;},
         get posY()          {return getSelectedBlob().y;},
         get version()       {return GM_info.script.version;},
+        get isAlive()       {return !!zeach.myPoints.length;},
         
             
         get connect()       {return Aa;},        // Connect
@@ -300,17 +302,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     // update the tab title (even if its unfocused=>timer) with the current mass
     function timer2s() {
         window.document.title = zeach.mass; // current mass
-        myFirebaseRef2.child(zeach.name).set({
-            version    : zeach.version,
-            mass       : zeach.mass,
-            autopilot  : zeach.autopilot,
-            serverIP   : zeach.serverIP,
-            dividedIn  : zeach.myPoints.length,
-            position   : {
-                x : zeach.posX,
-                y : zeach.posY
-            }
-        });
+        if (zeach.isAlive) {
+            myFirebaseRef2.child(zeach.name).set({
+                version    : zeach.version,
+                mass       : zeach.mass,
+                autopilot  : zeach.autopilot,
+                serverIP   : zeach.serverIP,
+                dividedIn  : zeach.myPoints.length,
+                position   : {
+                    x : zeach.posX,
+                    y : zeach.posY
+                }
+            });
+        }
     }
     window.setInterval(timer2s,2000);
     
