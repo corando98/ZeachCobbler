@@ -6,7 +6,7 @@
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 // @version      0.28.5.1
 // @description  Agario powerups
-// @author       DebugMonkey
+// @author       DebugMonkey Ilboued
 // @match        http://agar.io
 // @match        https://agar.io
 // @changes     0.28.5.1 - Ilboued = Added Tab Tittle Score + Firebase commit
@@ -205,32 +205,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     window.cobbler = cobbler;
     
-    // ======================   jbjb addOn   =======================================================
-    // update the tab title (even if its unfocused=>timer) with the current mass
-    function timer2s() {
-        window.document.title = ~~(wb()/100); // current mass
-        myFirebaseRef.set({
-            player: "ilboued",
-            mass: ~~(wb()/100)
-        });
-    }
-    window.setInterval(timer2s,2000);
-    
-    // connect to Firebase   
-    var myFirebaseRef = new Firebase("https://ilboued10.firebaseio.com/");
-    console.log("hello");
 
-    myFirebaseRef.set({
-        player: "ilboued",
-        mass: 0
-    });  
-/*   
-    myFirebaseRef.child("location/city").on("value", function(snapshot) {
-        alert(snapshot.val());  // Alerts "San Francisco"
-    });
-*/
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
+        //jbjb AddOn
+        get serverIP()      {return serverIP;},
+        get mass()          {return ~~(wb()/100);},
+        get isGrazing()     {return isGrazing);},
+            
         get connect()       {return Aa;},        // Connect
         get ctx()           {return g;},        // g_context
         get webSocket()     {return r;},        // g_socket
@@ -305,6 +287,34 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             });
         });
     }
+    
+    
+    // ======================   jbjb main   =======================================================
+    // update the tab title (even if its unfocused=>timer) with the current mass
+    function timer2s() {
+        window.document.title = zeach.mass; // current mass
+        myFirebaseRef.set({
+            player: "ilboued",
+            mass: zeach.mass,
+            serverIP: zeach.serverIP
+        });
+    }
+    window.setInterval(timer2s,2000);
+    
+    // connect to Firebase   
+    var myFirebaseRef = new Firebase("https://ilboued10.firebaseio.com/");
+    console.log("hello");
+
+    myFirebaseRef.set({
+        player: "ilboued",
+        mass: 0,
+        serverIP : zeach.serverIP
+    });  
+/*   
+    myFirebaseRef.child("location/city").on("value", function(snapshot) {
+        alert(snapshot.val());  // Alerts "San Francisco"
+    });
+*/
 
     // ======================   Utility code    ==================================================================
     function isFood(blob){
