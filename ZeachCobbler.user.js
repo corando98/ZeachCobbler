@@ -4,12 +4,14 @@
 // @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @version      0.28.5.1
+// @version      0.28.5.4
 // @description  Agario powerups
 // @author       DebugMonkey Ilboued
 // @match        http://agar.io
 // @match        https://agar.io
-// @changes     0.28.5.1 - Ilboued = Added Tab Tittle Score + Firebase commit
+// @changes
+//              0.28.5.4 - Ilboued = Added Firebase information for each player
+//              0.28.5.3 - Ilboued = Added Tab Tittle Score + Firebase commit
 //
 //              0.28.0 - Revamped UI
 //                     - Stats now detects viruses being eaten
@@ -110,8 +112,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
 (function(d, f) {
-
-
     // Options that will always be reset on reload
     var zoomFactor = 10;
     var isGrazing = false;
@@ -205,13 +205,20 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     window.cobbler = cobbler;
     
-
+    // jbjb globals
+    global_nickName = "noname";
+    
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
         //jbjb AddOn
         get serverIP()      {return serverIP;},
         get mass()          {return ~~(wb()/100);},
-        get isGrazing()     {return isGrazing);},
+        get autopilot()     {return isGrazing;},
+        get name()          {return global_nickName;},
+        get posX()          {return getSelectedBlob().x;},
+        get posY()          {return getSelectedBlob().y;},
+        get version()       {return GM_info.script.version;},
+        
             
         get connect()       {return Aa;},        // Connect
         get ctx()           {return g;},        // g_context
@@ -293,23 +300,24 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     // update the tab title (even if its unfocused=>timer) with the current mass
     function timer2s() {
         window.document.title = zeach.mass; // current mass
-        myFirebaseRef.set({
-            player: "ilboued",
-            mass: zeach.mass,
-            serverIP: zeach.serverIP
+        myFirebaseRef2.child(zeach.name).set({
+            version    : zeach.version,
+            mass       : zeach.mass,
+            autopilot  : zeach.autopilot,
+            serverIP   : zeach.serverIP,
+            dividedIn  : zeach.myPoints.length,
+            position   : {
+                x : zeach.posX,
+                y : zeach.posY
+            }
         });
     }
     window.setInterval(timer2s,2000);
     
     // connect to Firebase   
-    var myFirebaseRef = new Firebase("https://ilboued10.firebaseio.com/");
-    console.log("hello");
+    var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");
 
-    myFirebaseRef.set({
-        player: "ilboued",
-        mass: 0,
-        serverIP : zeach.serverIP
-    });  
+
 /*   
     myFirebaseRef.child("location/city").on("value", function(snapshot) {
         alert(snapshot.val());  // Alerts "San Francisco"
@@ -1187,7 +1195,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }, 5*1000);
 
-    function drawMiniMap() {
+    function drawMiniMap() { //jbjb map
         rescaleMinimap();
         var minimapScale = cobbler.miniMapScaleValue;
         miniMapCtx.clearRect(0, 0, ~~(zeach.mapWidth/minimapScale), ~~(zeach.mapHeight/minimapScale));
@@ -1565,7 +1573,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
 
         if((zeach.hasNickname || isMyCell) && (this.name && (nameCache && (null == itemToDraw || -1 == zeach.textBlobs.indexOf(kbIndex)))) ) {
-
             itemToDraw = nameCache;
             itemToDraw.setValue(this.name);
             setCellName(this, itemToDraw);
@@ -2465,8 +2472,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function U() {
         /*new*/if(isGrazing){ doGrazing(); return; }
         /*new*/if(suspendMouseUpdates){return;}
-        /*jbjb*/
-        
 
         var a;
         if (S()) {
@@ -3026,6 +3031,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 Q = 0;
                 /*new*/GM_setValue("nick", a);
                 /*new*/console.log("Storing '" + a + "' as nick");
+                // => !!! jbjb : this is global to every instance of agar.io running !!!
+                global_nickName = a;
             };
             d.setRegion = ea;
             d.setSkins = function(a) {
@@ -3697,6 +3704,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         /*new*//*remap*/if(0 != this.id) {
                             /*new*//*remap*/var vertical_offset = drawCellName.call(this,b,e,d);
                             /*new*//*remap*/ drawCellMass.call(this,vertical_offset,b);
+                       
                         }
                         a.restore();
                     }
