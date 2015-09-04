@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Zeach Cobbler
-// @namespace    https://github.com/RealDebugMonkey/ZeachCobbler
-// @updateURL    http://bit.do/ZeachCobblerJS2
-// @downloadURL  http://bit.do/ZeachCobblerJS2
+// @name         Zeach Cobbler Ilboued
+// @namespace    https://github.com/ilboued/ZeachCobbler/
+// @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
+// @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 // @version      0.28.5
 // @description  Agario powerups
@@ -77,6 +77,8 @@
 //                   4 - update with mikeyk730's latest changes
 //                   5 - skins should now display in experimental
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
+// jbjb : load firebase lib
+// @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -100,6 +102,10 @@ $.getScript("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js
 unsafeWindow.connect2 = unsafeWindow.connect;
 jQuery("#canvas").remove();
 jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canvas>');
+
+
+
+
 
 (function(d, f) {
 
@@ -196,7 +202,31 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     makeCobbler();
 
     window.cobbler = cobbler;
+    
+    // ======================   jbjb addOn   =======================================================
+    // update the tab title (even if its unfocused=>timer) with the current mass
+    function timer2s() {
+        window.document.title = ~~(wb()/100); // current mass
+        myFirebaseRef.set({
+            player: "ilboued",
+            mass: ~~(wb()/100)
+        });
+    }
+    window.setInterval(timer2s,2000);
+    
+    // connect to Firebase   
+    var myFirebaseRef = new Firebase("https://ilboued10.firebaseio.com/");
+    console.log("hello");
 
+    myFirebaseRef.set({
+        player: "ilboued",
+        mass: 0
+    });  
+/*   
+    myFirebaseRef.child("location/city").on("value", function(snapshot) {
+        alert(snapshot.val());  // Alerts "San Francisco"
+    });
+*/
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
         get connect()       {return Aa;},        // Connect
@@ -1787,6 +1817,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
 // ======================   Start main    ==================================================================
+    
 
     function kb() {
         wa = true;
@@ -2422,6 +2453,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function U() {
         /*new*/if(isGrazing){ doGrazing(); return; }
         /*new*/if(suspendMouseUpdates){return;}
+        /*jbjb*/
+        
+
         var a;
         if (S()) {
             a = ca - q / 2;
@@ -2601,6 +2635,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             g.drawImage(b, 15, s$$0 - 10 - 24 - 5);
             /*new*//*mikey*//*remap*/(zeach.myPoints&&zeach.myPoints[0]&&OnUpdateMass(wb()));
         }
+        
         xb();
         c$$0 = Date.now() - c$$0;
         if (c$$0 > 1E3 / 60) {
@@ -4304,6 +4339,8 @@ function OnGainMass(me, other)
         stats.gains[key].mass += mass;
         sfx_event("eat");
     }
+    
+
 }
 
 function OnLoseMass(me, other)
