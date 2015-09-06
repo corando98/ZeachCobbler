@@ -4,15 +4,17 @@
 // @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @version      0.28.5.5
+// @version      0.28.5.6
 // @description  Agario powerups
 // @author       DebugMonkey Ilboued
 // @match        http://agar.io
 // @match        https://agar.io
 // @changes
-//              0.28.5.5 - Ilboued = Correct bug on noname at init on firebase set
-//              0.28.5.4 - Ilboued = Added Firebase information for each player
-//              0.28.5.3 - Ilboued = Added Tab Tittle Score + Firebase commit
+//              0.28.5.6 - Add 'f' to toogle full screen
+//                       - Add color change on tab title depending on score
+//              0.28.5.5 - Correct bug on noname at init on firebase set
+//              0.28.5.4 - Add Firebase information for each player
+//              0.28.5.3 - Add Tab Tittle Score + Firebase commit
 //
 //              0.28.0 - Revamped UI
 //                     - Stats now detects viruses being eaten
@@ -301,7 +303,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     // ======================   jbjb main   =======================================================
     // update the tab title (even if its unfocused=>timer) with the current mass
     function timer2s() {
-        window.document.title = zeach.mass; // current mass
+        window.document.title = zeach.mass + ' ' + zeach.name; // current mass
         if (zeach.isAlive) {
             myFirebaseRef2.child(zeach.name).set({
                 version    : zeach.version,
@@ -315,11 +317,84 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
+        if (zeach.mass < 300) {
+            setFavicon("#000");
+        } else if (zeach.mass < 600 ) {
+            setFavicon("#F00");
+        } else if (zeach.mass < 1000 ) {
+            setFavicon("#00F");
+        } else {
+            setFavicon("#0F0");
+        }
     }
     window.setInterval(timer2s,2000);
     
+    function keyboardHit(key) {
+        if ('I'.charCodeAt(0) === key) {
+            //setFavicon("#FFF");
+        } else if ('F'.charCodeAt(0) === key) {
+            toggleFullScreen();
+        }
+    }
+    
+    
+    // favicon
+    function setFavicon(color) {
+        document.head = document.head || document.getElementsByTagName('head')[0];
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+
+        ctx.drawImage(img, 0, 0); 
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, 32, 32);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 32px sans-serif';
+        var aDigit = (~~(Math.random()*10)).toString();
+        ctx.fillText(aDigit, 7, 27);
+
+        var link = document.createElement('link');
+        var oldLink = document.getElementById('dynamic-favicon');
+        link.id = 'dynamic-favicon';
+        link.rel = 'shortcut icon';
+        link.href = canvas.toDataURL("image/x-icon");
+        if (oldLink) {
+            document.head.removeChild(oldLink);
+            console.log('old old old old favicon removed !');
+        }
+        document.head.appendChild(link);
+    }
+    
     // connect to Firebase   
     var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");
+    
+    function toggleFullScreen() {
+        if (!document.fullscreenElement &&    // alternative standard method
+            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
 
 
 /*   
@@ -1746,6 +1821,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 point.locked = false;
             }
         }
+        else {
+            keyboardHit(d.keyCode);
+        }
+        
     }
 
     function onAfterUpdatePacket() {
@@ -2646,7 +2725,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 ta = new ua(24, "#FFFFFF");
             }
             ta.C(X("score") + ": " + ~~(Q / 100));
-            /*new*/ /*remap*/ ta.setValue("Score: " + ~~(Q / 100) + extras);
+            /*new*/ /*remap*/ ta.setValue("Score: " + zeach.mass ); //score = current score, not max + supress extra
             b = ta.L();
             a$$0 = b.width;
             g.globalAlpha = 0.2;
@@ -3033,8 +3112,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 I = a;
                 Ya();
                 Q = 0;
-                /*new*/GM_setValue("nick", a);
-                /*new*/console.log("Storing '" + a + "' as nick");
+                // GM_setValue("nick", a);
+                /*new*/console.log("Not Storing '" + a + "' as nick");
                 // => !!! jbjb : this is global to every instance of agar.io running !!!
                 global_nickName = a;
             };
@@ -3940,6 +4019,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     b.scale(0.4, 0.4);
                     a.w(b);
                     b.restore();
+                    // jbjb memo
                     var d = document.getElementById("favicon");
                     var f = d.cloneNode(true);
                     /*new*/try{
@@ -4045,8 +4125,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 f.ajax(Ja + "//m.agar.io/getToken", {
                     error : function() {
                         f("#helloContainer").attr("data-party-state", "6");
+                        console.log("## join party :-(");
                     },
                     success : function(c) {
+                        console.log("## join party :-)");
                         c = c.split("\n");
                         f(".partyToken").val(a);
                         f("#helloContainer").attr("data-party-state", "5");
@@ -4165,6 +4247,7 @@ jQuery('#ZCOverlayBody').append('<div id="ZCStats" style="position:relative;widt
     '   <li><B>R</B> - Fire at virus near selected blob (virus is highlighted in red)</li>' +
     '   <li><B>M</B> - Enables/Disables mouse input</li>' +
     '   <li><B>Z</B> - Zoom in/zoom out</li>' +
+    '   <li><B>F</B> - toogle full screen</li>' +
     '   <li><B>1...7</B> - Selecte n-th blob sorted by size</li>' +
     '   <li><B>Click</B> - Lock currently selected blob (if blob locking enabled)</li>' +
     '   <li><B>S</B> - Unlock all blobs (if blob locking enabled)</li>' +
@@ -4452,8 +4535,11 @@ function DrawStats(game_over) {
         stats.time_of_death = Date.now();
         sfx_play(1);
         StopBGM();
-        ShowZCStats();
-        if(window.cobbler.autoRespawn && window.cobbler.grazingMode){setTimeout(function(){jQuery(".btn-play-guest").click();},3000);}
+        if(window.cobbler.autoRespawn && window.cobbler.grazingMode){
+            setTimeout(function(){jQuery(".btn-play-guest").click();},3000);
+        } else {
+            // jbjb ShowZCStats();
+        }
     }
     var time = stats.time_of_death ? stats.time_of_death : Date.now();
     var seconds = (time - stats.birthday)/1000;
