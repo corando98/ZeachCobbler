@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Zeach Cobbler Ilboued
+// @name         Agar.io Ilboued Bot
 //
 // @namespace    https://github.com/ilboued/ZeachCobbler/
 //
@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.2
+// @version      0.3
 //
 // @description  Agario powerups and bot
 //
@@ -17,7 +17,9 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
+// @changes      0.3 - name change
+//               0.2 - change version for testing
+//               0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
 
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
 // @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
@@ -115,12 +117,12 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function makeCobbler(){
         var optionsAndDefaults = {
             "isLiteBrite"       : true,
-            "sfxVol"            : 0.5,
-            "bgmVol"            : 0.5,
+            "sfxVol"            : 0.0,
+            "bgmVol"            : 0.0,
             "drawTail"          : false,
             "splitGuide"        : true,
             "rainbowPellets"    : true,
-            "debugLevel"        : 1,
+            "debugLevel"        : 0,
             "imgurSkins"        : true,
             "amExtendedSkins"   : true,
             "amConnectSkins"    : true,
@@ -137,7 +139,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             "enableBlobLock"    : false,
             'nextOnBlobLock'    : false,
             'rightClickFires'   : false,
-            'showZcStats'       : true,
+            'showZcStats'       : false,
         };
         simpleSavedSettings(optionsAndDefaults);
     }
