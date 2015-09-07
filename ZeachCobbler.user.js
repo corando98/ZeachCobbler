@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.1
+// @version      0.2
 //
 // @description  Agario powerups and bot
 //
