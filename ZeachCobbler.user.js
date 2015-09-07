@@ -1,91 +1,27 @@
 // ==UserScript==
 // @name         Zeach Cobbler Ilboued
+//
 // @namespace    https://github.com/ilboued/ZeachCobbler/
+//
 // @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
 // @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
+//
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @version      0.28.5.6
-// @description  Agario powerups
-// @author       DebugMonkey Ilboued
+//
+// @version      0.1
+//
+// @description  Agario powerups and bot
+//
+// @author       ilboued (based on RealDebugMonkey ZeachCobbler)
+//
 // @match        http://agar.io
 // @match        https://agar.io
-// @changes
-//              0.28.5.6 - Add 'f' to toogle full screen
-//                       - Add color change on tab title depending on score
-//              0.28.5.5 - Correct bug on noname at init on firebase set
-//              0.28.5.4 - Add Firebase information for each player
-//              0.28.5.3 - Add Tab Tittle Score + Firebase commit
 //
-//              0.28.0 - Revamped UI
-//                     - Stats now detects viruses being eaten
-//                   1 - Updated @updateURL and @downloadURL to not use rawgit
-//                   2 - Upgraded zoom functions
-//                   3 - Some zoom bug fixes
-//                   4 - protocol breakage fix
-//                   5 - fixed my fuckup
-//              0.27.0 - Click-to-lock added
-//                     - Added ability to lock blob at some pos
-//                     - Added ability to select n-th size blob
-//                   2 - Fixed virus shot counter, improved shots remaining calculation
-//                     - General code cleanup
-//                     - shots per ms field added
-//                     - options screen cleanup/reorg
-//                   6 - Hack to get mod loading again.
-//                   7 - proper fix for xp bar rename
-//                   8 - added isAgitated
-//                     - changed multiblob grazer var name to reset multiblob default to 'false'
-//              0.26.0 - Configurable Minimap scale & Agariomod private server location update
-//              0.25.0 - Facebook Update
-//                   1 - Tons of bug fixes
-//              0.24.0 - Switched back to hacky method of loading & added hotkey reference
-//                   1 - Guest play fix
-//                   2 - UI Tweaks and a new message
-//              0.23.0 - Agariomods.com private server support
-//              0.22.0 - Added hybrid grazer option & fixed music
-//                   1 - music restored, viruses excluded from relocated names
-//                     - Hybrid grazer goes back to old grazer if it loses enough mass
-//                   2 - Hybrid grazer checkbox fix
-//                   3 - volume fix
-//                   4 - Blank cell fix
-//                     - Option to remove grid lines
-//                     - Oldest cell now just displays name rather than negative Time To Remerge (TTR)
-//                   5 - Grazer auto-respawn
-//                   6 - G and H act equivalently in hybrid-grazer mode
-//                     - if old grazer has no targets it will try to switch into new grazer mode
-//              0.21.0 - Changed way script is loaded.
-//              0.20.0 - Version leap due to updated grazer
-//                     - Fixes for new client behavior
-//              0.15.0 - Fixed Minimap (Zeach broke it)
-//                     - Fixed Borders(Zeach broke them too)
-//                     - Lite Brite mode added (and some UI issues fixed)
-//                   2 - Lite Brite, SFX, and BGM settings all saved
-//                   3 - hack for overflowing chart & updated hardcoded agariomods skins
-//              0.14.0 - Major refactoring to help with future updates
-//                     - Support for AgarioMods connect skins
-//              0.13.0 - Fixed break caused by recent code changes
-//                   1 - bug fixes
-//                     - removed direct connect UI (for now)
-//                   2 - grazer speed improved by removing debug logging & adding artifical 200ms throttle
-//                   3 - fixed virus poppers
-//                     - fixed ttr calculation
-//                   6 - fixed flickering grazer lines
-//              0.12.0 - Added music and sound effects.
-//                     - Sound effects from agariomods.com
-//                     - Music from http://incompetech.com/music/royalty-free/most/kerbalspaceprogram.php
-//                     - Fix: scroll wheel function
-//                     - Fixed blank cell not displaying % diff issue
-//                     - Fixed key bindings triggering while changing name
-//                   4 - bug fix courtesy of Gjum
-//                   5 - updated handshake for v548
-//              0.11.0 - Fix for v538 fix
-//                   1 - grazer fixed, time alive and ttr fixed
-//                   2 - more fixes for stuff I missed
-//                   3 - onDestroy bugfix
-//                   4 - update with mikeyk730's latest changes
-//                   5 - skins should now display in experimental
+// @changes      0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
+
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
-// jbjb : load firebase lib
 // @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
+
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -99,10 +35,6 @@ var debugMonkeyReleaseMessage = "<h3>Protocol Changes and Burnout</h3><p>" +
     "the others who have been helpful in the github issues area during my away time. You guys are the real MVPs.<br>" +
     "<img src='http://i.imgur.com/p4zv6vx.jpg'><br><br>-debugmonkey";
 
-//if (window.top != window.self)  //-- Don't run on frames or iframes
-//    return;
-//https://cdn.rawgit.com/pockata/blackbird-js/1e4c9812f8e6266bf71a25e91cb12a553e7756f4/blackbird.js
-//https://raw.githubusercontent.com/pockata/blackbird-js/cc2dc268b89e6345fa99ca6109ddaa6c22143ad0/blackbird.css
 $.getScript("https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.4.1/canvas.min.js");
 $.getScript("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js");
 
@@ -112,12 +44,17 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
 
+// ========================================================================================
+// ========================================================================================
+// A = ?
+// ========================================================================================
+// ========================================================================================
 
 
 (function(d, f) {
     // Options that will always be reset on reload
     var zoomFactor = 10;
-    var isGrazing = false;
+    var isGrazing = 2;
     var serverIP = "";
     var showVisualCues = true;
 
@@ -147,9 +84,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
     var miniMapCtx=jQuery('<canvas id="mini-map" width="175" height="175" style="border:2px solid #999;text-align:center;position:fixed;bottom:5px;right:5px;"></canvas>')
-        .appendTo(jQuery('body'))
-        .get(0)
-        .getContext("2d");
+    .appendTo(jQuery('body'))
+    .get(0)
+    .getContext("2d");
 
     // cobbler is the object that holds all user options. Options that should never be persisted can be defined here.
     // If an option setting should be remembered it can
@@ -168,10 +105,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         _.forEach(optionsObject, function(defaultValue, settingName){
             var backingVar = '_' + settingName;
             cobbler[backingVar] = GM_getValue(settingName, defaultValue),
-            Object.defineProperty(cobbler, settingName, {
-                get: function()     { return this[backingVar];},
-                set: function(val)  { this[backingVar] = val; GM_setValue(settingName, val); }
-            });
+                Object.defineProperty(cobbler, settingName, {
+                    get: function()     { return this[backingVar];},
+                    set: function(val)  { this[backingVar] = val; GM_setValue(settingName, val); }
+                });
         });
     }
     // defines all options that should be persisted along with their default values.
@@ -207,23 +144,21 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     makeCobbler();
 
     window.cobbler = cobbler;
-    
-    // jbjb globals
-    global_nickName = "noname";
-    
+
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
         //jbjb AddOn
+        leaderBoard :       0,
+        nickName :          'no name',
         get serverIP()      {return serverIP;},
         get mass()          {return ~~(wb()/100);},
         get autopilot()     {return isGrazing;},
-        get name()          {return global_nickName;},
         get posX()          {return getSelectedBlob().x;},
         get posY()          {return getSelectedBlob().y;},
         get version()       {return GM_info.script.version;},
         get isAlive()       {return !!zeach.myPoints.length;},
-        
-            
+
+
         get connect()       {return Aa;},        // Connect
         get ctx()           {return g;},        // g_context
         get webSocket()     {return r;},        // g_socket
@@ -249,13 +184,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get textFunc()      {return ua;},       // CachedCanvas
         get textBlobs()     {return Bb;},       // g_skinNamesB
         get hasNickname()   {return va;},        // g_showNames
-        get scale()   {return k;},        //
+        get scale()         {return k;},        //
         // Classes
         get CachedCanvas()  {return ua;},       // CachedCanvas
         get Cell()          {return aa;},        //
         // These never existed before but are useful
         get mapWidth()      {return  ~~(Math.abs(zeach.mapLeft) + zeach.mapRight);},
-        get mapHeight()  {return  ~~(Math.abs(zeach.mapTop) + zeach.mapBottom);},
+        get mapHeight()     {return  ~~(Math.abs(zeach.mapTop) + zeach.mapBottom);},
     };
 
 
@@ -298,14 +233,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             });
         });
     }
-    
-    
+
+
     // ======================   jbjb main   =======================================================
     // update the tab title (even if its unfocused=>timer) with the current mass
     function timer2s() {
-        window.document.title = zeach.mass + ' ' + zeach.name; // current mass
+        window.document.title = zeach.mass + ' ' + zeach.nickName; // current mass
         if (zeach.isAlive) {
-            myFirebaseRef2.child(zeach.name).set({
+            myFirebaseRef2.child(zeach.nickName).set({
                 version    : zeach.version,
                 mass       : zeach.mass,
                 autopilot  : zeach.autopilot,
@@ -317,27 +252,29 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
-        if (zeach.mass < 300) {
-            setFavicon("#000");
+        if (zeach.leaderBoard>0) {
+            setFavicon('magenta');
+        } else if (zeach.mass < 300) {
+            setFavicon("black");
         } else if (zeach.mass < 600 ) {
-            setFavicon("#F00");
+            setFavicon("red");
         } else if (zeach.mass < 1000 ) {
-            setFavicon("#00F");
+            setFavicon("orange");
         } else {
-            setFavicon("#0F0");
+            setFavicon("green");
         }
     }
     window.setInterval(timer2s,2000);
-    
-    function keyboardHit(key) {
+
+    function onKeyPressed(key) {
         if ('I'.charCodeAt(0) === key) {
             //setFavicon("#FFF");
         } else if ('F'.charCodeAt(0) === key) {
             toggleFullScreen();
         }
     }
-    
-    
+
+
     // favicon
     function setFavicon(color) {
         document.head = document.head || document.getElementsByTagName('head')[0];
@@ -348,12 +285,22 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var ctx = canvas.getContext('2d');
         var img = new Image();
 
-        ctx.drawImage(img, 0, 0); 
+        ctx.drawImage(img, 0, 0);
+        
+        ctx.lineWidth = 0
+        ctx.beginPath();
+        ctx.arc(16, 16, 16, 0, 2 * Math.PI);
         ctx.fillStyle = color;
-        ctx.fillRect(0, 0, 32, 32);
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.strokeStyle = color;        
+        ctx.stroke();
+
+        ctx.fillStyle = 'white';
         ctx.font = 'bold 32px sans-serif';
-        var aDigit = (~~(Math.random()*10)).toString();
+        var aDigit = (~~(zeach.mass/100.0)).toString();
+        if (zeach.mass > 1000) {
+            aDigit = 'X';
+        }
         ctx.fillText(aDigit, 7, 27);
 
         var link = document.createElement('link');
@@ -363,14 +310,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         link.href = canvas.toDataURL("image/x-icon");
         if (oldLink) {
             document.head.removeChild(oldLink);
-            console.log('old old old old favicon removed !');
         }
         document.head.appendChild(link);
     }
-    
+
     // connect to Firebase   
     var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");
-    
+
     function toggleFullScreen() {
         if (!document.fullscreenElement &&    // alternative standard method
             !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
@@ -397,7 +343,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
 
-/*   
+    /*   
     myFirebaseRef.child("location/city").on("value", function(snapshot) {
         alert(snapshot.val());  // Alerts "San Francisco"
     });
@@ -461,7 +407,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     function distanceFromCellZero(blob) {
         return isPlayerAlive() ? lineDistance(blob, getSelectedBlob()) :
-            Math.sqrt((zeach.mapRight - zeach.mapLeft) * (zeach.mapRight - zeach.mapLeft) + (zeach.mapBottom - zeach.mapTop) * (zeach.mapBottom - zeach.mapTop));
+        Math.sqrt((zeach.mapRight - zeach.mapLeft) * (zeach.mapRight - zeach.mapLeft) + (zeach.mapBottom - zeach.mapTop) * (zeach.mapBottom - zeach.mapTop));
     }
 
     function getViewport(interpolated) {
@@ -502,9 +448,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             pseudoblob.nx = interx;
             pseudoblob.ny = intery;
             if (((targetBlob.nx < myBlob.nx && targetBlob.nx < interx && interx < myBlob.nx) ||
-                (targetBlob.nx > myBlob.nx && targetBlob.nx > interx && interx > myBlob.nx)) &&
+                 (targetBlob.nx > myBlob.nx && targetBlob.nx > interx && interx > myBlob.nx)) &&
                 ((targetBlob.ny < myBlob.ny && targetBlob.ny < intery && intery < myBlob.ny) ||
-                (targetBlob.ny > myBlob.ny && targetBlob.ny > intery && intery > myBlob.ny))){
+                 (targetBlob.ny > myBlob.ny && targetBlob.ny > intery && intery > myBlob.ny))){
                 if(lineDistance(potential, pseudoblob) < potential.size+100){
                     return true;
                 }
@@ -564,18 +510,18 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             //isGrazing = false;
             return;
         }
-        
+
         if(null === throttledResetGrazingTargetId){
             throttledResetGrazingTargetId = _.throttle(function (){
                 grazzerTargetResetRequest = 'all';
                 //console.log(~~(Date.now()/1000));
             }, 200);
         }
-        
-        
+
+
         if (grazzerTargetResetRequest == 'all') {
             grazzerTargetResetRequest = false;
-            
+
             for(i = 0; i < zeach.myPoints.length; i++) {
                 zeach.myPoints[i].grazingTargetID = false;
             }
@@ -591,7 +537,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
             getSelectedBlob().grazingTargetID = newTarget.id;
         }
-        
+
         // with target fixation on, target remains until it's eaten by someone or
         // otherwise disappears. With it off target is constantly recalculated
         // at the expense of CPU
@@ -605,11 +551,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var targets = findFoodToEat(!cobbler.grazerMultiBlob2);
         for(i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
-            
+
             if (!cobbler.grazerMultiBlob2 && point.id != getSelectedBlob().id) {
                 continue;
             }
-                    
+
             point.grazingMode = isGrazing;
             if(cobbler.grazerHybridSwitch) {
                 var mass = getMass(point.nSize);
@@ -638,8 +584,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     } else {
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random(), point);
                     }
-                
-                break;
+
+                    break;
                 }
                 case 2: {
                     if (!cobbler.grazerMultiBlob2) {
@@ -649,7 +595,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         target = targets[point.id];
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random(), point);
                     }
-                    
+
                     break;
                 }
             }
@@ -764,9 +710,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             return !ghostSet[element.id] && // a fresher blob with the same id doesn't exist in blobArray already
                 (curTimestamp - element.lastTimestamp < 10000) && // last seen no more than 10 seconds ago
                 (
-                    (Math.abs(viewport.x - element.nx) > (viewport.dx + element.nSize) * 0.9) ||
-                    (Math.abs(viewport.y - element.ny) > (viewport.dy + element.nSize) * 0.9)
-                ); // outside of firmly visible area, otherwise there's no need to remember it
+                (Math.abs(viewport.x - element.nx) > (viewport.dx + element.nSize) * 0.9) ||
+                (Math.abs(viewport.y - element.ny) > (viewport.dy + element.nSize) * 0.9)
+            ); // outside of firmly visible area, otherwise there's no need to remember it
         });
 
         ghostBlobs.forEach(function (element) {
@@ -785,7 +731,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         });
 
         var accs = zeach.myPoints.map(function (cell) {
-            
+
 
             var per_food = [], per_threat = [];
             var acc = {
@@ -799,11 +745,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 per_threat: per_threat,
                 cumulatives: [ { x: 0, y: 0}, { x: 0, y: 0} ],
             };
-            
+
             if (!useGradient && cell.grazingMode != 2) {
                 return acc;
             }
-            
+
             var totalMass = _.sum(_.pluck(zeach.myPoints, "nSize").map(getMass));
 
             // Avoid walls too
@@ -960,7 +906,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             cell.grazeInfo = acc;
             return acc;
         });
-        
+
         if (useGradient) {
             var funcs = accs.map(function(acc) {
                 return new dasMouseSpeedFunction(acc.id, acc.x, acc.y, 200, acc.fx, acc.fy);
@@ -1102,7 +1048,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
         return pelletCount;
     }
-// ======================   UI stuff    ==================================================================
+    // ======================   UI stuff    ==================================================================
 
     function drawRescaledItems(ctx) {
         if (showVisualCues && isPlayerAlive()) {
@@ -1365,11 +1311,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
             // Render summary force without special forces, like walls
             drawLine(ctx,playerBlob,
-                {
-                    x: playerBlob.x + (cumulatives[0].x + cumulatives[1].x) / maxSize,
-                    y: playerBlob.y + (cumulatives[0].y + cumulatives[1].y) / maxSize,
-                }, "gray"
-            );
+                     {
+                         x: playerBlob.x + (cumulatives[0].x + cumulatives[1].x) / maxSize,
+                         y: playerBlob.y + (cumulatives[0].y + cumulatives[1].y) / maxSize,
+                     }, "gray"
+                    );
 
             // Render foods and threats force cumulatives
             drawLine(ctx,playerBlob, {x: playerBlob.x + cumulatives[1].x / maxSize, y: playerBlob.y + cumulatives[1].y / maxSize }, "green" );
@@ -1431,19 +1377,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         var oldLineWidth = ctx.lineWidth;
         var oldColor = ctx.color;
-        
+
         ctx.lineWidth = 10;
         for(var i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
             if (point.grazingMode != 1) {
                 continue;
             }
-        
+
             if(_.has(zeach.allNodes, point.grazingTargetID)){
                 drawLine(ctx, zeach.allNodes[point.grazingTargetID], point, "green");
             }
         }
-        
+
         ctx.lineWidth = 2;
         for(var i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
@@ -1466,7 +1412,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     }
 
-// ======================   Virus Popper    ==================================================================
+    // ======================   Virus Popper    ==================================================================
     function findNearestVirus(cell, blobArray){
         var nearestVirus = _.min(_.filter(blobArray, "isVirus", true), function(element) {
             return lineDistance(cell, element);
@@ -1519,7 +1465,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         fireAtVirusNearestToBlob(getMouseCoordsAsPseudoBlob(), zeach.allItems);
     }
 
-// ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
     /* AgarioMod.com skins have been moved to the very end of the file */
     var extendedSkins = {
         "billy mays" : "http://i.imgur.com/HavxFJu.jpg",
@@ -1581,7 +1527,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         else if(!cell.isAgitated && showSkins ){
             if(-1 != defaultSkins.indexOf(userNameLowerCase) || isSpecialSkin(userNameLowerCase) || isImgurSkin(userNameLowerCase) ||
-                    isAgarioModsSkin(userNameLowerCase) || isAMConnectSkin(userNameLowerCase) || isExtendedSkin(userNameLowerCase)){
+               isAgarioModsSkin(userNameLowerCase) || isAMConnectSkin(userNameLowerCase) || isExtendedSkin(userNameLowerCase)){
                 if (!imgCache.hasOwnProperty(userNameLowerCase)){
                     if(isSpecialSkin(userNameLowerCase)) {
                         imgCache[userNameLowerCase] = new Image;
@@ -1627,7 +1573,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
 
-// ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
     function shouldRelocateName(){
         if(cobbler.namesUnderBlobs && !this.isVirus) {
             return true;
@@ -1714,7 +1660,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     }
 
-// ======================   Misc    ==================================================================
+    // ======================   Misc    ==================================================================
 
     function switchCurrentBlob() {
         var myids_sorted = _.pluck(zeach.myPoints, "id").sort(); // sort by id
@@ -1822,9 +1768,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
         }
         else {
-            keyboardHit(d.keyCode);
+            onKeyPressed(d.keyCode);
         }
-        
+
     }
 
     function onAfterUpdatePacket() {
@@ -1918,8 +1864,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
 
-// ======================   Start main    ==================================================================
-    
+    // ======================   Start main    ==================================================================
+
 
     function kb() {
         wa = true;
@@ -1934,7 +1880,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             } else {
                 zoomFactor = zoomFactor >= 11 ? 11 : +(zoomFactor + 0.05).toFixed(2);
             }
-            
+
         };
         F.onmousedown = function(a) {
             /*new*/if(cobbler.enableBlobLock) {lockCurrentBlob();}
@@ -2106,7 +2052,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
-        f.get("https://m.agar.io/info", function(a) {
+        f.get("https://m.agar.io/fullInfo", function(a) { // jbjb replace info by fullInfo to try to solve party mode that randomly works
             var c = {};
             var b;
             for (b in a.regions) {
@@ -2562,14 +2508,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             var c = da - s$$0 / 2;
             if (!(64 > a * a + c * c)) {
                 if (!(0.01 > Math.abs($a - fa) && 0.01 > Math.abs(ab - ga))) {
-                        $a = fa;
-                        ab = ga;
-                        a = L(13);
-                        a.setUint8(0, 16);
-                        a.setInt32(1, fa, true);
-                        a.setInt32(5, ga, true);
-                        a.setUint32(9, 0, true);
-                        M(a);
+                    $a = fa;
+                    ab = ga;
+                    a = L(13);
+                    a.setUint8(0, 16);
+                    a.setInt32(1, fa, true);
+                    a.setInt32(5, ga, true);
+                    a.setUint32(9, 0, true);
+                    M(a);
 
                 }
             }
@@ -2735,7 +2681,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             g.drawImage(b, 15, s$$0 - 10 - 24 - 5);
             /*new*//*mikey*//*remap*/(zeach.myPoints&&zeach.myPoints[0]&&OnUpdateMass(wb()));
         }
-        
+
         xb();
         c$$0 = Date.now() - c$$0;
         if (c$$0 > 1E3 / 60) {
@@ -2816,51 +2762,56 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if (null != z || 0 != E.length) {
             if (null != z || va) {
                 y = document.createElement("canvas");
-                var a = y.getContext("2d");
+                var ctx = y.getContext("2d");
                 var c = 60;
                 c = null == z ? c + 24 * E.length : c + 180;
                 var b = Math.min(200, 0.3 * q) / 200;
                 y.width = 200 * b;
                 y.height = c * b;
-                a.scale(b, b);
-                a.globalAlpha = 0.4;
-                a.fillStyle = "#000000";
-                a.fillRect(0, 0, 200, c);
-                a.globalAlpha = 1;
-                a.fillStyle = "#FFFFFF";
+                ctx.scale(b, b);
+                ctx.globalAlpha = 0.4;
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, 200, c);
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = "#FFFFFF";
                 b = null;
                 b = X("leaderboard");
-                a.font = "30px Ubuntu";
-                a.fillText(b, 100 - a.measureText(b).width / 2, 40);
+                ctx.font = "30px Ubuntu";
+                ctx.fillText(b, 100 - ctx.measureText(b).width / 2, 40);
                 if (null == z) {
-                    a.font = "20px Ubuntu";
-                    c = 0;
-                    for (;c < E.length;++c) {
-                        b = E[c].name || X("unnamed_cell");
+                    ctx.font = "20px Ubuntu";
+                    rankFromZero = 0;
+                    zeach.leaderBoard = 0;
+                    for (;rankFromZero < E.length;++rankFromZero) {
+                        aTop10Name = E[rankFromZero].name || X("unnamed_cell");
                         if (!va) {
-                            b = X("unnamed_cell");
+                            aTop10Name = X("unnamed_cell");
                         }
-                        if (-1 != K.indexOf(E[c].id)) {
+                        if (-1 != K.indexOf(E[rankFromZero].id)) {
                             if (m[0].name) {
-                                b = m[0].name;
+                                aTop10Name = m[0].name;
                             }
-                            a.fillStyle = "#FFAAAA";
-                            /*new*//*mikey*//*remap*/OnLeaderboard(c+1);
+                            ctx.fillStyle = "#FFAAAA";
+                            /*new*//*mikey*//*remap*/OnLeaderboard(rankFromZero+1);
+                            if (zeach.leaderBoard != (rankFromZero + 1)) {
+                                zeach.leaderBoard = rankFromZero + 1; //jbjb
+                                console.log('on leader board at new rank ' + zeach.leaderBoard );
+                            }
                         } else {
-                            a.fillStyle = "#FFFFFF";
+                            ctx.fillStyle = "#FFFFFF";
                         }
-                        b = c + 1 + ". " + b;
-                        a.fillText(b, 100 - a.measureText(b).width / 2, 70 + 24 * c);
+                        aTop10Name = rankFromZero + 1 + ". " + aTop10Name;
+                        ctx.fillText(aTop10Name, 100 - ctx.measureText(aTop10Name).width / 2, 70 + 24 * rankFromZero);
                     }
                 } else {
                     c = b = 0;
                     for (;c < z.length;++c) {
                         var e = b + z[c] * Math.PI * 2;
-                        a.fillStyle = yb[c + 1];
-                        a.beginPath();
-                        a.moveTo(100, 140);
-                        a.arc(100, 140, 80, b, e, false);
-                        a.fill();
+                        ctx.fillStyle = yb[c + 1];
+                        ctx.beginPath();
+                        ctx.moveTo(100, 140);
+                        ctx.arc(100, 140, 80, b, e, false);
+                        ctx.fill();
                         b = e;
                     }
                 }
@@ -3115,7 +3066,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 // GM_setValue("nick", a);
                 /*new*/console.log("Not Storing '" + a + "' as nick");
                 // => !!! jbjb : this is global to every instance of agar.io running !!!
-                global_nickName = a;
+                zeach.nickName = a;
             };
             d.setRegion = ea;
             d.setSkins = function(a) {
@@ -3787,7 +3738,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         /*new*//*remap*/if(0 != this.id) {
                             /*new*//*remap*/var vertical_offset = drawCellName.call(this,b,e,d);
                             /*new*//*remap*/ drawCellMass.call(this,vertical_offset,b);
-                       
+
                         }
                         a.restore();
                     }
@@ -4154,9 +4105,17 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             /*new*/d.onload = kb;
         }
     }
-    /*new*/})(unsafeWindow, unsafeWindow.jQuery);
+})(unsafeWindow, unsafeWindow.jQuery);
 
-// ====================================== Stats Screen ===========================================================
+
+
+
+
+// ========================================================================================
+// ========================================================================================
+// B = Stats Screen 
+// ========================================================================================
+// ========================================================================================
 
 var __STORAGE_PREFIX = "mikeyk730__";
 var chart_update_interval = 10;
@@ -4178,85 +4137,86 @@ unsafeWindow.showZCOverlay = function (){
     OnShowOverlay(false);
 };
 jQuery('body').append('<div id="ZCOverlay" class="bs-example-modal-lg" style="position:relative;z-index: 300;">'+
-'<div class="modal-dialog modal-lg">'+
-'    <div class="modal-content">'+
-'    <div class="modal-header">'+
-'    <button type="button" class="close" onclick="hideZCOverlay();")><span>×</span></button>'+
-'<h4 class="modal-title">Zeach Cobbler v' +GM_info.script.version + '</h4>'+
-'</div>'+
-'<div id="ZCOverlayBody" class="modal-body" style="height:675px;">'+
-'    </div>'+
-'    <div class="modal-footer">'+
-'    <button type="button" id="ZCClose" class="btn btn-default" onclick="hideZCOverlay();">Let\'s Roll</button>'+
-'    <button type="button" id="ZCPlay" class="btn btn-primary" onclick="hideZCOverlay();setNick(document.getElementById(\'nick\').value); return false;">Play</button>'+
-'</div>'+
-'</div><!-- /.modal-content -->'+
-'</div><!-- /.modal-dialog -->'+
-'</div><!-- /.modal -->');
+                      '<div class="modal-dialog modal-lg">'+
+                      '    <div class="modal-content">'+
+                      '    <div class="modal-header">'+
+                      '    <button type="button" class="close" onclick="hideZCOverlay();")><span>×</span></button>'+
+                      '<h4 class="modal-title">Zeach Cobbler v' +GM_info.script.version + '</h4>'+
+                      '</div>'+
+                      '<div id="ZCOverlayBody" class="modal-body" style="height:675px;">'+
+                      '    </div>'+
+                      '    <div class="modal-footer">'+
+                      '    <button type="button" id="ZCClose" class="btn btn-default" onclick="hideZCOverlay();">Let\'s Roll</button>'+
+                      '    <button type="button" id="ZCPlay" class="btn btn-primary" onclick="hideZCOverlay();setNick(document.getElementById(\'nick\').value); return false;">Play</button>'+
+                      '</div>'+
+                      '</div><!-- /.modal-content -->'+
+                      '</div><!-- /.modal-dialog -->'+
+                      '</div><!-- /.modal -->');
 
 jQuery("#ZCPlay").hide();
 
 jQuery("#agario-main-buttons")
-    .append('<button type="button" class="btn btn-danger" id="opnZC" onclick="showZCOverlay()" style="margin-top:5px;position:relative;width:100%;">ZeachCobbler Options</button>');
+.append('<button type="button" class="btn btn-danger" id="opnZC" onclick="showZCOverlay()" style="margin-top:5px;position:relative;width:100%;">ZeachCobbler Options</button>');
 jQuery("#agario-main-buttons")
-    .append('<button type="button" id="opnBrowser" onclick="openServerbrowser();" style="margin-top:5px;position:relative;width:100%" class="btn btn-success">Agariomods Private Servers</button><br>');
+.append('<button type="button" id="opnBrowser" onclick="openServerbrowser();" style="margin-top:5px;position:relative;width:100%" class="btn btn-success">Agariomods Private Servers</button><br>');
 
 jQuery('#ZCOverlayBody').append('<div id="ZCStats" style="position:relative;width:100%; background-color: #FFFFFF; border-radius: 15px; padding: 5px 15px 5px 15px;">'+
-    '<ul class="nav nav-pills" role="tablist">' +
-    '<li role="presentation" class="active" > <a href="#page0" id="newsTab"   role="tab" data-toggle="tab">News</a></li>' +
-    '<li role="presentation">                 <a href="#page1" id="statsTab"  role="tab" data-toggle="tab">Stats</a></li>' +
-    '<li role="presentation">                 <a href="#page2" id="configTab" role="tab" data-toggle="tab">Extended Options</a></li>' +
-    '<li role="presentation">                 <a href="#page3" id="helpTab" role="tab" data-toggle="tab">Help</a></li>' +
-        //'<li role="presentation"><a href="#page3" role="tab" data-toggle="tab">IP Connect</a></li>' +
-    '</ul>'+
+                                '<ul class="nav nav-pills" role="tablist">' +
+                                '<li role="presentation" class="active" > <a href="#page0" id="newsTab"   role="tab" data-toggle="tab">News</a></li>' +
+                                '<li role="presentation">                 <a href="#page1" id="statsTab"  role="tab" data-toggle="tab">Stats</a></li>' +
+                                '<li role="presentation">                 <a href="#page2" id="configTab" role="tab" data-toggle="tab">Extended Options</a></li>' +
+                                '<li role="presentation">                 <a href="#page3" id="helpTab" role="tab" data-toggle="tab">Help</a></li>' +
+                                //'<li role="presentation"><a href="#page3" role="tab" data-toggle="tab">IP Connect</a></li>' +
+                                '</ul>'+
 
-    '<div id="bigbox" class="tab-content">' +
-    '<div id="page0" role="tabpanel" class="tab-pane active">'+ debugMonkeyReleaseMessage +'</div>' +
+                                '<div id="bigbox" class="tab-content">' +
+                                '<div id="page0" role="tabpanel" class="tab-pane active">'+ debugMonkeyReleaseMessage +'</div>' +
 
-    '<div id="page1" role="tabpanel" class="tab-pane">' +
-    '<div class="row">' +
-    '<div id="statArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-    '<div id="pieArea" class="col-sm-5" style="vertical-align: top; height:250px;"></div>' +
-    '<div id="padder" class="col-sm-1"></div>' +
-    '</div>' +
-    '<div class="row">' +
-    '<div id="gainArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-    '<div id="lossArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-    '</div>' +
-    '<div class="row">' +
-    '<div id="chartArea" class="col-sm-8" ></div>' +
-    '<div id="XPArea" class="col-sm-4"></div>' +
-    '</div>' +
-    '</div>' +
-    '<div id="page2" role="tabpanel" class="tab-pane">' +
-    '<div class="row">' +
-    '<div id="col1" class="col-sm-4 checkbox" style="padding-left: 5%; padding-right: 1%;"></div>' +
-    '<div id="col2" class="col-sm-4" style="padding-left: 2%; padding-right: 2%;"></div>' +
-    '<div id="col3" class="col-sm-4" style="padding-left: 2%; padding-right: 5%;"></div>' +
-    '</div>' +
-    '</div>'+
-    '<div id="page3" role="tabpanel" class="tab-pane">' +
-    '<div class="row">' +
-    '<div id="col1" class="col-sm-6" style="padding-left: 5%; padding-right: 1%;"><h3>Keys</h3><ul>' +
-    '   <li><B>TAB</B> - When split switches selected blob</li>' +
-    '   <li><B>A</B> - Toggle Acid mode</li>' +
-    '   <li><B>C</B> - Toggle display of visual cues</li>' +
-    '   <li><B>G</B> - Toggle new grazer (better overall)</li>' +
-    '   <li><B>H</B> - Toggle old grazer (slightly better early on)' +
-    '   <li><B>E</B> - Fire at virus near cursor</li>' +
-    '   <li><B>R</B> - Fire at virus near selected blob (virus is highlighted in red)</li>' +
-    '   <li><B>M</B> - Enables/Disables mouse input</li>' +
-    '   <li><B>Z</B> - Zoom in/zoom out</li>' +
-    '   <li><B>F</B> - toogle full screen</li>' +
-    '   <li><B>1...7</B> - Selecte n-th blob sorted by size</li>' +
-    '   <li><B>Click</B> - Lock currently selected blob (if blob locking enabled)</li>' +
-    '   <li><B>S</B> - Unlock all blobs (if blob locking enabled)</li>' +
-    '</ul></div>' +
-    '<div id="col2" class="col-sm-6" style="padding-left: 5%; padding-right: 2%;"><h3></h3></div>' +
-    '</div>' +
-    '</div>');
+                                '<div id="page1" role="tabpanel" class="tab-pane">' +
+                                '<div class="row">' +
+                                '<div id="statArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+                                '<div id="pieArea" class="col-sm-5" style="vertical-align: top; height:250px;"></div>' +
+                                '<div id="padder" class="col-sm-1"></div>' +
+                                '</div>' +
+                                '<div class="row">' +
+                                '<div id="gainArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+                                '<div id="lossArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+                                '</div>' +
+                                '<div class="row">' +
+                                '<div id="chartArea" class="col-sm-8" ></div>' +
+                                '<div id="XPArea" class="col-sm-4"></div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div id="page2" role="tabpanel" class="tab-pane">' +
+                                '<div class="row">' +
+                                '<div id="col1" class="col-sm-4 checkbox" style="padding-left: 5%; padding-right: 1%;"></div>' +
+                                '<div id="col2" class="col-sm-4" style="padding-left: 2%; padding-right: 2%;"></div>' +
+                                '<div id="col3" class="col-sm-4" style="padding-left: 2%; padding-right: 5%;"></div>' +
+                                '</div>' +
+                                '</div>'+
+                                '<div id="page3" role="tabpanel" class="tab-pane">' +
+                                '<div class="row">' +
+                                '<div id="col1" class="col-sm-6" style="padding-left: 5%; padding-right: 1%;"><h3>Keys</h3><ul>' +
+                                '   <li><B>TAB</B> - When split switches selected blob</li>' +
+                                '   <li><B>A</B> - Toggle Acid mode</li>' +
+                                '   <li><B>C</B> - Toggle display of visual cues</li>' +
+                                '   <li><B>G</B> - Toggle new grazer (better overall)</li>' +
+                                '   <li><B>H</B> - Toggle old grazer (slightly better early on)' +
+                                '   <li><B>E</B> - Fire at virus near cursor</li>' +
+                                '   <li><B>R</B> - Fire at virus near selected blob (virus is highlighted in red)</li>' +
+                                '   <li><B>M</B> - Enables/Disables mouse input</li>' +
+                                '   <li><B>Z</B> - Zoom in/zoom out</li>' +
+                                '   <li><B>F</B> - toogle full screen</li>' +
+                                '   <li><B>1...7</B> - Selecte n-th blob sorted by size</li>' +
+                                '   <li><B>Click</B> - Lock currently selected blob (if blob locking enabled)</li>' +
+                                '   <li><B>S</B> - Unlock all blobs (if blob locking enabled)</li>' +
+                                '</ul></div>' +
+                                '<div id="col2" class="col-sm-6" style="padding-left: 5%; padding-right: 2%;"><h3></h3></div>' +
+                                '</div>' +
+                                '</div>');
 jQuery(".agario-profile-panel").appendTo("#XPArea");
 jQuery("#statsTab").click(function(){OnShowOverlay(false);});
+
 function LS_getValue(aKey, aDefault) {
     var val = localStorage.getItem(__STORAGE_PREFIX + aKey);
     if (null === val && 'undefined' != typeof aDefault) return aDefault;
@@ -4446,7 +4406,7 @@ function OnGainMass(me, other)
         stats.gains[key].mass += mass;
         sfx_event("eat");
     }
-    
+
 
 }
 
@@ -4492,7 +4452,10 @@ function DrawPie(pellet, w, cells, viruses)
 
 function GetTopN(n, p){
     var r = [];
-    var a = Object.keys(stats[p]).sort(function(a, b) {return -(stats[p][a].mass - stats[p][b].mass)});
+    var a = Object.keys(stats[p]).sort(function(a, b) {
+        return -(stats[p][a].mass - stats[p][b].mass)
+    });
+
     for (var i = 0; i < n && i < a.length; ++i){
         var key = a[i];
         var mass = stats[p][key].mass;
@@ -4538,7 +4501,7 @@ function DrawStats(game_over) {
         if(window.cobbler.autoRespawn && window.cobbler.grazingMode){
             setTimeout(function(){jQuery(".btn-play-guest").click();},3000);
         } else {
-            // jbjb ShowZCStats();
+            ShowZCStats();
         }
     }
     var time = stats.time_of_death ? stats.time_of_death : Date.now();
@@ -4701,8 +4664,16 @@ unsafeWindow.OnDraw = function(context) {
     display_stats && stat_canvas && context.drawImage(stat_canvas, 10, 10);
 };
 
-// ====================== Music & SFX System ==============================================================
-//sfx play on event (only one of each sfx can play - for sfx that won't overlap with itself)
+
+
+// ========================================================================================
+// ========================================================================================
+// C = Music & SFX System 
+// ========================================================================================
+// ========================================================================================
+
+// sfx play on event (only one of each sfx can play - for sfx that won't overlap with itself)
+
 var ssfxlist = [
     'spawn',
     'gameover'
@@ -4776,11 +4747,11 @@ volSFX = function (vol) {
 };
 
 var tracks = ['http://incompetech.com/music/royalty-free/mp3-preview2/Frost%20Waltz.mp3',
-    'http://incompetech.com/music/royalty-free/mp3-preview2/Frozen%20Star.mp3',
-    'http://incompetech.com/music/royalty-free/mp3-preview2/Groove%20Grove.mp3',
-    'http://incompetech.com/music/royalty-free/mp3-preview2/Dreamy%20Flashback.mp3',
-    'http://incompetech.com/music/royalty-free/mp3-preview2/Impact%20Lento.mp3',
-    'http://incompetech.com/music/royalty-free/mp3-preview2/Wizardtorium.mp3'];
+              'http://incompetech.com/music/royalty-free/mp3-preview2/Frozen%20Star.mp3',
+              'http://incompetech.com/music/royalty-free/mp3-preview2/Groove%20Grove.mp3',
+              'http://incompetech.com/music/royalty-free/mp3-preview2/Dreamy%20Flashback.mp3',
+              'http://incompetech.com/music/royalty-free/mp3-preview2/Impact%20Lento.mp3',
+              'http://incompetech.com/music/royalty-free/mp3-preview2/Wizardtorium.mp3'];
 /*sfx*/
 var nodeAudio = document.createElement("audio");
 nodeAudio.id = 'audiotemplate';
@@ -4814,10 +4785,10 @@ unsafeWindow.openServerbrowser = function (a) {
     }
     b = true;
     jQuery("#rsb")
-        .prop("disabled", true);
+    .prop("disabled", true);
     if(!a) {
         jQuery("#serverBrowser")
-            .fadeIn();
+        .fadeIn();
     }
     getServers();
 };
@@ -4826,7 +4797,7 @@ function serverinfo(list, index) {
     if(index >= list.length) {
         unsafeWindow.openServerbrowser.loading = false;
         jQuery("#rsb")
-            .prop("disabled", false);
+        .prop("disabled", false);
         return;
     }
     value = list[index];
@@ -4837,34 +4808,34 @@ function serverinfo(list, index) {
         dataType: "json",
         success: function (data) {
             $("#" + (value[0] + value[1]) + " #player")
-                .text(data.current_players + "/" + data.max_players);
+            .text(data.current_players + "/" + data.max_players);
             latency = Date.now() - started;
             if(latency < 100) {
                 jQuery("#" + (value[0] + value[1]) + " #latency")
-                    .css("color", "#19A652");
+                .css("color", "#19A652");
             } else {
                 if(latency < 250) {
                     jQuery("#" + (value[0] + value[1]) + " #latency")
-                        .css("color", "#E1BD2C");
+                    .css("color", "#E1BD2C");
                 } else {
                     jQuery("#" + (value[0] + value[1]) + " #latency")
-                        .css("color", "#F00");
+                    .css("color", "#F00");
                 }
             }
             jQuery("#" + (value[0] + value[1]) + " #latencyres")
-                .text(latency + "ms");
+            .text(latency + "ms");
         },
         error: function (data) {
             jQuery("#" + (value[0] + value[1]) + " #player")
-                .text("No information");
+            .text("No information");
             jQuery("#" + (value[0] + value[1]) + " #latency")
-                .css("color", "#f00");
+            .css("color", "#f00");
             jQuery("#" + (value[0] + value[1]) + " #latency")
-                .text("Failed");
+            .text("Failed");
         },
         complete: function (data) {
             if(!(document.getElementById("serverBrowser")
-                    .style.display == "none")) {
+                 .style.display == "none")) {
                 serverinfo(list, index + 1);
             }
         }
@@ -4872,7 +4843,7 @@ function serverinfo(list, index) {
 }
 unsafeWindow.connectPrivate = function (location, i) {
     var ip = location.toLowerCase()
-            .replace(" ", "") + ".iomods.com";
+    .replace(" ", "") + ".iomods.com";
     var port = 1500 + parseInt(i);
     //server.ip = ip;
     //server.i = i;
@@ -4886,7 +4857,7 @@ document.head.appendChild(st);
 
 unsafeWindow.closeServerbrowser = function () {
     jQuery("#serverBrowser")
-        .fadeOut();
+    .fadeOut();
 };
 var locations=new Array("Chicago Beta","Dallas Beta","Frankfurt Beta","London Beta","Los Angeles Beta","Miami Beta","New Jersey Beta","Paris Beta","Seattle Beta","Silicon Valley Beta","Sydney Beta","Amsterdam","Amsterdam Beta","Atlanta Beta","Frankfurt Alpha","Frankfurt","London","Quebec","Paris","Paris Gamma","Atlanta","Chicago","Dallas","Los Angeles","Miami","New Jersey","Seattle","Silicon Valley","Sydney","Tokyo");
 locations.sort();
@@ -4894,31 +4865,31 @@ locations[0] = [locations[1], locations[1] = locations[0]][0];
 
 function getServers() {
     jQuery("#serverlist1")
-        .empty();
+    .empty();
     jQuery("#serverlist2")
-        .empty();
+    .empty();
     var latencylist = Array();
     jQuery.each(locations, function (index, value) {
         var i = 1;
         for(; i <= 2; i++) {
             serverid = value.toLowerCase()
-                    .replace(" ", "") + i;
+            .replace(" ", "") + i;
             $("#serverlist" + i)
-                .append('<a href class="serveritem" id="' + serverid + '" onclick="connectPrivate(\'' + value + "', '" + i + '\');closeServerbrowser();return false;"><b style="color: #222">' + value + " #" + i + '</b><br>\t\t\t<i style="color: #999"><span id="player">fetching data...</span> <i style="color: #ccc" class="fa fa-users" /> | </i><span id="latency"><i class="fa fa-signal"></i> <span id="latencyres"></span></span></a>');
+            .append('<a href class="serveritem" id="' + serverid + '" onclick="connectPrivate(\'' + value + "', '" + i + '\');closeServerbrowser();return false;"><b style="color: #222">' + value + " #" + i + '</b><br>\t\t\t<i style="color: #999"><span id="player">fetching data...</span> <i style="color: #ccc" class="fa fa-users" /> | </i><span id="latency"><i class="fa fa-signal"></i> <span id="latencyres"></span></span></a>');
             latencylist.push(new Array(value.toLowerCase()
-                .replace(" ", ""), i));
+                                       .replace(" ", ""), i));
         }
     });
     serverinfo(latencylist, 0);
 }
 
 jQuery(document)
-    .ready(function () {
-        jQuery("body")
-            .append('<div id="serverBrowser" class="overlay" style="display:none"><div class="valign"><div class="popupbox"><div class="popheader"><h3>Agariomods Ogar Server Browser</h3></div>\t<div class="scrollable"><center style="border-right:1px solid #e8e8e8;float:left;width:50%;"><div id="serverlist1"></div></center><center style="float:right;width:50%;"><div id="serverlist2"></div></center></div><div class="popupbuttons"><button onclick="closeServerbrowser()" type="button" style="transform:translateX(72%);margin:4px"\tclass="btn btn-danger">Back</button><button id="rsb" onclick="openServerbrowser(true)" class="btn btn-info" type="button" style="float:right;margin:4px;">Refresh <i class="glyphicon glyphicon-refresh"></i></button></div></div></div></div>');
-        jQuery("body")
-            .append('<div id="chat" style="display:none"><div id="chatlines"></div><div id="chatinput" style="display:none" class="input-group">\t<input type="text" id="chatinputfield" class="form-control" maxlength="120"><span class="input-group-btn">\t<button onclick="sendMSG()" class="btn btn-default" type="button">Send</button></span></div></div>');
-    });
+.ready(function () {
+    jQuery("body")
+    .append('<div id="serverBrowser" class="overlay" style="display:none"><div class="valign"><div class="popupbox"><div class="popheader"><h3>Agariomods Ogar Server Browser</h3></div>\t<div class="scrollable"><center style="border-right:1px solid #e8e8e8;float:left;width:50%;"><div id="serverlist1"></div></center><center style="float:right;width:50%;"><div id="serverlist2"></div></center></div><div class="popupbuttons"><button onclick="closeServerbrowser()" type="button" style="transform:translateX(72%);margin:4px"\tclass="btn btn-danger">Back</button><button id="rsb" onclick="openServerbrowser(true)" class="btn btn-info" type="button" style="float:right;margin:4px;">Refresh <i class="glyphicon glyphicon-refresh"></i></button></div></div></div></div>');
+    jQuery("body")
+    .append('<div id="chat" style="display:none"><div id="chatlines"></div><div id="chatinput" style="display:none" class="input-group">\t<input type="text" id="chatinputfield" class="form-control" maxlength="120"><span class="input-group-btn">\t<button onclick="sendMSG()" class="btn btn-default" type="button">Send</button></span></div></div>');
+});
 // ===============================================================================================================
 uiOnLoadTweaks();
 
@@ -4944,15 +4915,15 @@ AppendCheckbox(col1, 'feature-blob-lock-next', ' Switch blob on lock', window.co
 
 var col2 = $("#col2");
 col2.append('<h4>Debug Level</h4><div class="btn-group-sm" role="group" data-toggle="buttons">' +
-    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugNone" autocomplete="off" value=0>None</label>' +
-    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugLow" autocomplete="off" value=1>Low</label>' +
-    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugHigh" autocomplete="off" value=2>High</label>' +
-    '</div>');
+            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugNone" autocomplete="off" value=0>None</label>' +
+            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugLow" autocomplete="off" value=1>Low</label>' +
+            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugHigh" autocomplete="off" value=2>High</label>' +
+            '</div>');
 $('input[name="DebugLevel"]:radio[value='+window.cobbler.debugLevel +']').parent().addClass("active");
 $('input[name="DebugLevel"]').change( function() {window.cobbler.debugLevel = $(this).val();});
 
 col2.append('<h4>Virus Popper</h4><h5>Milliseconds between shots</h5><div id="mspershot-group" class="input-group input-group-sm"> <input type="text" id="mspershot-textbox" class="form-control" placeholder="1-2000 (Default: 100)"' +
-    'value=' + cobbler.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
+            'value=' + cobbler.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
 $('#mspershot-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval) && newval > 0 && newval <= 2000) {
@@ -4965,8 +4936,8 @@ $('#mspershot-textbox').on('input propertychange paste', function() {
 });
 
 col2.append('<h4>Minimap Scale</h4>' +
-    '<div id="minimap-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="minimap-checkbox" type="checkbox"></span>' +
-    '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ cobbler.miniMapScaleValue +'></div>');
+            '<div id="minimap-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="minimap-checkbox" type="checkbox"></span>' +
+            '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ cobbler.miniMapScaleValue +'></div>');
 $('#minimap-checkbox').change(function(){
     if(!!this.checked){
         $('#minimap-textbox').removeAttr("disabled");
@@ -4994,9 +4965,9 @@ AppendCheckbox(grazerChecks, 'option5', ' Visualize Grazer', window.cobbler.visu
 AppendCheckbox(grazerChecks, 'grazer-multiBlob-checkbox', ' Grazer MultiBlob', window.cobbler.grazerMultiBlob2, function(val){window.cobbler.grazerMultiBlob2 = val;});
 
 col2.append('<h5>Hybrid Grazer</h5>' +
-    '<div id="hybrid-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="hybrid-checkbox" type="checkbox"></span>' +
-    '<input id="hybrid-textbox" type="text" class="form-control" value='+ cobbler.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
-    '<h6>Starts with old grazer and at specified mass switches to new grazer</h6>');
+            '<div id="hybrid-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="hybrid-checkbox" type="checkbox"></span>' +
+            '<input id="hybrid-textbox" type="text" class="form-control" value='+ cobbler.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
+            '<h6>Starts with old grazer and at specified mass switches to new grazer</h6>');
 $('#hybrid-checkbox').change(function(){
     if(!!this.checked){
         $('#hybrid-textbox').removeAttr("disabled");
@@ -5029,9 +5000,9 @@ AppendCheckboxP(col3, 'imgur-checkbox', ' Imgur.com  i/skins', window.cobbler.im
 
 // ---- Tooltips
 $("#rainbow-checkbox").attr({"data-toggle": "tooltip", "data-placement": "right",
-    "title": "Allow food pellets to be rainbow colored rather than purple. Combines well with Lite Brite Mode"});
+                             "title": "Allow food pellets to be rainbow colored rather than purple. Combines well with Lite Brite Mode"});
 $("#litebrite-checkbox").attr({"data-toggle": "tooltip", "data-placement": "right",
-    "title": "Leaves blob centers empty except for skins."});
+                               "title": "Leaves blob centers empty except for skins."});
 setTimeout(function(){$(function () { $('[data-toggle="tooltip"]').tooltip()})}, 5000); // turn on all tooltips.
 
 // Ugly ass hack to fix effects of official code loading before mod
