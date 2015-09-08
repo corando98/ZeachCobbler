@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.3
+// @version      0.4
 //
 // @description  Agario powerups and bot
 //
@@ -17,7 +17,8 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.3 - name change
+// @changes      0.4 - voice message at each mass big step
+//               0.3 - name change
 //               0.2 - change version for testing
 //               0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
 
@@ -265,6 +266,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         } else {
             setFavicon("green");
         }
+        
+        sayIfLevelChange(zeach.nickName, zeach.mass);
     }
     window.setInterval(timer2s,2000);
 
@@ -276,7 +279,41 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }
 
+    
+    function sayIfLevelChange(name,mass) {
+        // Check to see if the counter has been initialized
+        if ( typeof sayIfLevelChange.currentLevel == 'undefined' ) {
+            // It has not... perform the initialization
+            sayIfLevelChange.currentLevel = 0;
+        }
+        var newLevel = 0;
+        if (mass<300) {
+            newLevel = 0;
+        } else if (mass<600) {
+            newLevel = 300;
+        } else if (mass<900) {
+            newLevel = 600;
+        } else if (mass<1200) {
+            newLevel = 900;
+        } else {
+            newLevel = 1200;
+        }
+        console.log('current level : ' + sayIfLevelChange.currentLevel);
+        if (newLevel>sayIfLevelChange.currentLevel) {
+            say(name + ' dépasse les ' + newLevel);
+            console.log('new level !');
+        }
+        sayIfLevelChange.currentLevel = newLevel;
+    }
 
+    function say(message) {
+        var msg = new SpeechSynthesisUtterance(message);
+        msg.lang = 'fr-FR';
+        speechSynthesis.speak(msg);
+    }
+        
+        
+  
     // favicon
     function setFavicon(color) {
         document.head = document.head || document.getElementsByTagName('head')[0];
@@ -322,6 +359,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function toggleFullScreen() {
         if (!document.fullscreenElement &&    // alternative standard method
             !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+            say("mode plein écran !");
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
             } else if (document.documentElement.msRequestFullscreen) {
@@ -332,6 +370,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }
         } else {
+            say("mode fenêtré !");
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.msExitFullscreen) {
@@ -343,6 +382,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
         }
     }
+    
+
 
 
     /*   
@@ -1169,6 +1210,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function displayDebugText(ctx, agarTextFunction) {
+        //console.log('debug level ' + cobbler.debugLevel);
 
         if(0 >= cobbler.debugLevel) {
             return;
@@ -2783,7 +2825,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 if (null == z) {
                     ctx.font = "20px Ubuntu";
                     rankFromZero = 0;
-                    zeach.leaderBoard = 0;
+                    var onLeaderBoard = false;
                     for (;rankFromZero < E.length;++rankFromZero) {
                         aTop10Name = E[rankFromZero].name || X("unnamed_cell");
                         if (!va) {
@@ -2795,6 +2837,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             }
                             ctx.fillStyle = "#FFAAAA";
                             /*new*//*mikey*//*remap*/OnLeaderboard(rankFromZero+1);
+                            onLeaderBoard = true;
                             if (zeach.leaderBoard != (rankFromZero + 1)) {
                                 zeach.leaderBoard = rankFromZero + 1; //jbjb
                                 console.log('on leader board at new rank ' + zeach.leaderBoard );
@@ -2805,6 +2848,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         aTop10Name = rankFromZero + 1 + ". " + aTop10Name;
                         ctx.fillText(aTop10Name, 100 - ctx.measureText(aTop10Name).width / 2, 70 + 24 * rankFromZero);
                     }
+                    if (!onLeaderBoard) {
+                        if (zeach.leaderBoard>0) {
+                            console.log('lost leaderbord from rank ' + zeach.leaderBoard);
+                        }
+                        zeach.leaderBoard = 0;
+                    }
+                         
                 } else {
                     c = b = 0;
                     for (;c < z.length;++c) {
