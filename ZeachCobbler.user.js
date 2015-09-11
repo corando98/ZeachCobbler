@@ -69,6 +69,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     var suspendMouseUpdates = false;
     var grazingTargetFixation = false;
     var selectedBlobID = null;
+    var lastSplitTime = +new Date;
+    var lastSplittedForBlob = {};
 
     // Constants
     var Huge = 2.66,
@@ -118,12 +120,12 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function makeCobbler(){
         var optionsAndDefaults = {
             "isLiteBrite"       : true,
-            "sfxVol"            : 0.0,
-            "bgmVol"            : 0.0,
+            "sfxVol"            : 0.5,
+            "bgmVol"            : 0.5,
             "drawTail"          : false,
             "splitGuide"        : true,
             "rainbowPellets"    : true,
-            "debugLevel"        : 0,
+            "debugLevel"        : 1,
             "imgurSkins"        : true,
             "amExtendedSkins"   : true,
             "amConnectSkins"    : true,
@@ -729,8 +731,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }, 500);
         }
     }
-    
-
+   
     function dasMouseSpeedFunction(id, cx, cy, radius, nx, ny) {
         this.cx = cx; this.cy = cy; this.radius = radius; this.nx = nx; this.ny = ny;
         this.value = function(x, y) {
@@ -883,7 +884,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             // Avoid walls too
             var wallArray = [];
             wallArray.push({id: -2, nx: cell.nx, ny: zeach.mapTop - 1, nSize: cell.nSize * 30});
-            wallArray.push({id: -3, nx: cell.nx, ny: zeach.mapBottom + 1, nSize: cell.nSize * 30});
             wallArray.push({id: -4, ny: cell.ny, nx: zeach.mapLeft - 1, nSize: cell.nSize * 30});
             wallArray.push({id: -5, ny: cell.ny, nx: zeach.mapRight + 1, nSize: cell.nSize * 30});
             wallArray.forEach(function(el) {
@@ -997,6 +997,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             dist *= 2;
                         }
                     }
+					// split and chase /c0dedeaf
+					function bigGuysAround() {
+            			return zeach.allItems.some(function (threat) {
+                			return !threat.isVirus && getMass(threat.size) > getMass(el.size);
+            			});
+        			}
+					
+					// chasing /c0dedeaf
+                    if (el.id === lastSplittedForBlob.id && lastSplitTime + 1000 < new Date()) {
+                    	if (!bigGuysAround()) {
+                        	dist /= 100; // Continue chasing if split did not hit
+                        }
+					}
 
                     dist = Math.max(dist, 0.01);
 
