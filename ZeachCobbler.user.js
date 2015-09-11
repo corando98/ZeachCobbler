@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.4
+// @version      0.5
 //
 // @description  Agario powerups and bot
 //
@@ -17,13 +17,19 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.4 - voice message at each mass big step
-//               0.3 - name change
+// @changes      0.5 - add voice volume tuning + online map
+//               0.4 - voice message at each mass big step (300-600-1000)
+//               0.3 - app name change
+//                   - tab title include a circle colored vs mass + a digit :
+//                   - 0:0->99, 1:100->199, 2:200->199, 3: ...
+//                   - black(0-300)/red(300-600)/orange(600-1000)/green(>1000)
+//                     or magentaga + 'X' if on the leader board
 //               0.2 - change version for testing
 //               0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
 
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
 // @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
+// xxxxxx        https://cdnjs.cloudflare.com/ajax/libs/annyang/2.0.0/annyang.min.js
 
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -42,6 +48,7 @@ $.getScript("https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.4.1/canvas.min.js
 $.getScript("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js");
 
 unsafeWindow.connect2 = unsafeWindow.connect;
+
 jQuery("#canvas").remove();
 jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canvas>');
 
@@ -49,7 +56,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 // ========================================================================================
 // ========================================================================================
-// A = ?
+//   A = Original Agar.io code + hack...
 // ========================================================================================
 // ========================================================================================
 
@@ -86,14 +93,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     var ghostBlobs = [];
 
 
-    var miniMapCtx=jQuery('<canvas id="mini-map" width="175" height="175" style="border:2px solid #999;text-align:center;position:fixed;bottom:5px;right:5px;"></canvas>')
+    var miniMapCtx = jQuery('<canvas id="mini-map" width="175" height="175" style="border:2px solid #999;text-align:center;position:fixed;bottom:5px;right:5px;"></canvas>')
     .appendTo(jQuery('body'))
     .get(0)
     .getContext("2d");
 
-    // cobbler is the object that holds all user options. Options that should never be persisted can be defined here.
+    // nonPersistantUserOptions is the object that holds all user options. Options that should never be persisted can be defined here.
     // If an option setting should be remembered it can
-    var cobbler = {
+    var nonPersistantUserOptions = {
         set grazingMode(val)    {isGrazing = val;},
         get grazingMode()       {return isGrazing;},
         _isAcid : false,
@@ -107,19 +114,20 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function simpleSavedSettings(optionsObject){
         _.forEach(optionsObject, function(defaultValue, settingName){
             var backingVar = '_' + settingName;
-            cobbler[backingVar] = GM_getValue(settingName, defaultValue),
-                Object.defineProperty(cobbler, settingName, {
+            nonPersistantUserOptions[backingVar] = GM_getValue(settingName, defaultValue),
+                Object.defineProperty(nonPersistantUserOptions, settingName, {
                     get: function()     { return this[backingVar];},
                     set: function(val)  { this[backingVar] = val; GM_setValue(settingName, val); }
                 });
         });
     }
     // defines all options that should be persisted along with their default values.
-    function makeCobbler(){
+    function makeNonPersistantUserOptions(){
         var optionsAndDefaults = {
             "isLiteBrite"       : true,
             "sfxVol"            : 0.0,
             "bgmVol"            : 0.0,
+            "voiceVol"          : 0.0,
             "drawTail"          : false,
             "splitGuide"        : true,
             "rainbowPellets"    : true,
@@ -144,15 +152,16 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         };
         simpleSavedSettings(optionsAndDefaults);
     }
-    makeCobbler();
+    makeNonPersistantUserOptions();
 
-    window.cobbler = cobbler;
+    window.nonPersistantUserOptions = nonPersistantUserOptions;
 
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
-        //jbjb AddOn
+        // ilboued AddOn
         leaderBoard :       0,
         nickName :          'no name',
+        simpleBlobList : {},
         get serverIP()      {return serverIP;},
         get mass()          {return ~~(wb()/100);},
         get autopilot()     {return isGrazing;},
@@ -176,7 +185,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get mapRight()      {return qa;},       // g_maxX
         get mapBottom()     {return ra;},       // g_maxY
         get isShowSkins()   {return fb;},       // g_showSkins
-        // "g_showNames": "va",
         get isNightMode()   {return sa;},       // ??
         get isShowMass()    {return gb;},       // ??
         get gameMode()      {return O;},        // g_mode
@@ -237,13 +245,34 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         });
     }
 
-
-    // ======================   jbjb main   =======================================================
-    // update the tab title (even if its unfocused=>timer) with the current mass
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // main ilboued main
+    //
+    //
+    
+    // connect to cloud database to store mass, pos, name.... 
+    var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");    
+    //
+    // 0.5Hz timer : store parameters + refresh tab title
+    //
     function timer2s() {
         window.document.title = zeach.mass + ' ' + zeach.nickName; // current mass
         if (zeach.isAlive) {
-            myFirebaseRef2.child(zeach.nickName).set({
+            myFirebaseRef2.child('allPlayers/' + zeach.nickName).set({
                 version    : zeach.version,
                 mass       : zeach.mass,
                 autopilot  : zeach.autopilot,
@@ -255,6 +284,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
+        
+        // myFirebaseRef2.child('allBlobs').set(zeach.simpleBlobList);
+        // console.log('#fired => ' + zeach.simpleBlobList);
+        
         if (zeach.leaderBoard>0) {
             setFavicon('magenta');
         } else if (zeach.mass < 300) {
@@ -267,10 +300,30 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             setFavicon("green");
         }
         
-        sayIfLevelChange(zeach.nickName, zeach.mass);
-    }
-    window.setInterval(timer2s,2000);
+        sayIfLevelChange(zeach.nickName, zeach.mass, window.nonPersistantUserOptions.voiceVol);
+        
 
+    }
+    //
+    function timer30Hz() {
+        if (zeach.isAlive) {
+            zeach.simpleBlobList[0] = {
+                isVirus : false,
+                name : zeach.nickName,
+                size : 0,
+                x : zeach.posX,
+                y : zeach.posY
+            }
+            myFirebaseRef2.child('allBlobs').set(zeach.simpleBlobList);
+        }
+    }
+
+    window.setInterval(timer30Hz,33);
+    
+    window.setInterval(timer2s,2000);
+    //
+    // keyboard
+    //
     function onKeyPressed(key) {
         if ('I'.charCodeAt(0) === key) {
             //setFavicon("#FFF");
@@ -278,9 +331,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             toggleFullScreen();
         }
     }
-
-    
-    function sayIfLevelChange(name,mass) {
+    //
+    // speech synthesis
+    //   
+    function sayIfLevelChange(name,mass,volume) {
         // Check to see if the counter has been initialized
         if ( typeof sayIfLevelChange.currentLevel == 'undefined' ) {
             // It has not... perform the initialization
@@ -298,23 +352,50 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         } else {
             newLevel = 1200;
         }
-        console.log('current level : ' + sayIfLevelChange.currentLevel);
+        // console.log('current level : ' + sayIfLevelChange.currentLevel);
         if (newLevel>sayIfLevelChange.currentLevel) {
-            say(name + ' dépasse les ' + newLevel);
-            console.log('new level !');
+            say(name + ' dépasse les ' + newLevel, volume);
         }
         sayIfLevelChange.currentLevel = newLevel;
     }
-
-    function say(message) {
+    //
+    //
+    function say(message, volume) {
         var msg = new SpeechSynthesisUtterance(message);
         msg.lang = 'fr-FR';
+        msg.volume = volume;
         speechSynthesis.speak(msg);
     }
-        
-        
-  
-    // favicon
+
+    
+    //unsafeWindow.say = say;
+
+    //$('#gamemode').val(':teams');
+    //$('#nick').val('ilboued')
+    
+    // Speech recognition...
+    /*
+    if (annyang) {
+        // Let's define a command.
+        console.log('annyang started !');
+        var commands = {
+            'bonjour': function() { toggleFullScreen(); say('ok !'); }
+        };
+
+        // Add our commands to annyang
+        annyang.addCommands(commands);
+
+        // Start listening.
+        annyang.setLanguage('fr-FR');
+        annyang.start();
+    } else {
+        console.log('annyang not started :-(');
+    }
+    */
+
+    //
+    // favicon update (called by 0.5Hz timer
+    //
     function setFavicon(color) {
         document.head = document.head || document.getElementsByTagName('head')[0];
 
@@ -352,10 +433,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         document.head.appendChild(link);
     }
-
-    // connect to Firebase   
-    var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");
-
+    //
+    // toggleFullScreen (called by keyboard)
+    //
     function toggleFullScreen() {
         if (!document.fullscreenElement &&    // alternative standard method
             !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
@@ -393,6 +473,16 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 */
 
     // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+    // ======================   Utility code    ==================================================================
+
     function isFood(blob){
         return (blob.nSize < 15);
     }
@@ -472,6 +562,15 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         };
     }
 
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
+    // ======================   Grazing code    ==================================================================
     // ======================   Grazing code    ==================================================================
 
     function checkCollision(myBlob, targetBlob, potential){
@@ -591,21 +690,21 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var target;
 
 
-        var targets = findFoodToEat(!cobbler.grazerMultiBlob2);
+        var targets = findFoodToEat(!nonPersistantUserOptions.grazerMultiBlob2);
         for(i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
 
-            if (!cobbler.grazerMultiBlob2 && point.id != getSelectedBlob().id) {
+            if (!nonPersistantUserOptions.grazerMultiBlob2 && point.id != getSelectedBlob().id) {
                 continue;
             }
 
             point.grazingMode = isGrazing;
-            if(cobbler.grazerHybridSwitch) {
+            if(nonPersistantUserOptions.grazerHybridSwitch) {
                 var mass = getMass(point.nSize);
                 // switch over to new grazer once we pass the threshhold
-                if(1 === point.grazingMode && mass > cobbler.grazerHybridSwitchMass){
+                if(1 === point.grazingMode && mass > nonPersistantUserOptions.grazerHybridSwitchMass){
                     point.grazingMode = 2; // We gained enough much mass. Use new grazer.
-                }else if(2 === point.grazingMode && mass < cobbler.grazerHybridSwitchMass ){
+                }else if(2 === point.grazingMode && mass < nonPersistantUserOptions.grazerHybridSwitchMass ){
                     point.grazingMode = 1; // We lost too much mass. Use old grazer.
                 }
             }
@@ -622,7 +721,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     } else {
                         target = zeach.allNodes[point.grazingTargetID];
                     }
-                    if (!cobbler.grazerMultiBlob2) {
+                    if (!nonPersistantUserOptions.grazerMultiBlob2) {
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random());
                     } else {
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random(), point);
@@ -631,7 +730,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     break;
                 }
                 case 2: {
-                    if (!cobbler.grazerMultiBlob2) {
+                    if (!nonPersistantUserOptions.grazerMultiBlob2) {
                         target = _.max(targets, "v");
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random());
                     } else {
@@ -1098,7 +1197,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             drawMapBorders(ctx);
             drawGrazingLines_old(ctx);
             drawGrazingLines(ctx);
-            if(cobbler.drawTail){
+            if(nonPersistantUserOptions.drawTail){
                 drawTrailTail(ctx);
             }
 
@@ -1155,7 +1254,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawSplitGuide(ctx, cell) {
-        if( !isPlayerAlive() || !cobbler.splitGuide){
+        if( !isPlayerAlive() || !nonPersistantUserOptions.splitGuide){
             return;
         }
         var radius = 660;
@@ -1183,7 +1282,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if(!showVisualCues){
             return cell.color;
         }
-        if(cobbler.rainbowPellets && isFood(cell)){
+        if(nonPersistantUserOptions.rainbowPellets && isFood(cell)){
             return cell.color;
         }
         var color = cell.color;
@@ -1210,25 +1309,25 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function displayDebugText(ctx, agarTextFunction) {
-        //console.log('debug level ' + cobbler.debugLevel);
+        //console.log('debug level ' + nonPersistantUserOptions.debugLevel);
 
-        if(0 >= cobbler.debugLevel) {
+        if(0 >= nonPersistantUserOptions.debugLevel) {
             return;
         }
 
         var textSize = 15;
         var debugStrings = [];
-        if(1 <= cobbler.debugLevel) {
+        if(1 <= nonPersistantUserOptions.debugLevel) {
             debugStrings.push("v " + _version_);
             debugStrings.push("Server: " + serverIP);
 
             debugStrings.push("G - grazing: " + (isGrazing ? (1 == isGrazing) ? "Old" : "New" : "Off"));
         }
-        if(2 <= cobbler.debugLevel) {
+        if(2 <= nonPersistantUserOptions.debugLevel) {
             debugStrings.push("M - suspend mouse: " + (suspendMouseUpdates ? "On" : "Off"));
             debugStrings.push("P - grazing target fixation :" + (grazingTargetFixation ? "On" : "Off"));
             if(grazingTargetFixation){ debugStrings.push("  (T) to retarget");}
-            debugStrings.push("O - right click: " + (cobbler.rightClickFires ? "Fires @ virus" : "Default"))
+            debugStrings.push("O - right click: " + (nonPersistantUserOptions.rightClickFires ? "Fires @ virus" : "Default"))
             debugStrings.push("Z - zoom: " + zoomFactor.toString());
             if (isPlayerAlive()) {
                 debugStrings.push("Location: " + Math.floor(getSelectedBlob().x) + ", " + Math.floor(getSelectedBlob().y));
@@ -1248,31 +1347,41 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     // Probably isn't necessary to throttle it ... but what the hell.
     var rescaleMinimap = _.throttle(function(){
-        var minimapScale = cobbler.miniMapScaleValue;
+        var minimapScale = nonPersistantUserOptions.miniMapScaleValue;
         var scaledWidth = ~~(zeach.mapWidth/minimapScale);
         var scaledHeight = ~~(zeach.mapHeight/minimapScale);
         var minimap = jQuery("#mini-map");
 
-        if(minimap.width() != scaledWidth || minimap.height() != scaledHeight || cobbler.minimapScaleCurrentValue != minimapScale){
+        if(minimap.width() != scaledWidth || minimap.height() != scaledHeight || nonPersistantUserOptions.minimapScaleCurrentValue != minimapScale){
             // rescale the div
             minimap.width(scaledWidth);
             minimap.height(scaledHeight);
             // rescale the canvas element
             minimap[0].width = scaledWidth;
             minimap[0].height = scaledHeight;
-            cobbler.minimapScaleCurrentValue = minimapScale;
+            nonPersistantUserOptions.minimapScaleCurrentValue = minimapScale;
         }
     }, 5*1000);
 
-    function drawMiniMap() { //jbjb map
+    function drawMiniMap() { // ilboued memo
+        zeach.simpleBlobList = {};
+        var index = 1;
+        
         rescaleMinimap();
-        var minimapScale = cobbler.miniMapScaleValue;
+        var minimapScale = nonPersistantUserOptions.miniMapScaleValue;
         miniMapCtx.clearRect(0, 0, ~~(zeach.mapWidth/minimapScale), ~~(zeach.mapHeight/minimapScale));
 
         _.forEach(_.values(getOtherBlobs()), function(blob){
             miniMapCtx.strokeStyle = blob.isVirus ?  "#33FF33" : 'rgb(52,152,219)' ;
             miniMapCtx.beginPath();
             miniMapCtx.arc((blob.nx+Math.abs(zeach.mapLeft)) / minimapScale, (blob.ny+Math.abs(zeach.mapTop)) / minimapScale, blob.size / minimapScale, 0, 2 * Math.PI);
+            zeach.simpleBlobList[index++] = {
+                x : blob.nx,
+                y : blob.ny,
+                isVirus : blob.isVirus,
+                size : blob.size,
+                name : blob.name
+            }
             miniMapCtx.stroke();
         });
 
@@ -1280,6 +1389,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             miniMapCtx.strokeStyle = "#FFFFFF";
             miniMapCtx.beginPath();
             miniMapCtx.arc((myBlob.nx+Math.abs(zeach.mapLeft)) / minimapScale, (myBlob.ny+Math.abs(zeach.mapTop)) / minimapScale, myBlob.size / minimapScale, 0, 2 * Math.PI);
+            zeach.simpleBlobList[index++] = {
+                x : myBlob.nx,
+                y : myBlob.ny,
+                isVirus : false,
+                size : myBlob.size,
+                name : myBlob.name
+            }
             miniMapCtx.stroke();
         });
     }
@@ -1292,7 +1408,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawGrazingLines(ctx) {
-        if(!isGrazing || !cobbler.visualizeGrazing ||  !isPlayerAlive())
+        if(!isGrazing || !nonPersistantUserOptions.visualizeGrazing ||  !isPlayerAlive())
         {
             //console.log("returning early");
             return;
@@ -1414,7 +1530,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawGrazingLines_old(ctx) {
-        if(!isGrazing || !cobbler.visualizeGrazing ||  !isPlayerAlive())
+        if(!isGrazing || !nonPersistantUserOptions.visualizeGrazing ||  !isPlayerAlive())
         {
             //console.log("returning early");
             return;
@@ -1471,7 +1587,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     function fireAtVirusNearestToBlob(blob, blobArray) {
         console.log("fireAtVirusNearestToBlob");
-        var msDelayBetweenShots = cobbler.msDelayBetweenShots;
+        var msDelayBetweenShots = nonPersistantUserOptions.msDelayBetweenShots;
         nearestVirus = findNearestVirus(blob, blobArray);
 
         if(-1 == nearestVirus){
@@ -1510,6 +1626,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
+    // ======================   Skins    ==================================================================
     /* AgarioMod.com skins have been moved to the very end of the file */
     var extendedSkins = {
         "billy mays" : "http://i.imgur.com/HavxFJu.jpg",
@@ -1542,19 +1671,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function isAgarioModsSkin(targetName){
-        if(!cobbler.amExtendedSkins){
+        if(!nonPersistantUserOptions.amExtendedSkins){
             return false;
         }
         return _.includes(agariomodsSkins, targetName)
     }
     function isImgurSkin(targetName){
-        if(!cobbler.imgurSkins){
+        if(!nonPersistantUserOptions.imgurSkins){
             return false;
         }
         return _.startsWith(targetName, "i/");
     }
     function isAMConnectSkin(targetName){
-        if(!cobbler.amConnectSkins){
+        if(!nonPersistantUserOptions.amConnectSkins){
             return false;
         }
         return _.startsWith(targetName, "*");
@@ -1618,8 +1747,20 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
     // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
+    // ======================   Draw Functions    ==================================================================
     function shouldRelocateName(){
-        if(cobbler.namesUnderBlobs && !this.isVirus) {
+        if(nonPersistantUserOptions.namesUnderBlobs && !this.isVirus) {
             return true;
         }
         return ((isExtendedSkin(this.name)|| isSpecialSkin(this.name) || /*isBitDoSkin(this.name)||*/ isAMConnectSkin(this.name)));
@@ -1731,7 +1872,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         //        isGrazing = 0;
         //        showVisualCues = true;
         //        suspendMouseUpdates = false;
-        //        cobbler.enableBlobLock = false;
+        //        nonPersistantUserOptions.enableBlobLock = false;
         //}
         if(jQuery("#overlays").is(':visible')){
             return;
@@ -1742,8 +1883,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             switchCurrentBlob();
         }
         else if('A'.charCodeAt(0) === d.keyCode && isPlayerAlive()){
-            cobbler.isAcid = !cobbler.isAcid;
-            setAcid(cobbler.isAcid);
+            nonPersistantUserOptions.isAcid = !nonPersistantUserOptions.isAcid;
+            setAcid(nonPersistantUserOptions.isAcid);
         }
         else if('C'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             grazzerTargetResetRequest = "all";
@@ -1761,7 +1902,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             fireAtVirusNearestToCursor();
         }
         else if('G'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            if(cobbler.grazerHybridSwitch && isGrazing){
+            if(nonPersistantUserOptions.grazerHybridSwitch && isGrazing){
                 isGrazing = 0;
                 return;
             }
@@ -1769,7 +1910,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             isGrazing = (2 == isGrazing) ? false : 2;
         }
         else if('H'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            if(cobbler.grazerHybridSwitch && isGrazing){
+            if(nonPersistantUserOptions.grazerHybridSwitch && isGrazing){
                 isGrazing = 0;
                 return;
             }
@@ -1780,7 +1921,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             suspendMouseUpdates = !suspendMouseUpdates;
         }
         else if('O'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            cobbler.rightClickFires = !cobbler.rightClickFires;
+            nonPersistantUserOptions.rightClickFires = !nonPersistantUserOptions.rightClickFires;
         }
         else if('P'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             grazingTargetFixation = !grazingTargetFixation;
@@ -1793,7 +1934,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             grazzerTargetResetRequest = "current";
         }
         else if('V'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            cobbler.visualizeGrazing = !cobbler.visualizeGrazing;
+            nonPersistantUserOptions.visualizeGrazing = !nonPersistantUserOptions.visualizeGrazing;
         }
         else if('Z'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             // /*old*/ zoomFactor = (zoomFactor == 10 ? 11 : 10);
@@ -1897,7 +2038,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if (blob.locked) {
             blob.locked = false;
         } else {
-            if (cobbler.nextOnBlobLock) {
+            if (nonPersistantUserOptions.nextOnBlobLock) {
                 switchCurrentBlob();
             }
             blob.locked = true;
@@ -1908,7 +2049,18 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
 
-    // ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
+// ======================   Start main    ==================================================================
 
 
     function kb() {
@@ -1927,8 +2079,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
         };
         F.onmousedown = function(a) {
-            /*new*/if(cobbler.enableBlobLock) {lockCurrentBlob();}
-            /*new*/if(isPlayerAlive() && cobbler.rightClickFires){fireAtVirusNearestToCursor();}return;
+            /*new*/if(nonPersistantUserOptions.enableBlobLock) {lockCurrentBlob();}
+            /*new*/if(isPlayerAlive() && nonPersistantUserOptions.rightClickFires){fireAtVirusNearestToCursor();}return;
             if (Ma) {
                 var c = a.clientX - (5 + q / 5 / 2);
                 var b = a.clientY - (5 + q / 5 / 2);
@@ -2096,7 +2248,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
-        f.get("https://m.agar.io/fullInfo", function(a) { // jbjb replace info by fullInfo to try to solve party mode that randomly works
+        f.get("https://m.agar.io/fullInfo", function(a) { // ilboued : replace info by fullInfo to try to solve party mode that randomly works
             var c = {};
             var b;
             for (b in a.regions) {
@@ -2765,7 +2917,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function vb() {
         g.fillStyle = sa ? "#111111" : "#F2FBFF";
         g.fillRect(0, 0, q, s$$0);
-        /*new*/if(!cobbler.gridLines){return;}
+        /*new*/if(!nonPersistantUserOptions.gridLines){return;}
         g.save();
         g.strokeStyle = sa ? "#AAAAAA" : "#000000";
         g.globalAlpha = 0.2 * k;
@@ -2825,7 +2977,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 if (null == z) {
                     ctx.font = "20px Ubuntu";
                     rankFromZero = 0;
-                    var onLeaderBoard = false;
+                    var onLeaderBoard = false; // ilboued add
                     for (;rankFromZero < E.length;++rankFromZero) {
                         aTop10Name = E[rankFromZero].name || X("unnamed_cell");
                         if (!va) {
@@ -2836,11 +2988,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                                 aTop10Name = m[0].name;
                             }
                             ctx.fillStyle = "#FFAAAA";
-                            /*new*//*mikey*//*remap*/OnLeaderboard(rankFromZero+1);
+                            OnLeaderboard(rankFromZero+1);
+                            // ilboued add :
                             onLeaderBoard = true;
                             if (zeach.leaderBoard != (rankFromZero + 1)) {
-                                zeach.leaderBoard = rankFromZero + 1; //jbjb
-                                console.log('on leader board at new rank ' + zeach.leaderBoard );
+                                zeach.leaderBoard = rankFromZero + 1; 
                             }
                         } else {
                             ctx.fillStyle = "#FFFFFF";
@@ -3115,9 +3267,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 I = a;
                 Ya();
                 Q = 0;
-                // GM_setValue("nick", a);
-                /*new*/console.log("Not Storing '" + a + "' as nick");
-                // => !!! jbjb : this is global to every instance of agar.io running !!!
+                // GM_setValue("nick", a); // ilboued comment to avoid name conflict if multiple agar.io running simulatenously
+                // ilboued : store name
                 zeach.nickName = a;
             };
             d.setRegion = ea;
@@ -3730,7 +3881,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         /*new*///if (!c) {
                         a.stroke();
                         /*new*///}}
-                        /*new*/if(!cobbler.isLiteBrite)
+                        /*new*/if(!nonPersistantUserOptions.isLiteBrite)
                             a.fill();
 
                         if (!(null == d)) {
@@ -4022,7 +4173,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     b.scale(0.4, 0.4);
                     a.w(b);
                     b.restore();
-                    // jbjb memo
                     var d = document.getElementById("favicon");
                     var f = d.cloneNode(true);
                     /*new*/try{
@@ -4165,6 +4315,22 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 // ========================================================================================
 // ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
+/// ========================================================================================
+// ========================================================================================
 // B = Stats Screen 
 // ========================================================================================
 // ========================================================================================
@@ -4193,7 +4359,7 @@ jQuery('body').append('<div id="ZCOverlay" class="bs-example-modal-lg" style="po
                       '    <div class="modal-content">'+
                       '    <div class="modal-header">'+
                       '    <button type="button" class="close" onclick="hideZCOverlay();")><span>×</span></button>'+
-                      '<h4 class="modal-title">Zeach Cobbler v' +GM_info.script.version + '</h4>'+
+                      '<h4 class="modal-title">agar.io ilboued bot v' +GM_info.script.version + '</h4>'+ ' (based on Zeach Cobbler Bot)' +
                       '</div>'+
                       '<div id="ZCOverlayBody" class="modal-body" style="height:675px;">'+
                       '    </div>'+
@@ -4529,7 +4695,7 @@ function AppendTopN(n, p, list) {
 }
 
 function ShowZCStats(){
-    if(cobbler.showZcStats){
+    if(nonPersistantUserOptions.showZcStats){
         jQuery("#ZCOverlay").fadeIn();
         jQuery('#statsTab').tab('show');
     }
@@ -4550,7 +4716,7 @@ function DrawStats(game_over) {
         stats.time_of_death = Date.now();
         sfx_play(1);
         StopBGM();
-        if(window.cobbler.autoRespawn && window.cobbler.grazingMode){
+        if(window.nonPersistantUserOptions.autoRespawn && window.nonPersistantUserOptions.grazingMode){
             setTimeout(function(){jQuery(".btn-play-guest").click();},3000);
         } else {
             ShowZCStats();
@@ -4720,6 +4886,24 @@ unsafeWindow.OnDraw = function(context) {
 
 // ========================================================================================
 // ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
+// ========================================================================================
 // C = Music & SFX System 
 // ========================================================================================
 // ========================================================================================
@@ -4791,11 +4975,15 @@ var StopBGM = function () {
 volBGM = function (vol) {
     console.log(vol.toString() + " - " + document.getElementById("bgm").value)
     bgmusic.volume = document.getElementById("bgm").value;
-    window.cobbler.bgmVol = document.getElementById("bgm").value;
+    window.nonPersistantUserOptions.bgmVol = document.getElementById("bgm").value;
 };
 
 volSFX = function (vol) {
-    window.cobbler.sfxVol = vol;
+    window.nonPersistantUserOptions.sfxVol = vol;
+}
+
+volVOICE = function (vol) {
+    window.nonPersistantUserOptions.voiceVol = vol;
 };
 
 var tracks = ['http://incompetech.com/music/royalty-free/mp3-preview2/Frost%20Waltz.mp3',
@@ -4829,6 +5017,23 @@ function uiOnLoadTweaks(){
 
     $('#nick').val(GM_getValue("nick", ""));
 }
+
+
+
+
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
+//================================  AgarioMods Private Servers  ========================================================
 //================================  AgarioMods Private Servers  ========================================================
 unsafeWindow.openServerbrowser = function (a) {
     var b = unsafeWindow.openServerbrowser.loading;
@@ -4942,28 +5147,42 @@ jQuery(document)
     jQuery("body")
     .append('<div id="chat" style="display:none"><div id="chatlines"></div><div id="chatinput" style="display:none" class="input-group">\t<input type="text" id="chatinputfield" class="form-control" maxlength="120"><span class="input-group-btn">\t<button onclick="sendMSG()" class="btn btn-default" type="button">Send</button></span></div></div>');
 });
+
+
+
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
+// ===============================================================================================================
 // ===============================================================================================================
 uiOnLoadTweaks();
 
 var col1 = $("#col1");
 col1.append("<h4>Options</h4>");
-AppendCheckbox(col1, 'showZcStats-checkbox', ' Show ZC Stats On Death', window.cobbler.showZcStats, function(val){window.cobbler.showZcStats = val;});
+AppendCheckbox(col1, 'showZcStats-checkbox', ' Show ZC Stats On Death', window.nonPersistantUserOptions.showZcStats, function(val){window.nonPersistantUserOptions.showZcStats = val;});
 col1.append("<h4>Modes</h4>");
-AppendCheckbox(col1, 'isacid-checkbox', ' Enable Acid Mode', window.cobbler.isAcid, function(val){window.cobbler.isAcid = val;});
-AppendCheckbox(col1, 'litebrite-checkbox', ' Enable Lite Brite Mode', window.cobbler.isLiteBrite, function(val){window.cobbler.isLiteBrite = val;});
+AppendCheckbox(col1, 'isacid-checkbox', ' Enable Acid Mode', window.nonPersistantUserOptions.isAcid, function(val){window.nonPersistantUserOptions.isAcid = val;});
+AppendCheckbox(col1, 'litebrite-checkbox', ' Enable Lite Brite Mode', window.nonPersistantUserOptions.isLiteBrite, function(val){window.nonPersistantUserOptions.isLiteBrite = val;});
 col1.append("<h4>Visual</h4>");
-AppendCheckbox(col1, 'trailingtail-checkbox', ' Draw Trailing Tail', window.cobbler.drawTail, function(val){window.cobbler.drawTail = val;});
-AppendCheckbox(col1, 'splitguide-checkbox', ' Draw Split Guide', window.cobbler.splitGuide, function(val){window.cobbler.splitGuide = val;});
-AppendCheckbox(col1, 'rainbow-checkbox', ' Rainbow Pellets', window.cobbler.rainbowPellets, function(val){window.cobbler.rainbowPellets = val;});
-AppendCheckbox(col1, 'namesunder-checkbox', ' Names under blobs', window.cobbler.namesUnderBlobs, function(val){window.cobbler.namesUnderBlobs = val;});
-AppendCheckbox(col1, 'gridlines-checkbox', ' Show Gridlines', window.cobbler.gridLines, function(val){window.cobbler.gridLines = val;});
+AppendCheckbox(col1, 'trailingtail-checkbox', ' Draw Trailing Tail', window.nonPersistantUserOptions.drawTail, function(val){window.nonPersistantUserOptions.drawTail = val;});
+AppendCheckbox(col1, 'splitguide-checkbox', ' Draw Split Guide', window.nonPersistantUserOptions.splitGuide, function(val){window.nonPersistantUserOptions.splitGuide = val;});
+AppendCheckbox(col1, 'rainbow-checkbox', ' Rainbow Pellets', window.nonPersistantUserOptions.rainbowPellets, function(val){window.nonPersistantUserOptions.rainbowPellets = val;});
+AppendCheckbox(col1, 'namesunder-checkbox', ' Names under blobs', window.nonPersistantUserOptions.namesUnderBlobs, function(val){window.nonPersistantUserOptions.namesUnderBlobs = val;});
+AppendCheckbox(col1, 'gridlines-checkbox', ' Show Gridlines', window.nonPersistantUserOptions.gridLines, function(val){window.nonPersistantUserOptions.gridLines = val;});
 col1.append("<h4>Stats</h4>");
 AppendCheckbox(col1, 'chart-checkbox', ' Show in-game chart', display_chart, OnChangeDisplayChart);
 AppendCheckbox(col1, 'stats-checkbox', ' Show in-game stats', display_stats, OnChangeDisplayStats);
 col1.append("<h4>Features</h4>");
-AppendCheckbox(col1, 'feature-click-fire', ' Click to fire @ virus', window.cobbler.rightClickFires, function(val) {window.cobbler.rightClickFires = val;});
-AppendCheckbox(col1, 'feature-blob-lock', ' Click to lock blob', window.cobbler.enableBlobLock, function(val) {window.cobbler.enableBlobLock = val;});
-AppendCheckbox(col1, 'feature-blob-lock-next', ' Switch blob on lock', window.cobbler.nextOnBlobLock, function(val) {window.cobbler.nextOnBlobLock = val;});
+AppendCheckbox(col1, 'feature-click-fire', ' Click to fire @ virus', window.nonPersistantUserOptions.rightClickFires, function(val) {window.nonPersistantUserOptions.rightClickFires = val;});
+AppendCheckbox(col1, 'feature-blob-lock', ' Click to lock blob', window.nonPersistantUserOptions.enableBlobLock, function(val) {window.nonPersistantUserOptions.enableBlobLock = val;});
+AppendCheckbox(col1, 'feature-blob-lock-next', ' Switch blob on lock', window.nonPersistantUserOptions.nextOnBlobLock, function(val) {window.nonPersistantUserOptions.nextOnBlobLock = val;});
 
 var col2 = $("#col2");
 col2.append('<h4>Debug Level</h4><div class="btn-group-sm" role="group" data-toggle="buttons">' +
@@ -4971,16 +5190,16 @@ col2.append('<h4>Debug Level</h4><div class="btn-group-sm" role="group" data-tog
             '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugLow" autocomplete="off" value=1>Low</label>' +
             '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugHigh" autocomplete="off" value=2>High</label>' +
             '</div>');
-$('input[name="DebugLevel"]:radio[value='+window.cobbler.debugLevel +']').parent().addClass("active");
-$('input[name="DebugLevel"]').change( function() {window.cobbler.debugLevel = $(this).val();});
+$('input[name="DebugLevel"]:radio[value='+window.nonPersistantUserOptions.debugLevel +']').parent().addClass("active");
+$('input[name="DebugLevel"]').change( function() {window.nonPersistantUserOptions.debugLevel = $(this).val();});
 
 col2.append('<h4>Virus Popper</h4><h5>Milliseconds between shots</h5><div id="mspershot-group" class="input-group input-group-sm"> <input type="text" id="mspershot-textbox" class="form-control" placeholder="1-2000 (Default: 100)"' +
-            'value=' + cobbler.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
+            'value=' + nonPersistantUserOptions.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
 $('#mspershot-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval) && newval > 0 && newval <= 2000) {
         $("#mspershot-group").removeClass('has-error');
-        cobbler.msDelayBetweenShots = newval;
+        nonPersistantUserOptions.msDelayBetweenShots = newval;
     }
     else{
         $("#mspershot-group").addClass('has-error');
@@ -4989,21 +5208,21 @@ $('#mspershot-textbox').on('input propertychange paste', function() {
 
 col2.append('<h4>Minimap Scale</h4>' +
             '<div id="minimap-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="minimap-checkbox" type="checkbox"></span>' +
-            '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ cobbler.miniMapScaleValue +'></div>');
+            '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ nonPersistantUserOptions.miniMapScaleValue +'></div>');
 $('#minimap-checkbox').change(function(){
     if(!!this.checked){
         $('#minimap-textbox').removeAttr("disabled");
     } else {
         $('#minimap-textbox').attr({disabled:"disabled"})
     }
-    cobbler.miniMapScale = !!this.checked;
+    nonPersistantUserOptions.miniMapScale = !!this.checked;
 });
-if(cobbler.miniMapScale){$('#minimap-checkbox').prop('checked', true);}else{ $('#minimap-textbox').attr({disabled:"disabled"})}
+if(nonPersistantUserOptions.miniMapScale){$('#minimap-checkbox').prop('checked', true);}else{ $('#minimap-textbox').attr({disabled:"disabled"})}
 $('#minimap-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval) && newval > 1 && newval < 999) {
         $("#minimap-group").removeClass('has-error');
-        cobbler.miniMapScaleValue = newval;
+        nonPersistantUserOptions.miniMapScaleValue = newval;
     }
     else{
         $("#minimap-group").addClass('has-error');
@@ -5012,13 +5231,13 @@ $('#minimap-textbox').on('input propertychange paste', function() {
 
 col2.append('<h4>Grazer</h4><div id="grazer-checks" class="checkbox" ></div>');
 var grazerChecks = $("#grazer-checks");
-AppendCheckbox(grazerChecks, 'autorespawn-checkbox', ' Grazer Auto-Respawns', window.cobbler.autoRespawn, function(val){window.cobbler.autoRespawn = val;});
-AppendCheckbox(grazerChecks, 'option5', ' Visualize Grazer', window.cobbler.visualizeGrazing, function(val){window.cobbler.visualizeGrazing = val;});
-AppendCheckbox(grazerChecks, 'grazer-multiBlob-checkbox', ' Grazer MultiBlob', window.cobbler.grazerMultiBlob2, function(val){window.cobbler.grazerMultiBlob2 = val;});
+AppendCheckbox(grazerChecks, 'autorespawn-checkbox', ' Grazer Auto-Respawns', window.nonPersistantUserOptions.autoRespawn, function(val){window.nonPersistantUserOptions.autoRespawn = val;});
+AppendCheckbox(grazerChecks, 'option5', ' Visualize Grazer', window.nonPersistantUserOptions.visualizeGrazing, function(val){window.nonPersistantUserOptions.visualizeGrazing = val;});
+AppendCheckbox(grazerChecks, 'grazer-multiBlob-checkbox', ' Grazer MultiBlob', window.nonPersistantUserOptions.grazerMultiBlob2, function(val){window.nonPersistantUserOptions.grazerMultiBlob2 = val;});
 
 col2.append('<h5>Hybrid Grazer</h5>' +
             '<div id="hybrid-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="hybrid-checkbox" type="checkbox"></span>' +
-            '<input id="hybrid-textbox" type="text" class="form-control" value='+ cobbler.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
+            '<input id="hybrid-textbox" type="text" class="form-control" value='+ nonPersistantUserOptions.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
             '<h6>Starts with old grazer and at specified mass switches to new grazer</h6>');
 $('#hybrid-checkbox').change(function(){
     if(!!this.checked){
@@ -5026,14 +5245,14 @@ $('#hybrid-checkbox').change(function(){
     } else {
         $('#hybrid-textbox').attr({disabled:"disabled"})
     }
-    cobbler.grazerHybridSwitch = !!this.checked;
+    nonPersistantUserOptions.grazerHybridSwitch = !!this.checked;
 });
-if(cobbler.grazerHybridSwitch){$('#hybrid-checkbox').prop('checked', true);}else{ $('#hybrid-textbox').attr({disabled:"disabled"})}
+if(nonPersistantUserOptions.grazerHybridSwitch){$('#hybrid-checkbox').prop('checked', true);}else{ $('#hybrid-textbox').attr({disabled:"disabled"})}
 $('#hybrid-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval)) {
         $("#hybrid-group").removeClass('has-error');
-        cobbler.grazerHybridSwitchMass = newval;
+        nonPersistantUserOptions.grazerHybridSwitchMass = newval;
     }
     else{
         $("#hybrid-group").addClass('has-error');
@@ -5043,12 +5262,13 @@ $('#hybrid-textbox').on('input propertychange paste', function() {
 
 var col3 = $("#col3");
 col3.append("<h4>Music/Sound</h4>");
-col3.append('<p>Sound Effects<input id="sfx" type="range" value=' + window.cobbler.sfxVol + ' step=".1" min="0" max="1" oninput="volSFX(this.value);"></p>');
-col3.append('<p>Music<input type="range" id="bgm" value=' + window.cobbler.bgmVol + ' step=".1" min="0" max="1" oninput="volBGM(this.value);"></p>');
+col3.append('<p>Soundeee Effects<input id="sfx" type="range" value=' + window.nonPersistantUserOptions.sfxVol + ' step=".1" min="0" max="1" oninput="volSFX(this.value);"></p>');
+col3.append('<p>Music<input type="range" id="bgm" value=' + window.nonPersistantUserOptions.bgmVol + ' step=".1" min="0" max="1" oninput="volBGM(this.value);"></p>');
+col3.append('<p>Voice<input type="range" id="bgm" value=' + window.nonPersistantUserOptions.voiceVol + ' step=".1" min="0" max="1" oninput="volVOICE(this.value);"></p>');
 col3.append('<h4>Skins Support</h4>');
-AppendCheckboxP(col3, 'amConnect-checkbox', ' AgarioMods Connect *skins', window.cobbler.amConnectSkins, function(val){window.cobbler.amConnectSkins = val;});
-AppendCheckboxP(col3, 'amExtended-checkbox', ' AgarioMods Extended skins', window.cobbler.amExtendedSkins, function(val){window.cobbler.amExtendedSkins = val;});
-AppendCheckboxP(col3, 'imgur-checkbox', ' Imgur.com  i/skins', window.cobbler.imgurSkins, function(val){window.cobbler.imgurSkins = val;});
+AppendCheckboxP(col3, 'amConnect-checkbox', ' AgarioMods Connect *skins', window.nonPersistantUserOptions.amConnectSkins, function(val){window.nonPersistantUserOptions.amConnectSkins = val;});
+AppendCheckboxP(col3, 'amExtended-checkbox', ' AgarioMods Extended skins', window.nonPersistantUserOptions.amExtendedSkins, function(val){window.nonPersistantUserOptions.amExtendedSkins = val;});
+AppendCheckboxP(col3, 'imgur-checkbox', ' Imgur.com  i/skins', window.nonPersistantUserOptions.imgurSkins, function(val){window.nonPersistantUserOptions.imgurSkins = val;});
 
 // ---- Tooltips
 $("#rainbow-checkbox").attr({"data-toggle": "tooltip", "data-placement": "right",
@@ -5064,6 +5284,15 @@ setTimeout(function(){$(function () { $('[data-toggle="tooltip"]').tooltip()})},
 
 
 
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Skins from skins.AgarioMods.com  ===================================================
 //================================  Skins from skins.AgarioMods.com  ===================================================
 
 var agariomodsSkins = ("0chan;18-25;1up;360nati0n;8ball;UmguwJ0;aa9skillz;ace;adamzonetopmarks;advertisingmz;agariomods.com;al sahim;alaska;albania;alchestbreach;alexelcapo;algeria;am3nlc;amoodiesqueezie;amway921wot;amyleethirty3;anarchy;android;angrybirdsnest;angryjoeshow;animebromii;anonymous;antvenom;aperture;apple;arcadego;assassinscreed;atari;athenewins;authenticgames;avatar;aviatorgaming;awesome;awwmuffin;aypierre;baka;balenaproductions;bandaid;bane;baseball;bashurverse;basketball;bateson87;batman;battlefield;bdoubleo100;beats;bebopvox;belarus;belgium;bender;benderchat;bereghostgames;bert;bestcodcomedy;bielarus;bitcoin;bjacau1;bjacau2;black widow;blackiegonth;blitzwinger;blobfish;bluexephos;bluh;blunty3000;bobross;bobsaget;bodil30;bodil40;bohemianeagle;boo;boogie2988;borg;bowserbikejustdance;bp;breakfast;breizh;brksedu;buckballs;burgundy;butters;buzzbean11;bystaxx;byzantium;calfreezy;callofduty;captainsparklez;casaldenerd;catalonia;catalunya;catman;cavemanfilms;celopand;chaboyyhd;chaika;chaosxsilencer;chaoticmonki;charlie615119;charmander;chechenya;checkpointplus;cheese;chickfila;chimneyswift11;chocolate;chrisandthemike;chrisarchieprods;chrome;chucknorris;chuggaaconroy;cicciogamer89;cinnamontoastken;cirno;cj;ckaikd0021;clanlec;clashofclansstrats;cling on;cobanermani456;coca cola;codqg;coisadenerd;cokacola;colombia;colombiaa;commanderkrieger;communitygame;concrafter;consolesejogosbrasil;controless ;converse;cookie;coolifegame;coookie;cornella;cornellà;coruja;craftbattleduty;creeper;creepydoll;criken2;criousgamers;cristian4games;csfb;cuba;cubex55;cyberman65;cypriengaming;cyprus;czech;czechia;czechrepublic;d7297ut;d7oomy999;dagelijkshaadee;daithidenogla;darduinmymenlon;darksideofmoon;darksydephil;darkzerotv;dashiegames;day9tv;deadloxmc;deadpool;deal with it;deathly hallows;deathstar;debitorlp;deigamer;demon;derp;desu;dhole;diabl0x9;dickbutt;dilleron;dilleronplay;direwolf20;dissidiuswastaken;dnb;dnermc;doge;doggie;dolan;domo;domokun;donald;dong;donut;doraemon;dotacinema;douglby;dpjsc08;dreamcast;drift0r;drunken;dspgaming;dusdavidgames;dykgaming;ea;easports;easportsfootball;eatmydiction1;eavision;ebin;eeoneguy;egg;egoraptor;eguri89games;egypt;eksi;electrokitty;electronicartsde;elementanimation;elezwarface;eligorko;elrubiusomg;enzoknol;eowjdfudshrghk;epicface;ethoslab;exetrizegamer;expand;eye;facebook;fantabobgames;fast forward;fastforward;favijtv;fazeclan;fbi;fer0m0nas;fernanfloo;fgteev;fidel;fiji;finn;fir4sgamer;firefox;fishies;flash;florida;fnatic;fnaticc;foe;folagor03;forcesc2strategy;forocoches;frankieonpcin1080p;freeman;freemason;friesland;frigiel;frogout;fuckfacebook;fullhdvideos4me;funkyblackcat;gaben;gabenn;gagatunfeed;gamebombru;gamefails;gamegrumps;gamehelper;gameloft;gamenewsofficial;gameplayrj;gamerspawn;games;gameshqmedia;gamespot;gamestarde;gametrailers;gametube;gamexplain;garenavietnam;garfield;gassymexican;gaston;geilkind;generikb;germanletsfail;getinmybelly;getinthebox;ghostrobo;giancarloparimango11;gimper;gimperr;github;giygas;gizzy14gazza;gnomechild;gocalibergaming;godsoncoc;gogomantv;gokoutv;goldglovetv;gommehd;gona89;gonzo;gonzossm;grammar nazi;grayhat;grima;gronkh;grumpy;gtamissions;gtaseriesvideos;guccinoheya;guilhermegamer;guilhermeoss;gurren lagann;h2odelirious;haatfilms;hagrid;halflife;halflife3;halo;handicapped;hap;hassanalhajry;hatty;hawaii;hawkeye;hdluh;hdstarcraft;heartrockerchannel;hebrew;heisenburg;helix;helldogmadness;hikakingames;hikeplays;hipsterwhale;hispachan;hitler;homestuck;honeycomb;hosokawa;hue;huskymudkipz;huskystarcraft;hydro;iballisticsquid;iceland;ie;igameplay1337;ignentertainment;ihascupquake;illuminati;illuminatiii;ilvostrocarodexter;imaqtpie;imgur;immortalhdfilms;imperial japan;imperialists;imperialjapan;imvuinc;insanegaz;insidegaming;insidersnetwork;instagram;instalok;inthelittlewood;ipodmail;iron man;isaac;isamuxpompa;isis;isreal;itchyfeetleech;itsjerryandharry;itsonbtv;iulitm;ivysaur;izuniy;jackfrags;jacksepticeye;jahovaswitniss;jahrein;jaidefinichon;james bond;jamesnintendonerd;jamonymow;java;jellyyt;jeromeasf;jew;jewnose;jibanyan;jimmies;jjayjoker;joeygraceffagames;johnsju;jontronshow;josemicod5;joueurdugrenier;juegagerman;jumpinthepack;jupiter;kalmar union;kame;kappa;karamba728;kenny;keralis;kiloomobile;kingdomoffrance;kingjoffrey;kinnpatuhikaru;kirby;kitty;kjragaming;klingon;knekrogamer;knights templar;knightstemplar;knowyourmeme;kootra;kripparrian;ksiolajidebt;ksiolajidebthd;kuplinovplay;kurdistan;kwebbelkop;kyle;kyokushin4;kyrsp33dy;ladle;laggerfeed;lazuritnyignom;ldshadowlady;le snake;lenny;letsplay;letsplayshik;letstaddl;level5ch;levelcapgaming;lgbt;liberland;libertyy;liechtenstien;lifesimmer;linux;lisbug;littlelizardgaming;llessur;loadingreadyrun;loki;lolchampseries;lonniedos;love;lpmitkev;luigi;luke4316;m3rkmus1c;macedonia;machinimarealm;machinimarespawn;magdalenamariamonika;mahalovideogames;malena010102;malta;mario;mario11168;markipliergame;mars;maryland;masterball;mastercheif;mateiformiga;matroix;matthdgamer;matthewpatrick13;mattshea;maxmoefoegames;mcdonalds;meatboy;meatwad;meatwagon22;megamilk;messyourself;mickey;mike tyson;mike;miles923;minecraftblow;minecraftfinest;minecraftuniverse;miniladdd;miniminter;minnesotaburns;minnie;mkiceandfire;mlg;mm7games;mmohut;mmoxreview;mod3rnst3pny;moldova;morealia;mortalkombat;mr burns;mr.bean;mr.popo;mrchesterccj;mrdalekjd;mredxwx;mrlev12;mrlololoshka;mrvertez;mrwoofless;multirawen;munchingorange;n64;naga;namcobandaigameseu;nasa;natusvinceretv;nauru;nazi;nbgi;needforspeed;nepenthez;nextgentactics;nextgenwalkthroughs;ngtzombies;nick fury;nick;nickelodeon;niichts;nintendo;nintendocaprisun;nintendowiimovies;nipple;nislt;nobodyepic;node;noobfromua;northbrabant;northernlion;norunine;nosmoking;notch;nsa;obama;obey;officialclashofclans;officialnerdcubed;oficialmundocanibal;olafvids;omfgcata;onlyvgvids;opticnade;osu;ouch;outsidexbox;p3rvduxa;packattack04082;palau;paluten;pandaexpress;paulsoaresjr;pauseunpause;pazudoraya;pdkfilms;peanutbuttergamer;pedo;pedobear;peinto1008;peka;penguin;penguinz0;pepe;pepsi;perpetuumworld;pewdiepie;pi;pietsmittie;pig;piggy;pika;pimpnite;pinkfloyd;pinkstylist;pirate;piratebay;pizza;pizzaa;plagasrz;plantsvszombies;playclashofclans;playcomedyclub;playscopetrailers;playstation;playstation3gaminghd;pockysweets;poketlwewt;pooh;poop;popularmmos;potato;prestonplayz;protatomonster;prowrestlingshibatar;pt;pur3pamaj;quantum leap;question;rageface;rajmangaminghd;retard smile;rewind;rewinside;rezendeevil;reziplaygamesagain;rfm767;riffer333;robbaz;rockalone2k;rockbandprincess1;rockstar;rockstargames;rojov13;rolfharris;roomba;roosterteeth;roviomobile;rspproductionz;rss;rusgametactics;ryukyu;s.h.e.i.l.d;sah4rshow;samoa;sara12031986;sarazarlp;satan;saudi arabia;scream;screwattack;seal;seananners;serbia;serbiangamesbl;sethbling;sharingan;shell;shine;shofu;shrek;shufflelp;shurikworld;shuuya007;sinistar;siphano13;sir;skillgaming;skinspotlights;skkf;skull;skydoesminecraft;skylandersgame;skype;skyrim;slack;slovakia;slovenia;slowpoke;smash;smikesmike05;smoothmcgroove;smoove7182954;smoshgames;snafu;snapchat;snoop dogg;soccer;soliare;solomid;somalia;sp4zie;space ace;space;sparklesproduction;sparkofphoenix;spawn;speedyw03;speirstheamazinghd;spiderman;spongegar;spore;spqr;spy;squareenix;squirtle;ssohpkc;sssniperwolf;ssundee;stalinjr;stampylonghead;star wars rebel;starbucks;starchild;starrynight;staxxcraft;stitch;stupid;summit1g;sunface;superevgexa;superman;superskarmory;swiftor;swimmingbird941;syria;t3ddygames;tackle4826;taco;taltigolt;tasselfoot;tazercraft;tbnrfrags;tctngaming;teamfortress;teamgarrymoviethai;teammojang;terrorgamesbionic;tetraninja;tgn;the8bittheater;thealvaro845;theatlanticcraft;thebajancanadian;thebraindit;thecraftanos;thedanirep;thedeluxe4;thediamondminecart;theescapistmagazine;thefantasio974;thegaminglemon;thegrefg;thejoves;thejwittz;themasterov;themaxmurai;themediacows;themrsark;thepolishpenguinpl;theradbrad;therelaxingend;therpgminx;therunawayguys;thesims;theskylanderboy;thesw1tcher;thesyndicateproject;theuselessmouth;thewillyrex;thnxcya;thor;tintin;tmartn;tmartn2;tobygames;tomo0723sw;tonga;topbestappsforkids;totalhalibut;touchgameplay;transformer;transformers;trickshotting;triforce;trollarchoffice;trollface;trumpsc;tubbymcfatfuck;turkey;tv;tvddotty;tvongamenet;twitch;twitter;twosyncfifa;typicalgamer;uberdanger;uberhaxornova;ubisoft;uguu;ukip;ungespielt;uppercase;uruguay;utorrent;vanossgaming;vatican;venomextreme;venturiantale;videogamedunkey;videogames;vietnam;vikkstar123;vikkstar123hd;vintagebeef;virus;vladnext3;voat;voyager;vsauce3;w1ldc4t43;wakawaka;wales;walrus;wazowski;wewlad;white  light;whiteboy7thst;whoyourenemy;wiiriketopray;willyrex;windows;wingsofredemption;wit my woes;woodysgamertag;worldgamingshows;worldoftanks;worldofwarcraft;wowcrendor;wqlfy;wroetoshaw;wwf;wykop;xalexby11;xbox;xboxviewtv;xbulletgtx;xcalizorz;xcvii007r1;xjawz;xmandzio;xpertthief;xrpmx13;xsk;yamimash;yarikpawgames;ycm;yfrosta;yinyang;ylilauta;ylilautaa;yoba;yobaa;yobaaa;yogscast2;yogscastlalna;yogscastsips;yogscastsjin;yoteslaya;youalwayswin;yourheroes;yourmom;youtube;zackscottgames;zangado;zazinombies;zeecrazyatheist;zeon;zerkaahd;zerkaaplays;zexyzek;zimbabwe;zng;zoella;zoidberg;zombey;zoomingames").split(";");
