@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Agar.io Ilboued Bot
+// @name         Agar.io Ilboued modded bot by Daigo
 //
 // @namespace    https://github.com/ilboued/ZeachCobbler/
 //
@@ -10,14 +10,15 @@
 //
 // @version      0.4.1
 //
-// @description  Agario powerups and bot
+// @description  Agario powerups and bot plus split added
 //
 // @author       ilboued (based on RealDebugMonkey ZeachCobbler)
 //
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.4 - voice message at each mass big step
+// @changes      0.4.1 - Split function and sound tweaked
+//  		 0.4 - voice message at each mass big step
 //               0.3 - name change
 //               0.2 - change version for testing
 //               0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
