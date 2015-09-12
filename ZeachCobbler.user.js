@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Agar.io Ilboued Bot
 //
-// @namespace    https://github.com/ilboued/ZeachCobbler/
+// @namespace    https://github.com/corand98/ZeachCobbler/
 //
-// @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
-// @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
+// @updateURL    https://raw.githubusercontent.com/corando98/ZeachCobbler/master/ZeachCobbler.user.js
+// @downloadURL  https://raw.githubusercontent.com/corando98/ZeachCobbler/master/ZeachCobbler.user.js
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
@@ -12,7 +12,7 @@
 //
 // @description  Agario powerups and bot
 //
-// @author       ilboued (based on RealDebugMonkey ZeachCobbler)
+// @author       Daigo (based on liboued and IBR ZeachCobbler)
 //
 // @match        http://agar.io
 // @match        https://agar.io
