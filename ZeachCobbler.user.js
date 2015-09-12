@@ -902,7 +902,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 dist = Math.max(dist, 0.01);
 
                 // Walls. Hate them muchly.
-                dist /= 10;
+                dist /= 25;
 
                 // The more we're split and the more we're to lose, the more we should be afraid.
                 dist /= cell.nSize * Math.sqrt(zeach.myPoints.length);
