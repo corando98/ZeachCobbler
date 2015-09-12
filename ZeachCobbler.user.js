@@ -3,8 +3,8 @@
 //
 // @namespace    https://github.com/ilboued/ZeachCobbler/
 //
-// @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
-// @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
+// @updateURL    https://raw.githubusercontent.com/corando98/ZeachCobbler/master/ZeachCobbler.user.js
+// @downloadURL  https://raw.githubusercontent.com/corando98/ZeachCobbler/master/ZeachCobbler.user.js
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
