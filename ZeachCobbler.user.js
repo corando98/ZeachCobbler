@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.6
+// @version      0.6.1
 //
 // @description  Agario powerups and bot
 //
@@ -17,18 +17,19 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.6 - correct togglefullscreen bug
-//                   - add ace code editor to code javascript realtime :-)
-//                     CTRL-R run the js, CTRL-S save and tun the js
-//               0.5 - add voice volume tuning + online map
-//               0.4 - voice message at each mass big step (300-600-1000)
-//               0.3 - app name change
-//                   - tab title include a circle colored vs mass + a digit :
-//                   - 0:0->99, 1:100->199, 2:200->199, 3: ...
-//                   - black(0-300)/red(300-600)/orange(600-1000)/green(>1000)
-//                     or magentaga + 'X' if on the leader board
-//               0.2 - change version for testing
-//               0.1 - fork from https://github.com/RealDebugMonkey/ZeachCobbler
+// @changes      0.6.1 - correct : ignore space to split if js edit mode
+//               0.6   - correct : togglefullscreen bug
+//                     - add ace code editor to code javascript realtime :-)
+//                       CTRL-R run the js, CTRL-S save and tun the js
+//               0.5   - add voice volume tuning + online map
+//               0.4   - voice message at each mass big step (300-600-1000)
+//               0.3   - app name change
+//                     - tab title include a circle colored vs mass + a digit :
+//                     - 0:0->99, 1:100->199, 2:200->199, 3: ...
+//                     - black(0-300)/red(300-600)/orange(600-1000)/green(>1000)
+//                       or magentaga + 'X' if on the leader board
+//               0.2   - change version for testing
+//               0.1   - fork from https://github.com/RealDebugMonkey/ZeachCobbler
 
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
 // @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
@@ -273,6 +274,16 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     //
     
     //jbjbxx
+    /*
+    $(window).keydown(function(event) {
+        if(event.ctrlKey && event.keyCode == 78) { 
+            $('body').html("Hey! Ctrl+N event captured!");
+            event.preventDefault(); 
+        }
+    });
+*/
+    
+    
     jQuery('body').append('<div id="editor" style="position: absolute; top: 10%; right: 10%; bottom: 10%; left: 10%; z-index : 2; background-color : orange; opacity:0.8;"></div>');
     jQuery('body').append('<p style = "background-color : red; position : absolute; z-index : 3;"><button onclick="save()" type="button">save</button><button onclick="load()" type="button">load</button></p>');
     jQuery('body').append('<div id="result"></div>');
@@ -397,10 +408,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     //
     // keyboard
     //
-    function onKeyPressed(key) {
-        if ('I'.charCodeAt(0) === key) {
+    function onKeyPressed(event) {
+        console.log(event);
+        if(event.metaKey && event.keyCode == 78) { 
+            console.log("Hey! Ctrl+N event captured!");
+            event.preventDefault(); 
+        } else if ('I'.charCodeAt(0) === event.keyCode) {
             //setFavicon("#FFF");
-        } else if ('F'.charCodeAt(0) === key) {
+        } else if ('F'.charCodeAt(0) === event.keyCode) {
             toggleFullScreen();
         }
     }
@@ -441,7 +456,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
     
     //jbjb
-    unsafeWindow.say = say;
+    //unsafeWindow.say = say;
 
     
     //unsafeWindow.say = say;
@@ -1951,9 +1966,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         //        nonPersistantUserOptions.enableBlobLock = false;
         //}
         
-        if (nonPersistantUserOptions.codeEditorActivated) {
-            return;
-        }
+
         
         if(jQuery("#overlays").is(':visible')){
             return;
@@ -2034,7 +2047,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
         }
         else {
-            onKeyPressed(d.keyCode);
+            onKeyPressed(d);
         }
 
     }
@@ -2192,6 +2205,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var c = false;
         var b = false;
         d.onkeydown = function(e) {
+            //jbjbx
+            if (nonPersistantUserOptions.codeEditorActivated) {
+                return;
+            }
             if (!(32 != e.keyCode)) {
                 if (!a) {
                     U();
