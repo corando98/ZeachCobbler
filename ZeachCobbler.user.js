@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.5
+// @version      0.6
 //
 // @description  Agario powerups and bot
 //
@@ -17,7 +17,10 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.5 - add voice volume tuning + online map
+// @changes      0.6 - correct togglefullscreen bug
+//                   - add ace code editor to code javascript realtime :-)
+//                     CTRL-R run the js, CTRL-S save and tun the js
+//               0.5 - add voice volume tuning + online map
 //               0.4 - voice message at each mass big step (300-600-1000)
 //               0.3 - app name change
 //                   - tab title include a circle colored vs mass + a digit :
@@ -29,6 +32,7 @@
 
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
 // @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
+// @require      https://cdn.jsdelivr.net/ace/1.1.8/noconflict/ace.js
 // xxxxxx        https://cdnjs.cloudflare.com/ajax/libs/annyang/2.0.0/annyang.min.js
 
 // @grant        GM_setValue
@@ -101,6 +105,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     // nonPersistantUserOptions is the object that holds all user options. Options that should never be persisted can be defined here.
     // If an option setting should be remembered it can
     var nonPersistantUserOptions = {
+        codeEditorActivated : true,
         set grazingMode(val)    {isGrazing = val;},
         get grazingMode()       {return isGrazing;},
         _isAcid : false,
@@ -203,6 +208,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get mapWidth()      {return  ~~(Math.abs(zeach.mapLeft) + zeach.mapRight);},
         get mapHeight()     {return  ~~(Math.abs(zeach.mapTop) + zeach.mapBottom);},
     };
+    
+    //jbjb 
+    //unsafeWindow.zeach = zeach;
 
 
     function restoreCanvasElementObj(objPrototype){
@@ -264,12 +272,77 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     //
     //
     
+    //jbjbxx
+    jQuery('body').append('<div id="editor" style="position: absolute; top: 10%; right: 10%; bottom: 10%; left: 10%; z-index : 2; background-color : orange; opacity:0.8;"></div>');
+    jQuery('body').append('<p style = "background-color : red; position : absolute; z-index : 3;"><button onclick="save()" type="button">save</button><button onclick="load()" type="button">load</button></p>');
+    jQuery('body').append('<div id="result"></div>');
+
+    unsafeWindow.save = function() {
+        nonPersistantUserOptions.codeEditorActivated = false;
+        //document.getElementById('editor').style.display = 'none';
+        jQuery('#editor').fadeOut();
+        if(typeof(Storage) !== "undefined") {
+            localStorage.myDocument = editor.getValue();
+            document.getElementById("result").innerHTML = ":-) document saved";
+            eval(editor.getValue());
+        } else {
+            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+        }
+    }
+    unsafeWindow.load = function() {
+        nonPersistantUserOptions.codeEditorActivated = true;
+        jQuery('#editor').fadeIn();
+        editor.focus();
+        //document.getElementById('editor').style.display = 'block';
+        if(typeof(Storage) !== "undefined") {
+            editor.setValue(localStorage.myDocument,1);
+            document.getElementById("result").innerHTML = ":-) document loaded";
+        } else {
+            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
+        }
+    }
+
+    
+    var editor = ace.edit("editor");
+    ace.config.set("modePath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/");
+    ace.config.set("workerPath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/"); 
+    ace.config.set("themePath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/");
+    
+    // tester si besoin fct module : ace.config.set("basePath", "/path/to/src");
+    // --> https://github.com/ajaxorg/ace/issues/655
+    
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+    // if you want to use chrome debugger for the evaluated code, add to your source code snippet :
+    // //@ sourceURL=foo.js
+    
+    editor.commands.addCommand({
+        name: 'save',
+        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+        exec: function(editor) {
+            unsafeWindow.save();
+        },
+        readOnly: true // false if this command should not apply in readOnly mode
+    });    
+    
+    editor.commands.addCommand({
+        name: 'run',
+        bindKey: {win: 'Ctrl-R',  mac: 'Command-R'},
+        exec: function(editor) {
+            eval(editor.getValue());
+        },
+        readOnly: true // false if this command should not apply in readOnly mode
+    });
+    
+
+    
     // connect to cloud database to store mass, pos, name.... 
     var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");    
     //
     // 0.5Hz timer : store parameters + refresh tab title
     //
     function timer2s() {
+//        editor.insert('coucou');
         window.document.title = zeach.mass + ' ' + zeach.nickName; // current mass
         if (zeach.isAlive) {
             myFirebaseRef2.child('allPlayers/' + zeach.nickName).set({
@@ -366,6 +439,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         msg.volume = volume;
         speechSynthesis.speak(msg);
     }
+    
+    //jbjb
+    unsafeWindow.say = say;
 
     
     //unsafeWindow.say = say;
@@ -439,7 +515,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function toggleFullScreen() {
         if (!document.fullscreenElement &&    // alternative standard method
             !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-            say("mode plein écran !");
+            say("mode plein écran !", window.nonPersistantUserOptions.voiceVol);
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
             } else if (document.documentElement.msRequestFullscreen) {
@@ -450,7 +526,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }
         } else {
-            say("mode fenêtré !");
+            say("mode fenêtré !", window.nonPersistantUserOptions.voiceVol);
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.msExitFullscreen) {
@@ -1874,6 +1950,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         //        suspendMouseUpdates = false;
         //        nonPersistantUserOptions.enableBlobLock = false;
         //}
+        
+        if (nonPersistantUserOptions.codeEditorActivated) {
+            return;
+        }
+        
         if(jQuery("#overlays").is(':visible')){
             return;
         }
@@ -4338,6 +4419,12 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 var __STORAGE_PREFIX = "mikeyk730__";
 var chart_update_interval = 10;
 jQuery('body').append('<div id="chart-container" style="display:none; position:absolute; height:176px; width:300px; left:10px; bottom:44px"></div>');
+
+
+
+
+
+
 var checkbox_div = jQuery('#settings input[type=checkbox]').closest('div');
 
 // make sure player sees ads at least once so Zeach doesn't go medieval on me.
