@@ -8,7 +8,7 @@
 //
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
 //
-// @version      0.6.1
+// @version      0.6.2
 //
 // @description  Agario powerups and bot
 //
@@ -17,7 +17,8 @@
 // @match        http://agar.io
 // @match        https://agar.io
 //
-// @changes      0.6.1 - correct : ignore space to split if js edit mode
+// @changes      0.6.2 - suspended : firebase map over internet (maybe cause of hangs after sometimes...)
+//               0.6.1 - correct : ignore space to split if js edit mode
 //               0.6   - correct : togglefullscreen bug
 //                     - add ace code editor to code javascript realtime :-)
 //                       CTRL-R run the js, CTRL-S save and tun the js
@@ -402,7 +403,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }
 
-    window.setInterval(timer30Hz,33);
+    //window.setInterval(timer30Hz,33);
     
     window.setInterval(timer2s,2000);
     //
