@@ -1,42 +1,100 @@
 // ==UserScript==
-// @name         Agar.io Ilboued Bot
-//
-// @namespace    https://github.com/ilboued/ZeachCobbler/
-//
-// @updateURL    https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
-// @downloadURL  https://raw.githubusercontent.com/ilboued/ZeachCobbler/master/ZeachCobbler.user.js
-//
+// @name         Zeach Cobbler
+// @namespace    https://github.com/RealDebugMonkey/ZeachCobbler
+// @updateURL    http://bit.do/ZeachCobblerJS2
+// @downloadURL  http://bit.do/ZeachCobblerJS2
 // @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-//
-// @version      0.6.2
-//
-// @description  Agario powerups and bot
-//
-// @author       ilboued (based on RealDebugMonkey ZeachCobbler)
-//
-// @match        http://agar.io
-// @match        https://agar.io
-//
-// @changes      0.6.2 - suspended : firebase map over internet (maybe cause of hangs after sometimes...)
-//               0.6.1 - correct : ignore space to split if js edit mode
-//               0.6   - correct : togglefullscreen bug
-//                     - add ace code editor to code javascript realtime :-)
-//                       CTRL-R run the js, CTRL-S save and tun the js
-//               0.5   - add voice volume tuning + online map
-//               0.4   - voice message at each mass big step (300-600-1000)
-//               0.3   - app name change
-//                     - tab title include a circle colored vs mass + a digit :
-//                     - 0:0->99, 1:100->199, 2:200->199, 3: ...
-//                     - black(0-300)/red(300-600)/orange(600-1000)/green(>1000)
-//                       or magentaga + 'X' if on the leader board
-//               0.2   - change version for testing
-//               0.1   - fork from https://github.com/RealDebugMonkey/ZeachCobbler
-
+// @supportURL   https://github.com/RealDebugMonkey/ZeachCobbler/issues
+// @version      0.31.5
+// @description  Agario powerups
+// @author       DebugMonkey
+// @match        http://agar.io/*
+// @match        https://agar.io/*
+// @icon         https://raw.github.com/RealDebugMonkey/ZeachCobbler/master/icons/zeachcobbler_icon48.png
+// @icon64       https://raw.github.com/RealDebugMonkey/ZeachCobbler/master/icons/zeachcobbler_icon64.png
+// @icon128      https://raw.github.com/RealDebugMonkey/ZeachCobbler/master/icons/zeachcobbler_icon128.png
+// @changes          0.31.0 - Added ability to split by mouse click
+//                     - Also fixed semicolons, improved formating of console logs 
+//                   1 - Small bug-fixes                      
+//                   2 - V28 protocol fixes
+//                   3 - fixed the mouse click handler
+//                   4 - Chromium's JS lint found a lot of crap
+//                   5 - updated message
+//                   0.30.0 - Added GitHub, Contrib and Zeach Cobbler skins
+//                     - Use " ' " before nick to use your GitHub avatar 
+//                   1 - Fixed minimap screen-freezing bug
+//                   2 - Added strokecolor indiactors in teams mode
+//                   0.29.0 - Added option to edit keyboard binds
+//                     - Now you can edit keys in options
+//                   1 - Added Contributors tab, bug fixes
+//                   0.28.0 - Revamped UI
+//                     - Stats now detects viruses being eaten
+//                   1 - Updated @updateURL and @downloadURL to not use rawgit
+//                   2 - Upgraded zoom functions
+//                   3 - Some zoom bug fixes
+//                   4 - protocol breakage fix
+//                   5 - fixed my fuckup
+//              0.27.0 - Click-to-lock added
+//                     - Added ability to lock blob at some pos
+//                     - Added ability to select n-th size blob
+//                   2 - Fixed virus shot counter, improved shots remaining calculation
+//                     - General code cleanup
+//                     - shots per ms field added
+//                     - options screen cleanup/reorg
+//                   6 - Hack to get mod loading again.
+//                   7 - proper fix for xp bar rename
+//                   8 - added isAgitated
+//                     - changed multiblob grazer var name to reset multiblob default to 'false'
+//              0.26.0 - Configurable Minimap scale & Agariomod private server location update
+//              0.25.0 - Facebook Update
+//                   1 - Tons of bug fixes
+//              0.24.0 - Switched back to hacky method of loading & added hotkey reference
+//                   1 - Guest play fix
+//                   2 - UI Tweaks and a new message
+//              0.23.0 - Agariomods.com private server support
+//              0.22.0 - Added hybrid grazer option & fixed music
+//                   1 - music restored, viruses excluded from relocated names
+//                     - Hybrid grazer goes back to old grazer if it loses enough mass
+//                   2 - Hybrid grazer checkbox fix
+//                   3 - volume fix
+//                   4 - Blank cell fix
+//                     - Option to remove grid lines
+//                     - Oldest cell now just displays name rather than negative Time To Remerge (TTR)
+//                   5 - Grazer auto-respawn
+//                   6 - G and H act equivalently in hybrid-grazer mode
+//                     - if old grazer has no targets it will try to switch into new grazer mode
+//              0.21.0 - Changed way script is loaded.
+//              0.20.0 - Version leap due to updated grazer
+//                     - Fixes for new client behavior
+//              0.15.0 - Fixed Minimap (Zeach broke it)
+//                     - Fixed Borders(Zeach broke them too)
+//                     - Lite Brite mode added (and some UI issues fixed)
+//                   2 - Lite Brite, SFX, and BGM settings all saved
+//                   3 - hack for overflowing chart & updated hardcoded agariomods skins
+//              0.14.0 - Major refactoring to help with future updates
+//                     - Support for AgarioMods connect skins
+//              0.13.0 - Fixed break caused by recent code changes
+//                   1 - bug fixes
+//                     - removed direct connect UI (for now)
+//                   2 - grazer speed improved by removing debug logging & adding artifical 200ms throttle
+//                   3 - fixed virus poppers
+//                     - fixed ttr calculation
+//                   6 - fixed flickering grazer lines
+//              0.12.0 - Added music and sound effects.
+//                     - Sound effects from agariomods.com
+//                     - Music from http://incompetech.com/music/royalty-free/most/kerbalspaceprogram.php
+//                     - Fix: scroll wheel function
+//                     - Fixed blank cell not displaying % diff issue
+//                     - Fixed key bindings triggering while changing name
+//                   4 - bug fix courtesy of Gjum
+//                   5 - updated handshake for v548
+//              0.11.0 - Fix for v538 fix
+//                   1 - grazer fixed, time alive and ttr fixed
+//                   2 - more fixes for stuff I missed
+//                   3 - onDestroy bugfix
+//                   4 - update with mikeyk730's latest changes
+//                   5 - skins should now display in experimental
 // @require      https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js
-// @require      https://cdn.firebase.com/js/client/2.2.9/firebase.js
-// @require      https://cdn.jsdelivr.net/ace/1.1.8/noconflict/ace.js
-// xxxxxx        https://cdnjs.cloudflare.com/ajax/libs/annyang/2.0.0/annyang.min.js
-
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
@@ -44,33 +102,29 @@
 // ==/UserScript==
 var _version_ = GM_info.script.version;
 
-var debugMonkeyReleaseMessage = "<h3>Protocol Changes and Burnout</h3><p>" +
-    "Hey guys. I've patched the no-movement issue. Sorry for the inconvenience and for the delay in making a fix. <br><br>" +
-    "I've been a bit burnt out on Agar.io so I've been taking it easy. I'd like to thank PepinCZ, Gjum, and all " +
-    "the others who have been helpful in the github issues area during my away time. You guys are the real MVPs.<br>" +
-    "<img src='http://i.imgur.com/p4zv6vx.jpg'><br><br>-debugmonkey";
+var debugMonkeyReleaseMessage = "<h3>Even more bug fixes</h3><p>" +
+    "This update is brought to you by Smurfix and PepinCZ who have stepped up in my absence " +
+    "to provide bug fixes and support. Thank you guys and all those others who have submitted pull requests and bug reports. " +
+    "Again, if you find some bug please report it! (You can do that visiting TamperMonkey's controll panel and then click the bug image right of Zeach Cobbler) <br>" +
+    "<img src='http://i.imgur.com/p4zv6vx.jpg'><br><br>debugmonkey";
 
+//if (window.top != window.self)  //-- Don't run on frames or iframes
+//    return;
+//https://cdn.rawgit.com/pockata/blackbird-js/1e4c9812f8e6266bf71a25e91cb12a553e7756f4/blackbird.js
+//https://raw.githubusercontent.com/pockata/blackbird-js/cc2dc268b89e6345fa99ca6109ddaa6c22143ad0/blackbird.css
 $.getScript("https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.4.1/canvas.min.js");
 $.getScript("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js");
 
 unsafeWindow.connect2 = unsafeWindow.connect;
-
 jQuery("#canvas").remove();
 jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canvas>');
 
-
-
-// ========================================================================================
-// ========================================================================================
-//   A = Original Agar.io code + hack...
-// ========================================================================================
-// ========================================================================================
-
-
 (function(d, f) {
+
+
     // Options that will always be reset on reload
     var zoomFactor = 10;
-    var isGrazing = 2;
+    var isGrazing = false;
     var serverIP = "";
     var showVisualCues = true;
 
@@ -99,15 +153,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     var ghostBlobs = [];
 
 
-    var miniMapCtx = jQuery('<canvas id="mini-map" width="175" height="175" style="border:2px solid #999;text-align:center;position:fixed;bottom:5px;right:5px;"></canvas>')
-    .appendTo(jQuery('body'))
-    .get(0)
-    .getContext("2d");
+    var miniMapCtx=jQuery('<canvas id="mini-map" width="175" height="175" style="border:2px solid #999;text-align:center;position:fixed;bottom:5px;right:5px;"></canvas>')
+        .appendTo(jQuery('body'))
+        .get(0)
+        .getContext("2d");
 
-    // nonPersistantUserOptions is the object that holds all user options. Options that should never be persisted can be defined here.
+    // cobbler is the object that holds all user options. Options that should never be persisted can be defined here.
     // If an option setting should be remembered it can
-    var nonPersistantUserOptions = {
-        codeEditorActivated : true,
+    var cobbler = {
         set grazingMode(val)    {isGrazing = val;},
         get grazingMode()       {return isGrazing;},
         _isAcid : false,
@@ -121,24 +174,23 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function simpleSavedSettings(optionsObject){
         _.forEach(optionsObject, function(defaultValue, settingName){
             var backingVar = '_' + settingName;
-            nonPersistantUserOptions[backingVar] = GM_getValue(settingName, defaultValue),
-                Object.defineProperty(nonPersistantUserOptions, settingName, {
-                    get: function()     { return this[backingVar];},
-                    set: function(val)  { this[backingVar] = val; GM_setValue(settingName, val); }
-                });
+            cobbler[backingVar] = GM_getValue(settingName, defaultValue);
+            Object.defineProperty(cobbler, settingName, {
+                get: function()     { return this[backingVar];},
+                set: function(val)  { this[backingVar] = val; GM_setValue(settingName, val); }
+            });
         });
     }
     // defines all options that should be persisted along with their default values.
-    function makeNonPersistantUserOptions(){
+    function makeCobbler(){
         var optionsAndDefaults = {
             "isLiteBrite"       : true,
             "sfxVol"            : 0.0,
             "bgmVol"            : 0.0,
-            "voiceVol"          : 0.0,
             "drawTail"          : false,
             "splitGuide"        : true,
             "rainbowPellets"    : true,
-            "debugLevel"        : 0,
+            "debugLevel"        : 1,
             "imgurSkins"        : true,
             "amExtendedSkins"   : true,
             "amConnectSkins"    : true,
@@ -153,30 +205,59 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             "miniMapScale"      : false,
             "miniMapScaleValue" : 64,
             "enableBlobLock"    : false,
-            'nextOnBlobLock'    : false,
-            'rightClickFires'   : false,
-            'showZcStats'       : false,
+            "nextOnBlobLock"    : false,
+            "rightClickFires"   : false,
+            "clickToSplit"      : false,
+            "showZcStats"       : false,
+			"gitHubSkins"       : true,
+            // Menu Binds Values
+            "MenuSwitchBlob"    : false,
+            "MenuAcidMode"      : false,
+            "MenuLiteBriteMode" : false,
+            "MenuShowVisual"    : false,
+            "MenuFireAtVirCur"  : false,
+            "MenuNewGrazer"     : false,
+            "MenuOldGrazer"     : false,
+            "MenuSuspendMouse"  : false,
+            "MenuRightClick"    : false,
+            "MenuGrazingFix"    : false,
+            "MenuFireAtVirBlob" : false,
+            "MenuGrazerReset"   : false,
+            "MenuGrazingVisual" : false,
+            "MenuZoomFactor"    : false,
+            "MenuPointLock"     : false,
+            "MenuClickToSplit"  : false,
+            // Key Binds Defaults
+            "KeySwitchBlob"     : "TAB",
+            "KeyAcidMode"       : "A",
+            "KeyLiteBriteMode"  : "L",
+            "KeyShowVisual"     : "C",
+            "KeyFireAtVirCur"   : "E",
+            "KeyNewGrazer"      : "G",
+            "KeyOldGrazer"      : "H",
+            "KeySuspendMouse"   : "M",
+            "KeyRightClick"     : "O",
+            "KeyGrazingFix"     : "P",
+            "KeyFireAtVirBlob"  : "R",
+            "KeyGrazerReset"    : "T",
+            "KeyGrazingVisual"  : "V",
+            "KeyZoomFactor"     : "Z",
+            "KeyPointLock"      : "S",
+            "KeyClickToSplit"   : "U",
         };
         simpleSavedSettings(optionsAndDefaults);
     }
-    makeNonPersistantUserOptions();
+    makeCobbler();
 
-    window.nonPersistantUserOptions = nonPersistantUserOptions;
+    window.cobbler = cobbler;
 
     // ======================   Property & Var Name Restoration  =======================================================
     var zeach = {
-        // ilboued AddOn
-        leaderBoard :       0,
-        nickName :          'no name',
-        simpleBlobList : {},
-        get serverIP()      {return serverIP;},
+    
+    // <ilboued new>
+        nickName :          'ilboued',
         get mass()          {return ~~(wb()/100);},
-        get autopilot()     {return isGrazing;},
-        get posX()          {return getSelectedBlob().x;},
-        get posY()          {return getSelectedBlob().y;},
-        get version()       {return GM_info.script.version;},
-        get isAlive()       {return !!zeach.myPoints.length;},
-
+    // </ilboued new>
 
         get connect()       {return Aa;},        // Connect
         get ctx()           {return g;},        // g_context
@@ -192,6 +273,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get mapRight()      {return qa;},       // g_maxX
         get mapBottom()     {return ra;},       // g_maxY
         get isShowSkins()   {return fb;},       // g_showSkins
+        // "g_showNames": "va",
         get isNightMode()   {return sa;},       // ??
         get isShowMass()    {return gb;},       // ??
         get gameMode()      {return O;},        // g_mode
@@ -202,17 +284,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         get textFunc()      {return ua;},       // CachedCanvas
         get textBlobs()     {return Bb;},       // g_skinNamesB
         get hasNickname()   {return va;},        // g_showNames
-        get scale()         {return k;},        //
+        get scale()   {return k;},        //
         // Classes
         get CachedCanvas()  {return ua;},       // CachedCanvas
         get Cell()          {return aa;},        //
         // These never existed before but are useful
         get mapWidth()      {return  ~~(Math.abs(zeach.mapLeft) + zeach.mapRight);},
-        get mapHeight()     {return  ~~(Math.abs(zeach.mapTop) + zeach.mapBottom);},
+        get mapHeight()  {return  ~~(Math.abs(zeach.mapTop) + zeach.mapBottom);},
     };
-    
-    //jbjb 
-    //unsafeWindow.zeach = zeach;
 
 
     function restoreCanvasElementObj(objPrototype){
@@ -254,240 +333,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             });
         });
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // main ilboued main
-    //
-    //
     
-    //jbjbxx
-    /*
-    $(window).keydown(function(event) {
-        if(event.ctrlKey && event.keyCode == 78) { 
-            $('body').html("Hey! Ctrl+N event captured!");
-            event.preventDefault(); 
-        }
-    });
-*/
-    
-    
-    jQuery('body').append('<div id="editor" style="position: absolute; top: 10%; right: 10%; bottom: 10%; left: 10%; z-index : 2; background-color : orange; opacity:0.8;"></div>');
-    jQuery('body').append('<p style = "background-color : red; position : absolute; z-index : 3;"><button onclick="save()" type="button">save</button><button onclick="load()" type="button">load</button></p>');
-    jQuery('body').append('<div id="result"></div>');
-
-    unsafeWindow.save = function() {
-        nonPersistantUserOptions.codeEditorActivated = false;
-        //document.getElementById('editor').style.display = 'none';
-        jQuery('#editor').fadeOut();
-        if(typeof(Storage) !== "undefined") {
-            localStorage.myDocument = editor.getValue();
-            document.getElementById("result").innerHTML = ":-) document saved";
-            eval(editor.getValue());
-        } else {
-            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
-        }
-    }
-    unsafeWindow.load = function() {
-        nonPersistantUserOptions.codeEditorActivated = true;
-        jQuery('#editor').fadeIn();
-        editor.focus();
-        //document.getElementById('editor').style.display = 'block';
-        if(typeof(Storage) !== "undefined") {
-            editor.setValue(localStorage.myDocument,1);
-            document.getElementById("result").innerHTML = ":-) document loaded";
-        } else {
-            document.getElementById("result").innerHTML = "Sorry, your browser does not support web storage...";
-        }
-    }
-
-    
-    var editor = ace.edit("editor");
-    ace.config.set("modePath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/");
-    ace.config.set("workerPath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/"); 
-    ace.config.set("themePath", "https://cdn.jsdelivr.net/ace/1.1.8/noconflict/");
-    
-    // tester si besoin fct module : ace.config.set("basePath", "/path/to/src");
-    // --> https://github.com/ajaxorg/ace/issues/655
-    
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
-    // if you want to use chrome debugger for the evaluated code, add to your source code snippet :
-    // //@ sourceURL=foo.js
-    
-    editor.commands.addCommand({
-        name: 'save',
-        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
-        exec: function(editor) {
-            unsafeWindow.save();
-        },
-        readOnly: true // false if this command should not apply in readOnly mode
-    });    
-    
-    editor.commands.addCommand({
-        name: 'run',
-        bindKey: {win: 'Ctrl-R',  mac: 'Command-R'},
-        exec: function(editor) {
-            eval(editor.getValue());
-        },
-        readOnly: true // false if this command should not apply in readOnly mode
-    });
-    
-
-    
-    // connect to cloud database to store mass, pos, name.... 
-    var myFirebaseRef2 = new Firebase("https://ilboued10.firebaseio.com/");    
-    //
-    // 0.5Hz timer : store parameters + refresh tab title
-    //
-    function timer2s() {
-//        editor.insert('coucou');
-        window.document.title = zeach.mass + ' ' + zeach.nickName; // current mass
-        if (zeach.isAlive) {
-            myFirebaseRef2.child('allPlayers/' + zeach.nickName).set({
-                version    : zeach.version,
-                mass       : zeach.mass,
-                autopilot  : zeach.autopilot,
-                serverIP   : zeach.serverIP,
-                dividedIn  : zeach.myPoints.length,
-                position   : {
-                    x : zeach.posX,
-                    y : zeach.posY
-                }
-            });
-        }
-        
-        // myFirebaseRef2.child('allBlobs').set(zeach.simpleBlobList);
-        // console.log('#fired => ' + zeach.simpleBlobList);
-        
-        if (zeach.leaderBoard>0) {
-            setFavicon('magenta');
-        } else if (zeach.mass < 300) {
-            setFavicon("black");
-        } else if (zeach.mass < 600 ) {
-            setFavicon("red");
-        } else if (zeach.mass < 1000 ) {
-            setFavicon("orange");
-        } else {
-            setFavicon("green");
-        }
-        
-        sayIfLevelChange(zeach.nickName, zeach.mass, window.nonPersistantUserOptions.voiceVol);
-        
-
-    }
-    //
-    function timer30Hz() {
-        if (zeach.isAlive) {
-            zeach.simpleBlobList[0] = {
-                isVirus : false,
-                name : zeach.nickName,
-                size : 0,
-                x : zeach.posX,
-                y : zeach.posY
-            }
-            myFirebaseRef2.child('allBlobs').set(zeach.simpleBlobList);
-        }
-    }
-
-    //window.setInterval(timer30Hz,33);
-    
-    window.setInterval(timer2s,2000);
-    //
-    // keyboard
-    //
-    function onKeyPressed(event) {
-        console.log(event);
-        if(event.metaKey && event.keyCode == 78) { 
-            console.log("Hey! Ctrl+N event captured!");
-            event.preventDefault(); 
-        } else if ('I'.charCodeAt(0) === event.keyCode) {
-            //setFavicon("#FFF");
-        } else if ('F'.charCodeAt(0) === event.keyCode) {
-            toggleFullScreen();
-        }
-    }
-    //
-    // speech synthesis
-    //   
-    function sayIfLevelChange(name,mass,volume) {
-        // Check to see if the counter has been initialized
-        if ( typeof sayIfLevelChange.currentLevel == 'undefined' ) {
-            // It has not... perform the initialization
-            sayIfLevelChange.currentLevel = 0;
-        }
-        var newLevel = 0;
-        if (mass<300) {
-            newLevel = 0;
-        } else if (mass<600) {
-            newLevel = 300;
-        } else if (mass<900) {
-            newLevel = 600;
-        } else if (mass<1200) {
-            newLevel = 900;
-        } else {
-            newLevel = 1200;
-        }
-        // console.log('current level : ' + sayIfLevelChange.currentLevel);
-        if (newLevel>sayIfLevelChange.currentLevel) {
-            say(name + ' dépasse les ' + newLevel, volume);
-        }
-        sayIfLevelChange.currentLevel = newLevel;
-    }
-    //
-    //
-    function say(message, volume) {
-        var msg = new SpeechSynthesisUtterance(message);
-        msg.lang = 'fr-FR';
-        msg.volume = volume;
-        speechSynthesis.speak(msg);
-    }
-    
-    //jbjb
-    //unsafeWindow.say = say;
-
-    
-    //unsafeWindow.say = say;
-
-    //$('#gamemode').val(':teams');
-    //$('#nick').val('ilboued')
-    
-    // Speech recognition...
-    /*
-    if (annyang) {
-        // Let's define a command.
-        console.log('annyang started !');
-        var commands = {
-            'bonjour': function() { toggleFullScreen(); say('ok !'); }
-        };
-
-        // Add our commands to annyang
-        annyang.addCommands(commands);
-
-        // Start listening.
-        annyang.setLanguage('fr-FR');
-        annyang.start();
-    } else {
-        console.log('annyang not started :-(');
-    }
-    */
-
-    //
-    // favicon update (called by 0.5Hz timer
-    //
+    // <ilboued new>
     function setFavicon(color) {
         document.head = document.head || document.getElementsByTagName('head')[0];
 
@@ -498,13 +345,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var img = new Image();
 
         ctx.drawImage(img, 0, 0);
-        
+
         ctx.lineWidth = 0
         ctx.beginPath();
         ctx.arc(16, 16, 16, 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
-        ctx.strokeStyle = color;        
+        ctx.strokeStyle = color;
         ctx.stroke();
 
         ctx.fillStyle = 'white';
@@ -525,56 +372,35 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         document.head.appendChild(link);
     }
-    //
-    // toggleFullScreen (called by keyboard)
-    //
-    function toggleFullScreen() {
-        if (!document.fullscreenElement &&    // alternative standard method
-            !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
-            say("mode plein écran !", window.nonPersistantUserOptions.voiceVol);
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            }
+    
+    function timer2s() {
+        if (zeach.nickName==='') {
+            zeach.nickName = 'ilboued';
+        }
+        window.document.title = zeach.mass + ' ' + zeach.nickName; // current mass
+        if (zeach.leaderBoard>0) {
+            setFavicon('magenta');
+        } else if (zeach.mass < 300) {
+            setFavicon("black");
+        } else if (zeach.mass < 600 ) {
+            setFavicon("red");
+        } else if (zeach.mass < 1000 ) {
+            setFavicon("orange");
         } else {
-            say("mode fenêtré !", window.nonPersistantUserOptions.voiceVol);
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
+            setFavicon("green");
         }
     }
     
+    // 2s timer start
+    window.setInterval(timer2s,2000);
+    
+    // auto start
+    setTimeout(function(){jQuery(".btn-play-guest").click();},3000);
 
+    // </ilboued new>
 
-
-    /*   
-    myFirebaseRef.child("location/city").on("value", function(snapshot) {
-        alert(snapshot.val());  // Alerts "San Francisco"
-    });
-*/
-
+    
     // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-    // ======================   Utility code    ==================================================================
-
     function isFood(blob){
         return (blob.nSize < 15);
     }
@@ -632,7 +458,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     function distanceFromCellZero(blob) {
         return isPlayerAlive() ? lineDistance(blob, getSelectedBlob()) :
-        Math.sqrt((zeach.mapRight - zeach.mapLeft) * (zeach.mapRight - zeach.mapLeft) + (zeach.mapBottom - zeach.mapTop) * (zeach.mapBottom - zeach.mapTop));
+            Math.sqrt((zeach.mapRight - zeach.mapLeft) * (zeach.mapRight - zeach.mapLeft) + (zeach.mapBottom - zeach.mapTop) * (zeach.mapBottom - zeach.mapTop));
     }
 
     function getViewport(interpolated) {
@@ -655,15 +481,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
-    // ======================   Grazing code    ==================================================================
 
     function checkCollision(myBlob, targetBlob, potential){
         // Calculate distance to target
@@ -673,7 +490,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var ns = -1/sl;
         // y-int of ptt
         var yint1 = myBlob.ny - myBlob.nx*sl;
-        if(!(lineDistance(myBlob, potential) < dtt)){
+        if(lineDistance(myBlob, potential) >= dtt){
             // get second y-int
             var yint2 = potential.ny - potential.nx * ns;
             var interx = (yint2-yint1)/(sl-ns);
@@ -682,9 +499,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             pseudoblob.nx = interx;
             pseudoblob.ny = intery;
             if (((targetBlob.nx < myBlob.nx && targetBlob.nx < interx && interx < myBlob.nx) ||
-                 (targetBlob.nx > myBlob.nx && targetBlob.nx > interx && interx > myBlob.nx)) &&
+                (targetBlob.nx > myBlob.nx && targetBlob.nx > interx && interx > myBlob.nx)) &&
                 ((targetBlob.ny < myBlob.ny && targetBlob.ny < intery && intery < myBlob.ny) ||
-                 (targetBlob.ny > myBlob.ny && targetBlob.ny > intery && intery > myBlob.ny))){
+                (targetBlob.ny > myBlob.ny && targetBlob.ny > intery && intery > myBlob.ny))){
                 if(lineDistance(potential, pseudoblob) < potential.size+100){
                     return true;
                 }
@@ -744,24 +561,23 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             //isGrazing = false;
             return;
         }
-
-        if(null === throttledResetGrazingTargetId){
+        
+        if(!throttledResetGrazingTargetId){
             throttledResetGrazingTargetId = _.throttle(function (){
                 grazzerTargetResetRequest = 'all';
                 //console.log(~~(Date.now()/1000));
             }, 200);
         }
-
-
+             
         if (grazzerTargetResetRequest == 'all') {
             grazzerTargetResetRequest = false;
-
+            
             for(i = 0; i < zeach.myPoints.length; i++) {
                 zeach.myPoints[i].grazingTargetID = false;
             }
         } else if (grazzerTargetResetRequest == 'current') {
             var pseudoBlob = getMouseCoordsAsPseudoBlob();
-
+            
             pseudoBlob.size = getSelectedBlob().size;
             //pseudoBlob.scoreboard = scoreboard;
             var newTarget = findFoodToEat_old(pseudoBlob,zeach.allItems);
@@ -771,7 +587,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
             getSelectedBlob().grazingTargetID = newTarget.id;
         }
-
+        
         // with target fixation on, target remains until it's eaten by someone or
         // otherwise disappears. With it off target is constantly recalculated
         // at the expense of CPU
@@ -782,21 +598,21 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var target;
 
 
-        var targets = findFoodToEat(!nonPersistantUserOptions.grazerMultiBlob2);
+        var targets = findFoodToEat(!cobbler.grazerMultiBlob2);
         for(i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
-
-            if (!nonPersistantUserOptions.grazerMultiBlob2 && point.id != getSelectedBlob().id) {
+            
+            if (!cobbler.grazerMultiBlob2 && point.id != getSelectedBlob().id) {
                 continue;
             }
-
+                    
             point.grazingMode = isGrazing;
-            if(nonPersistantUserOptions.grazerHybridSwitch) {
+            if(cobbler.grazerHybridSwitch) {
                 var mass = getMass(point.nSize);
                 // switch over to new grazer once we pass the threshhold
-                if(1 === point.grazingMode && mass > nonPersistantUserOptions.grazerHybridSwitchMass){
+                if(1 === point.grazingMode && mass > cobbler.grazerHybridSwitchMass){
                     point.grazingMode = 2; // We gained enough much mass. Use new grazer.
-                }else if(2 === point.grazingMode && mass < nonPersistantUserOptions.grazerHybridSwitchMass ){
+                }else if(2 === point.grazingMode && mass < cobbler.grazerHybridSwitchMass ){
                     point.grazingMode = 1; // We lost too much mass. Use old grazer.
                 }
             }
@@ -813,23 +629,23 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     } else {
                         target = zeach.allNodes[point.grazingTargetID];
                     }
-                    if (!nonPersistantUserOptions.grazerMultiBlob2) {
+                    if (!cobbler.grazerMultiBlob2) {
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random());
                     } else {
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random(), point);
                     }
-
-                    break;
+                
+                break;
                 }
                 case 2: {
-                    if (!nonPersistantUserOptions.grazerMultiBlob2) {
+                    if (!cobbler.grazerMultiBlob2) {
                         target = _.max(targets, "v");
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random());
                     } else {
                         target = targets[point.id];
                         sendMouseUpdate(zeach.webSocket, target.x + Math.random(), target.y + Math.random(), point);
                     }
-
+                    
                     break;
                 }
             }
@@ -944,9 +760,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             return !ghostSet[element.id] && // a fresher blob with the same id doesn't exist in blobArray already
                 (curTimestamp - element.lastTimestamp < 10000) && // last seen no more than 10 seconds ago
                 (
-                (Math.abs(viewport.x - element.nx) > (viewport.dx + element.nSize) * 0.9) ||
-                (Math.abs(viewport.y - element.ny) > (viewport.dy + element.nSize) * 0.9)
-            ); // outside of firmly visible area, otherwise there's no need to remember it
+                    (Math.abs(viewport.x - element.nx) > (viewport.dx + element.nSize) * 0.9) ||
+                    (Math.abs(viewport.y - element.ny) > (viewport.dy + element.nSize) * 0.9)
+                ); // outside of firmly visible area, otherwise there's no need to remember it
         });
 
         ghostBlobs.forEach(function (element) {
@@ -964,8 +780,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             cell.gr_is_mine = true;
         });
 
+        var results;
         var accs = zeach.myPoints.map(function (cell) {
-
+            
 
             var per_food = [], per_threat = [];
             var acc = {
@@ -979,11 +796,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 per_threat: per_threat,
                 cumulatives: [ { x: 0, y: 0}, { x: 0, y: 0} ],
             };
-
+            
             if (!useGradient && cell.grazingMode != 2) {
                 return acc;
             }
-
+            
             var totalMass = _.sum(_.pluck(zeach.myPoints, "nSize").map(getMass));
 
             // Avoid walls too
@@ -1140,7 +957,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             cell.grazeInfo = acc;
             return acc;
         });
-
+        
         if (useGradient) {
             var funcs = accs.map(function(acc) {
                 return new dasMouseSpeedFunction(acc.id, acc.x, acc.y, 200, acc.fx, acc.fy);
@@ -1169,7 +986,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
             var func = new dasSumFunction(funcs);
 
-            var results = accs.map(function(acc) {
+            results = accs.map(function(acc) {
                 return gradient_ascend(func, step, 100, acc.id, acc.x, acc.y);
             });
         } else {
@@ -1213,10 +1030,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             var density = calcFoodDensity(cell, zeach.allNodes[element.id], blobArray)/(element.distance*2);
             densityResults.push({"density":density, "id":element.id});
         });
-        if(0 === densityResults.length){
+        if(!densityResults.length){
             //console.log("No target found");
             return avoidThreats(threats, cell);
-            return -1;
+            //return -1;
         }
         var target = densityResults.sort(function(x,y){return x.density>y.density?-1:1;});
         //console.log("Choosing blob (" + target[0].id + ") with density of : "+ target[0].isVirusensity);
@@ -1282,14 +1099,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
         return pelletCount;
     }
-    // ======================   UI stuff    ==================================================================
+// ======================   UI stuff    ==================================================================
 
     function drawRescaledItems(ctx) {
         if (showVisualCues && isPlayerAlive()) {
             drawMapBorders(ctx);
             drawGrazingLines_old(ctx);
             drawGrazingLines(ctx);
-            if(nonPersistantUserOptions.drawTail){
+            if(cobbler.drawTail){
                 drawTrailTail(ctx);
             }
 
@@ -1323,11 +1140,17 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
             if(noColors) {
                 ctx.fillStyle = "#FFFFFF";
-                ctx.strokeStyle = "#AAAAAA"
+                ctx.strokeStyle = "#AAAAAA";
             }
             else {
                 ctx.fillStyle = color;
-                ctx.strokeStyle = (this.id == nearestVirusID) ? "red" : color
+                
+                if (isTeamMode() && !cobbler.isLiteBrite) {
+                    ctx.strokeStyle = (this.id == nearestVirusID) ? "red" : setBorderColors(this, zeach.myPoints);
+                }
+                else {
+                    ctx.strokeStyle = (this.id == nearestVirusID) ? "red" : color;
+                }
             }
         }
     }
@@ -1346,7 +1169,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawSplitGuide(ctx, cell) {
-        if( !isPlayerAlive() || !nonPersistantUserOptions.splitGuide){
+        if( !isPlayerAlive() || !cobbler.splitGuide){
             return;
         }
         var radius = 660;
@@ -1374,7 +1197,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if(!showVisualCues){
             return cell.color;
         }
-        if(nonPersistantUserOptions.rainbowPellets && isFood(cell)){
+        if(cobbler.rainbowPellets && isFood(cell)){
             return cell.color;
         }
         var color = cell.color;
@@ -1383,7 +1206,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             var size_that =  ~~(getSelectedBlob().size * getSelectedBlob().size / 100);
             if (cell.isVirus || myPoints.length === 0) {
                 color = virusColor;
-            } else if (~myPoints.indexOf(cell)) {
+            }
+            if (~myPoints.indexOf(cell)) {
                 color = myColor;
             } else if (size_this > size_that * Huge) {
                 color = Huge_Color;
@@ -1396,31 +1220,65 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             } else {
                 color = Tiny_Color;
             }
+    
         }
         return color;
     }
+    
+    function setBorderColors(cell,myPoints){
+        if(!showVisualCues){
+            return cell.color;
+        }
+        if(cobbler.rainbowPellets && isFood(cell)){
+            return cell.color;
+        }
+        
+        var color = cell.color;
+        
+        if (!isFood(cell) && !cell.isVirus) {
+            if (myPoints.length > 0) {
+                var size_this =  getMass(cell.size);
+                var size_that =  ~~(getSelectedBlob().size * getSelectedBlob().size / 100);
+
+                if (~myPoints.indexOf(cell)) {
+                    color = myColor;
+                } else if (size_this > size_that * Huge) {
+                    color = Huge_Color;
+                } else if (size_this > size_that * Large) {
+                    color = Large_Color;
+                } else if (size_this > size_that * Small) {
+                    color = Same_Color;
+                } else if (size_this > size_that * Tiny) {
+                    color = Small_Color;
+                } else {
+                    color = Tiny_Color;
+                }                   
+            }
+        }
+        return color;
+    }    
 
     function displayDebugText(ctx, agarTextFunction) {
-        //console.log('debug level ' + nonPersistantUserOptions.debugLevel);
 
-        if(0 >= nonPersistantUserOptions.debugLevel) {
+        if(0 >= cobbler.debugLevel) {
             return;
         }
 
         var textSize = 15;
         var debugStrings = [];
-        if(1 <= nonPersistantUserOptions.debugLevel) {
+        if(1 <= cobbler.debugLevel) {
             debugStrings.push("v " + _version_);
             debugStrings.push("Server: " + serverIP);
 
-            debugStrings.push("G - grazing: " + (isGrazing ? (1 == isGrazing) ? "Old" : "New" : "Off"));
+            debugStrings.push(cobbler.KeyNewGrazer + " - " + "Grazing: " + (isGrazing ? (1 == isGrazing) ? "Old" : "New" : "Off"));
         }
-        if(2 <= nonPersistantUserOptions.debugLevel) {
-            debugStrings.push("M - suspend mouse: " + (suspendMouseUpdates ? "On" : "Off"));
-            debugStrings.push("P - grazing target fixation :" + (grazingTargetFixation ? "On" : "Off"));
+        if(2 <= cobbler.debugLevel) {
+            debugStrings.push(cobbler.KeySuspendMouse + " - " + "Suspend mouse: " + (suspendMouseUpdates ? "On" : "Off"));
+            debugStrings.push(cobbler.KeyGrazingFix + " - " + "Grazing target fixation :" + (grazingTargetFixation ? "On" : "Off"));
             if(grazingTargetFixation){ debugStrings.push("  (T) to retarget");}
-            debugStrings.push("O - right click: " + (nonPersistantUserOptions.rightClickFires ? "Fires @ virus" : "Default"))
-            debugStrings.push("Z - zoom: " + zoomFactor.toString());
+            debugStrings.push(cobbler.KeyRightClick + " - " + "Right click: " + (cobbler.rightClickFires ? "Fires @ virus" : "Default"));
+            debugStrings.push(cobbler.KeyClickToSplit + " - " + "Click to split: " + (cobbler.clickToSplit ? "On" : "Off"));
+            debugStrings.push(cobbler.KeyZoomFactor + " - " + "Zoom: " + zoomFactor.toString());
             if (isPlayerAlive()) {
                 debugStrings.push("Location: " + Math.floor(getSelectedBlob().x) + ", " + Math.floor(getSelectedBlob().y));
             }
@@ -1439,41 +1297,37 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     // Probably isn't necessary to throttle it ... but what the hell.
     var rescaleMinimap = _.throttle(function(){
-        var minimapScale = nonPersistantUserOptions.miniMapScaleValue;
+        var minimapScale = cobbler.miniMapScaleValue;
         var scaledWidth = ~~(zeach.mapWidth/minimapScale);
         var scaledHeight = ~~(zeach.mapHeight/minimapScale);
         var minimap = jQuery("#mini-map");
 
-        if(minimap.width() != scaledWidth || minimap.height() != scaledHeight || nonPersistantUserOptions.minimapScaleCurrentValue != minimapScale){
+        if(minimap.width() != scaledWidth || minimap.height() != scaledHeight || cobbler.minimapScaleCurrentValue != minimapScale){
             // rescale the div
             minimap.width(scaledWidth);
             minimap.height(scaledHeight);
             // rescale the canvas element
             minimap[0].width = scaledWidth;
             minimap[0].height = scaledHeight;
-            nonPersistantUserOptions.minimapScaleCurrentValue = minimapScale;
+            cobbler.minimapScaleCurrentValue = minimapScale;
         }
     }, 5*1000);
 
-    function drawMiniMap() { // ilboued memo
-        zeach.simpleBlobList = {};
-        var index = 1;
-        
+    function drawMiniMap() {
         rescaleMinimap();
-        var minimapScale = nonPersistantUserOptions.miniMapScaleValue;
+        var minimapScale = cobbler.miniMapScaleValue;
         miniMapCtx.clearRect(0, 0, ~~(zeach.mapWidth/minimapScale), ~~(zeach.mapHeight/minimapScale));
 
         _.forEach(_.values(getOtherBlobs()), function(blob){
             miniMapCtx.strokeStyle = blob.isVirus ?  "#33FF33" : 'rgb(52,152,219)' ;
             miniMapCtx.beginPath();
-            miniMapCtx.arc((blob.nx+Math.abs(zeach.mapLeft)) / minimapScale, (blob.ny+Math.abs(zeach.mapTop)) / minimapScale, blob.size / minimapScale, 0, 2 * Math.PI);
-            zeach.simpleBlobList[index++] = {
-                x : blob.nx,
-                y : blob.ny,
-                isVirus : blob.isVirus,
-                size : blob.size,
-                name : blob.name
-            }
+            miniMapCtx.arc(
+                (blob.nx+Math.abs(zeach.mapLeft)) / minimapScale, 
+                (blob.ny+Math.abs(zeach.mapTop)) / minimapScale, 
+                Math.abs(blob.size / minimapScale), 
+                0, 
+                2 * Math.PI
+            );
             miniMapCtx.stroke();
         });
 
@@ -1481,13 +1335,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             miniMapCtx.strokeStyle = "#FFFFFF";
             miniMapCtx.beginPath();
             miniMapCtx.arc((myBlob.nx+Math.abs(zeach.mapLeft)) / minimapScale, (myBlob.ny+Math.abs(zeach.mapTop)) / minimapScale, myBlob.size / minimapScale, 0, 2 * Math.PI);
-            zeach.simpleBlobList[index++] = {
-                x : myBlob.nx,
-                y : myBlob.ny,
-                isVirus : false,
-                size : myBlob.size,
-                name : myBlob.name
-            }
             miniMapCtx.stroke();
         });
     }
@@ -1500,7 +1347,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawGrazingLines(ctx) {
-        if(!isGrazing || !nonPersistantUserOptions.visualizeGrazing ||  !isPlayerAlive())
+        if(!isGrazing || !cobbler.visualizeGrazing ||  !isPlayerAlive())
         {
             //console.log("returning early");
             return;
@@ -1563,11 +1410,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
             // Render summary force without special forces, like walls
             drawLine(ctx,playerBlob,
-                     {
-                         x: playerBlob.x + (cumulatives[0].x + cumulatives[1].x) / maxSize,
-                         y: playerBlob.y + (cumulatives[0].y + cumulatives[1].y) / maxSize,
-                     }, "gray"
-                    );
+                {
+                    x: playerBlob.x + (cumulatives[0].x + cumulatives[1].x) / maxSize,
+                    y: playerBlob.y + (cumulatives[0].y + cumulatives[1].y) / maxSize,
+                }, "gray"
+            );
 
             // Render foods and threats force cumulatives
             drawLine(ctx,playerBlob, {x: playerBlob.x + cumulatives[1].x / maxSize, y: playerBlob.y + cumulatives[1].y / maxSize }, "green" );
@@ -1622,26 +1469,26 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function drawGrazingLines_old(ctx) {
-        if(!isGrazing || !nonPersistantUserOptions.visualizeGrazing ||  !isPlayerAlive())
+        if(!isGrazing || !cobbler.visualizeGrazing ||  !isPlayerAlive())
         {
             //console.log("returning early");
             return;
         }
         var oldLineWidth = ctx.lineWidth;
         var oldColor = ctx.color;
-
+        
         ctx.lineWidth = 10;
         for(var i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
             if (point.grazingMode != 1) {
                 continue;
             }
-
+        
             if(_.has(zeach.allNodes, point.grazingTargetID)){
                 drawLine(ctx, zeach.allNodes[point.grazingTargetID], point, "green");
             }
         }
-
+        
         ctx.lineWidth = 2;
         for(var i = 0; i < zeach.myPoints.length; i++) {
             var point = zeach.myPoints[i];
@@ -1657,14 +1504,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 } else {
                     //drawLine(ctx,element, getSelectedBlob(), "blue" );
                 }
-            })
+            });
         }
         ctx.lineWidth = oldLineWidth;
         ctx.color = oldColor;
 
     }
 
-    // ======================   Virus Popper    ==================================================================
+// ======================   Virus Popper    ==================================================================
     function findNearestVirus(cell, blobArray){
         var nearestVirus = _.min(_.filter(blobArray, "isVirus", true), function(element) {
             return lineDistance(cell, element);
@@ -1678,8 +1525,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function fireAtVirusNearestToBlob(blob, blobArray) {
-        console.log("fireAtVirusNearestToBlob");
-        var msDelayBetweenShots = nonPersistantUserOptions.msDelayBetweenShots;
+        console.log("Firing at virus nearest to blob");
+        var msDelayBetweenShots = cobbler.msDelayBetweenShots;
         nearestVirus = findNearestVirus(blob, blobArray);
 
         if(-1 == nearestVirus){
@@ -1711,26 +1558,28 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         window.setTimeout(function () { suspendMouseUpdates = false;}, msDelayBetweenShots *(shotsFired+1));
     }
+    
+    function splitAtCursor() {
+        console.log("Splitting at the cursor");
+        suspendMouseUpdates = true;
+        sendMouseUpdate(zeach.webSocket, zeach.mouseX2 + Math.random(), zeach.mouseY2 + Math.random());
+        window.setTimeout(function () { sendMouseUpdate(zeach.webSocket, zeach.mouseX2 + Math.random(), zeach.mouseY2 + Math.random()); }, 25);
+
+        window.setTimeout(function () {
+            sendMouseUpdate(zeach.webSocket, zeach.mouseX2 + Math.random(), zeach.mouseY2 + Math.random());
+            zeach.fireFunction(17);
+        });
+        
+        window.setTimeout(function () { suspendMouseUpdates = false;});
+    }
 
 
     function fireAtVirusNearestToCursor(){
+        console.log("Firing at virus nearest to cursor");
         fireAtVirusNearestToBlob(getMouseCoordsAsPseudoBlob(), zeach.allItems);
     }
 
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
-    // ======================   Skins    ==================================================================
+// ======================   Skins    ==================================================================
     /* AgarioMod.com skins have been moved to the very end of the file */
     var extendedSkins = {
         "billy mays" : "http://i.imgur.com/HavxFJu.jpg",
@@ -1740,7 +1589,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         "blueeyes" : "http://i.imgur.com/wxCfUws.jpg",
         "ygritte"  : "http://i.imgur.com/lDIFCT1.png",
         "lord kience" : "http://i.imgur.com/b2UXk15.png",
-    }
+    };
 
     var skinsSpecial = {
         "white  light": "https://i.imgur.com/4y8szAE.png",
@@ -1763,22 +1612,34 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
     function isAgarioModsSkin(targetName){
-        if(!nonPersistantUserOptions.amExtendedSkins){
+        if(!cobbler.amExtendedSkins){
             return false;
         }
-        return _.includes(agariomodsSkins, targetName)
+        return _.includes(agariomodsSkins, targetName);
+    }
+    function isContribSkin(targetName){
+        return _.includes(contribSkins, targetName);
+    }
+    function isZeachCobblerSkin(targetName){
+        return _.includes(zeachCobblerSkin, targetName);
     }
     function isImgurSkin(targetName){
-        if(!nonPersistantUserOptions.imgurSkins){
+        if(!cobbler.imgurSkins){
             return false;
         }
         return _.startsWith(targetName, "i/");
     }
     function isAMConnectSkin(targetName){
-        if(!nonPersistantUserOptions.amConnectSkins){
+        if(!cobbler.amConnectSkins){
             return false;
         }
         return _.startsWith(targetName, "*");
+    }
+	function isGitHubSkin(targetName){
+        if(!cobbler.gitHubSkins){
+            return false;
+        }
+        return _.startsWith(targetName, "'");
     }
 
 
@@ -1792,36 +1653,55 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         else if(!cell.isAgitated && showSkins ){
             if(-1 != defaultSkins.indexOf(userNameLowerCase) || isSpecialSkin(userNameLowerCase) || isImgurSkin(userNameLowerCase) ||
-               isAgarioModsSkin(userNameLowerCase) || isAMConnectSkin(userNameLowerCase) || isExtendedSkin(userNameLowerCase)){
+                    isAgarioModsSkin(userNameLowerCase) || isContribSkin(userNameLowerCase) || isZeachCobblerSkin(userNameLowerCase) || isAMConnectSkin(userNameLowerCase) || isGitHubSkin(userNameLowerCase) || isExtendedSkin(userNameLowerCase)){
                 if (!imgCache.hasOwnProperty(userNameLowerCase)){
                     if(isSpecialSkin(userNameLowerCase)) {
-                        imgCache[userNameLowerCase] = new Image;
+                        console.log("Special skin detected");
+                        imgCache[userNameLowerCase] = new Image();
                         imgCache[userNameLowerCase].src = skinsSpecial[userNameLowerCase];
                     }
                     else if(isExtendedSkin(userNameLowerCase)) {
-                        imgCache[userNameLowerCase] = new Image;
+                        console.log("Extended skin detected");
+                        imgCache[userNameLowerCase] = new Image();
                         imgCache[userNameLowerCase].src = extendedSkins[userNameLowerCase];
                     }
                     else if(isAgarioModsSkin(userNameLowerCase)) {
-                        imgCache[userNameLowerCase] = new Image;
+                        console.log("AM skin detected");
+                        imgCache[userNameLowerCase] = new Image();
                         imgCache[userNameLowerCase].src = "http://skins.agariomods.com/i/" + userNameLowerCase + ".png";
                     }
+                    else if(isContribSkin(userNameLowerCase)) {
+                        console.log("Contrib skin detected");
+                        imgCache[userNameLowerCase] = new Image();
+                        imgCache[userNameLowerCase].src = "https://avatars.githubusercontent.com/" + userNameLowerCase;
+                    }
+                    else if(isZeachCobblerSkin(userNameLowerCase)) {
+                        console.log("ZC skin detected");
+                        imgCache[userNameLowerCase] = new Image();
+                        imgCache[userNameLowerCase].src = "https://raw.githubusercontent.com/RealDebugMonkey/ZeachCobbler/master/icons/zeachcobbler_icon128.png";
+                    }
                     else if(isAMConnectSkin(userNameLowerCase)) {
-                        console.log("is AmConnect skin")
-                        imgCache[userNameLowerCase] = new Image;
+                        console.log("AM Connect skin detected");
+                        imgCache[userNameLowerCase] = new Image();
                         imgCache[userNameLowerCase].src = "http://connect.agariomods.com/img_" + userNameLowerCase.slice(1) + ".png";
                     }
                     else if(isImgurSkin(userNameLowerCase)){
-                        imgCache[userNameLowerCase] = new Image;
-                        imgCache[userNameLowerCase].src = "http://i.imgur.com/"+ userName.slice(2) +".png";
+                        console.log("Imgut skin detected");
+                        imgCache[userNameLowerCase] = new Image();
+                        imgCache[userNameLowerCase].src = "http://i.imgur.com/" + userName.slice(2) +".png";
+                    }
+					else if(isGitHubSkin(userNameLowerCase)){
+                        console.log("GitHub skin detected");
+                        imgCache[userNameLowerCase] = new Image();
+                        imgCache[userNameLowerCase].src = "https://avatars.githubusercontent.com/" + userNameLowerCase.slice(1);
                     }
 
                     else{
-                        imgCache[userNameLowerCase] = new Image;
+                        imgCache[userNameLowerCase] = new Image();
                         imgCache[userNameLowerCase].src = "skins/" + userNameLowerCase + ".png";
                     }
                 }
-                if(0 != imgCache[userNameLowerCase].width && imgCache[userNameLowerCase].complete) {
+                if(imgCache[userNameLowerCase].width && imgCache[userNameLowerCase].complete) {
                     retval = imgCache[userNameLowerCase];
                 } else {
                     retval = null;
@@ -1838,21 +1718,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
 
 
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
-    // ======================   Draw Functions    ==================================================================
+// ======================   Draw Functions    ==================================================================
     function shouldRelocateName(){
-        if(nonPersistantUserOptions.namesUnderBlobs && !this.isVirus) {
+        if(cobbler.namesUnderBlobs && !this.isVirus) {
             return true;
         }
         return ((isExtendedSkin(this.name)|| isSpecialSkin(this.name) || /*isBitDoSkin(this.name)||*/ isAMConnectSkin(this.name)));
@@ -1864,7 +1732,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         yBasePos = ~~this.y;
         // Viruses have empty name caches. If this is a virus with an empty name cache
         // then give it a name of the # of shots needed to split it.
-        if(null == nameCache) {
+        if(!nameCache) {
             if (this.isVirus) {
                 var virusSize = this.nSize;
                 var shotsNeeded = getVirusShotsNeededForSplit(virusSize).toString();
@@ -1874,7 +1742,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
         }
 
-        if((zeach.hasNickname || isMyCell) && (this.name && (nameCache && (null == itemToDraw || -1 == zeach.textBlobs.indexOf(kbIndex)))) ) {
+        if((zeach.hasNickname || isMyCell) && (this.name && (nameCache && (!itemToDraw || -1 == zeach.textBlobs.indexOf(kbIndex)))) ) {
+
             itemToDraw = nameCache;
             itemToDraw.setValue(this.name);
             setCellName(this, itemToDraw);
@@ -1909,8 +1778,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
         if(zeach.isShowMass) {
             var scale;
-            if(itemToDraw || 0 == zeach.myPoints.length && ((!this.isVirus || this.isAgitated) && 20 < this.size)) {
-                if(null == this.massText) {
+            if(itemToDraw || !zeach.myPoints.length && ((!this.isVirus || this.isAgitated) && 20 < this.size)) {
+                if(!this.massText) {
                     this.massText = new zeach.CachedCanvas(this.maxNameSize() / 2, "#FFFFFF", true, "#000000");
                 }
                 itemToDraw = this.massText;
@@ -1937,7 +1806,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
     }
 
-    // ======================   Misc    ==================================================================
+// ======================   Misc    ==================================================================
 
     function switchCurrentBlob() {
         var myids_sorted = _.pluck(zeach.myPoints, "id").sort(); // sort by id
@@ -1964,24 +1833,35 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         //        isGrazing = 0;
         //        showVisualCues = true;
         //        suspendMouseUpdates = false;
-        //        nonPersistantUserOptions.enableBlobLock = false;
+        //        cobbler.enableBlobLock = false;
         //}
-        
-
-        
         if(jQuery("#overlays").is(':visible')){
             return;
         }
-
-        if(9 === d.keyCode && isPlayerAlive()) {
+        
+        var TABKEY = 9;
+        var TABTEXT = "TAB";
+        
+        if(cobbler.KeySwitchBlob == TABTEXT && 9 === d.keyCode && isPlayerAlive()) {
             d.preventDefault();
             switchCurrentBlob();
         }
-        else if('A'.charCodeAt(0) === d.keyCode && isPlayerAlive()){
-            nonPersistantUserOptions.isAcid = !nonPersistantUserOptions.isAcid;
-            setAcid(nonPersistantUserOptions.isAcid);
+        else if(cobbler.KeySwitchBlob.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+            d.preventDefault();
+            switchCurrentBlob();
         }
-        else if('C'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+        else if(cobbler.KeyClickToSplit.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+            cobbler.clickToSplit = !cobbler.clickToSplit;
+        }
+        else if(cobbler.KeyAcidMode.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+            cobbler.isAcid = !cobbler.isAcid;
+            setAcid(cobbler.isAcid);
+        }
+        else if(cobbler.KeyLiteBriteMode.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+            cobbler.isLiteBrite = !cobbler.isLiteBrite;
+        }
+    
+        else if(cobbler.KeyShowVisual.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             grazzerTargetResetRequest = "all";
             showVisualCues = !showVisualCues;
             if(!showVisualCues) {
@@ -1993,45 +1873,45 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 jQuery("#mini-map").show();
             }
         }
-        else if('E'.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+        else if(cobbler.KeyFireAtVirCur.charCodeAt(0) === d.keyCode && isPlayerAlive()){
             fireAtVirusNearestToCursor();
         }
-        else if('G'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            if(nonPersistantUserOptions.grazerHybridSwitch && isGrazing){
+        else if(cobbler.KeyNewGrazer.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+            if(cobbler.grazerHybridSwitch && isGrazing){
                 isGrazing = 0;
                 return;
             }
             grazzerTargetResetRequest = "all";
             isGrazing = (2 == isGrazing) ? false : 2;
         }
-        else if('H'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            if(nonPersistantUserOptions.grazerHybridSwitch && isGrazing){
+        else if(cobbler.KeyOldGrazer.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+            if(cobbler.grazerHybridSwitch && isGrazing){
                 isGrazing = 0;
                 return;
             }
             grazzerTargetResetRequest = "all";
             isGrazing = (1 == isGrazing) ? false : 1;
         }
-        else if('M'.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+        else if(cobbler.KeySuspendMouse.charCodeAt(0) === d.keyCode && isPlayerAlive()){
             suspendMouseUpdates = !suspendMouseUpdates;
         }
-        else if('O'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            nonPersistantUserOptions.rightClickFires = !nonPersistantUserOptions.rightClickFires;
+        else if(cobbler.KeyRightClick.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+            cobbler.rightClickFires = !cobbler.rightClickFires;
         }
-        else if('P'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+        else if(cobbler.KeyGrazingFix.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             grazingTargetFixation = !grazingTargetFixation;
         }
-        else if('R'.charCodeAt(0) === d.keyCode && isPlayerAlive()){
+        else if(cobbler.KeyFireAtVirBlob.charCodeAt(0) === d.keyCode && isPlayerAlive()){
             fireAtVirusNearestToBlob(getSelectedBlob(),zeach.allItems);
         }
-        else if('T'.charCodeAt(0) === d.keyCode && isPlayerAlive() && (1 == isGrazing)) {
+        else if(cobbler.KeyGrazerReset.charCodeAt(0) === d.keyCode && isPlayerAlive() && (1 == isGrazing)) {
             console.log("Retarget requested");
             grazzerTargetResetRequest = "current";
         }
-        else if('V'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
-            nonPersistantUserOptions.visualizeGrazing = !nonPersistantUserOptions.visualizeGrazing;
+        else if(cobbler.KeyGrazingVisual.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+            cobbler.visualizeGrazing = !cobbler.visualizeGrazing;
         }
-        else if('Z'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+        else if(cobbler.KeyZoomFactor.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             // /*old*/ zoomFactor = (zoomFactor == 10 ? 11 : 10);
             /*new*/ zoomFactor = zoomFactor >= 11 ? 10 : +(zoomFactor + 0.1).toFixed(2);
         }
@@ -2041,29 +1921,25 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             var arr =  _.sortBy(zeach.myPoints, "nSize").reverse();
             selectedBlobID = arr[id].id;
         }
-        else if('S'.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
+        else if(cobbler.KeyPointLock.charCodeAt(0) === d.keyCode && isPlayerAlive()) {
             for(var i = 0; i < zeach.myPoints.length; i++) {
                 var point = zeach.myPoints[i];
                 point.locked = false;
             }
         }
-        else {
-            onKeyPressed(d);
-        }
-
     }
 
     function onAfterUpdatePacket() {
         if (!isPlayerAlive()){
             timeSpawned = null;
         }
-        if(null == timeSpawned && isPlayerAlive()) {
+        if(!timeSpawned && isPlayerAlive()) {
             timeSpawned = Date.now(); // it's been reported we miss some instances of player spawning
         }
     }
 
     function onBeforeNewPointPacket() {
-        if (0 == _.size(zeach.myPoints)){
+        if (!_.size(zeach.myPoints)){
             timeSpawned = Date.now();
         }
     }
@@ -2133,7 +2009,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if (blob.locked) {
             blob.locked = false;
         } else {
-            if (nonPersistantUserOptions.nextOnBlobLock) {
+            if (cobbler.nextOnBlobLock) {
                 switchCurrentBlob();
             }
             blob.locked = true;
@@ -2145,18 +2021,6 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
 
 
 // ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-// ======================   Start main    ==================================================================
-
 
     function kb() {
         wa = true;
@@ -2164,18 +2028,19 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         setInterval(La, 18E4);
         F = xa = document.getElementById("canvas");
         g = F.getContext("2d");
-        // /*old*/ (/*new*/ /remap/) F.onmousewheel = function (e) {zoomFactor = e.wheelDelta > 0 ? 10 : 11;}
+        // /*old*/ F.onmousewheel = function (e) {zoomFactor = e.wheelDelta > 0 ? 10 : 11;}
         /*new*/ F.onmousewheel = function (e) {
             if (e.wheelDelta > 0) {
                 zoomFactor = zoomFactor <= 9.50 ? 9.50 : +(zoomFactor - 0.05).toFixed(2);
             } else {
                 zoomFactor = zoomFactor >= 11 ? 11 : +(zoomFactor + 0.05).toFixed(2);
             }
-
+            
         };
         F.onmousedown = function(a) {
-            /*new*/if(nonPersistantUserOptions.enableBlobLock) {lockCurrentBlob();}
-            /*new*/if(isPlayerAlive() && nonPersistantUserOptions.rightClickFires){fireAtVirusNearestToCursor();}return;
+            /*new*/if(cobbler.enableBlobLock) {lockCurrentBlob(); return; }
+            /*new*/if(isPlayerAlive() && cobbler.rightClickFires){fireAtVirusNearestToCursor(); return; }
+            /*new*/if(isPlayerAlive() && cobbler.clickToSplit){splitAtCursor(); return; }
             if (Ma) {
                 var c = a.clientX - (5 + q / 5 / 2);
                 var b = a.clientY - (5 + q / 5 / 2);
@@ -2206,24 +2071,20 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var c = false;
         var b = false;
         d.onkeydown = function(e) {
-            //jbjbx
-            if (nonPersistantUserOptions.codeEditorActivated) {
-                return;
-            }
-            if (!(32 != e.keyCode)) {
+            if (32 == e.keyCode) {
                 if (!a) {
                     U();
                     G(17);
                     a = true;
                 }
             }
-            if (!(81 != e.keyCode)) {
+            if (81 == e.keyCode) {
                 if (!c) {
                     G(18);
                     c = true;
                 }
             }
-            if (!(87 != e.keyCode)) {
+            if (87 == e.keyCode) {
                 if (!b) {
                     U();
                     G(21);
@@ -2261,7 +2122,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
         Ra();
         ea(f("#region").val());
-        if (0 == za) {
+        if (!za) {
             if (x) {
                 N();
             }
@@ -2271,7 +2132,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         Pa();
     }
     function Na(a) {
-        // /*new*/ H *= Math.pow(0.9, a.wheelDelta / -120 || (a.detail || 0));
+        // /*old*/ H *= Math.pow(0.9, a.wheelDelta / -120 || (a.detail || 0));
         if (1 > H) {
             H = 1;
         }
@@ -2293,7 +2154,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 var h = v[p];
                 if (!!h.N()) {
                     if (!h.R) {
-                        if (!(20 >= h.size * k)) {
+                        if (20 < h.size * k) {
                             l = Math.max(h.size, l);
                             a = Math.min(h.x, a);
                             c = Math.min(h.y, c);
@@ -2313,15 +2174,16 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             });
             p = 0;
             for (;p < v.length;p++) {
-                if (h = v[p], h.N() && !(20 >= h.size * k)) {
+                var h;
+                if (h = v[p], h.N() && (20 < h.size * k)) {
                     a = 0;
                     for (;a < h.a.length;++a) {
                         c = h.a[a].x;
                         b = h.a[a].y;
-                        if (!(c < t - q / 2 / k)) {
-                            if (!(b < u - s$$0 / 2 / k)) {
-                                if (!(c > t + q / 2 / k)) {
-                                    if (!(b > u + s$$0 / 2 / k)) {
+                        if (c >= t - q / 2 / k) {
+                            if (b >= u - s$$0 / 2 / k) {
+                                if (c <= t + q / 2 / k) {
+                                    if (b <= u + s$$0 / 2 / k) {
                                         W.m(h.a[a]);
                                     }
                                 }
@@ -2337,7 +2199,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         ga = (da - s$$0 / 2) / k + u;
     }
     function La() {
-        if (null == ha) {
+        if (!ha) {
             ha = {};
             f("#region").children().each(function() {
                 var a = f(this);
@@ -2347,7 +2209,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 }
             });
         }
-        f.get("https://m.agar.io/fullInfo", function(a) { // ilboued : replace info by fullInfo to try to solve party mode that randomly works
+        f.get("https://m.agar.io/info", function(a) {
             var c = {};
             var b;
             for (b in a.regions) {
@@ -2477,7 +2339,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             }
             r = null;
         }
-        if (null != J) {
+        if (J) {
             var e = J;
             J = function() {
                 e(c);
@@ -2501,7 +2363,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         r.binaryType = "arraybuffer";
         r.onopen = function() {
             var a;
-            console.log("socket open");
+            console.log("Socket open");
             a = L(5);
             a.setUint8(0, 254);
             a.setUint32(1, 5, true);
@@ -2522,7 +2384,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         r.onmessage = pb;
         r.onclose = qb;
         r.onerror = function() {
-            console.log("socket error");
+            console.log("Socket error");
         };
     }
     function L(a) {
@@ -2535,7 +2397,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if (ka) {
             la = 500;
         }
-        console.log("socket close");
+        console.log("Socket close");
         setTimeout(N, la);
         la *= 2;
     }
@@ -2548,7 +2410,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             for (;;) {
                 var e = a.getUint16(b, true);
                 b += 2;
-                if (0 == e) {
+                if (!e) {
                     break;
                 }
                 c += String.fromCharCode(e);
@@ -2593,7 +2455,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 b += 4;
                 break;
             case 49:
-                if (null != z) {
+                if (z) {
                     break;
                 }
                 var e$$0 = a.getUint32(b, true);
@@ -2633,7 +2495,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 Y = (qa + oa) / 2;
                 Z = (ra + pa) / 2;
                 $ = 1;
-                if (0 == m.length) {
+                if (!m.length) {
                     t = Y;
                     u = Z;
                     k = $;
@@ -2695,16 +2557,15 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         for (;;) {
             e = a.getUint32(c, true);
             c += 4;
-            if (0 == e) {
+            if (!e) {
                 break;
             }
             ++l;
-            var d;
-            p = a.getInt32(c, true);
+            var p = a.getInt32(c, true);
             c += 4;
-            h = a.getInt32(c, true);
+            var h = a.getInt32(c, true);
             c += 4;
-            d = a.getInt16(c, true);
+            var d = a.getInt16(c, true);
             c += 2;
             var g = a.getUint8(c++);
             var k = a.getUint8(c++);
@@ -2718,20 +2579,32 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             q = !!(k & 1);
             var s = !!(k & 16);
             if (k & 2) {
-                c += 4;
+                c += 4 + a.getUint32(k, !0); /* V28 */
             }
             if (k & 4) {
-                c += 8;
+                for (var s = "";;) { /* V28 */
+                    var x = a.getUint8(c++);
+                    if (!x) break;
+                    s += String.fromCharCode(x);
+                }
+                /* This seems to be used to look up the player's color,
+                 * based on the skin they're using.
+                 */
             }
-            if (k & 8) {
-                c += 16;
-            }
+            //if (k & 8) { // V28 - gone
+            //    c += 16;
+            //}
             var r;
             var n = "";
             for (;;) {
-                r = a.getUint16(c, true);
+                try {
+                    r = a.getUint16(c, true);
+                } catch(err) {
+                    console.log(err);
+                    break;
+                }
                 c += 2;
-                if (0 == r) {
+                if (!r) {
                     break;
                 }
                 n += String.fromCharCode(r);
@@ -2782,13 +2655,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         for (;l < b;l++) {
             e = a.getUint32(c, true);
             c += 4;
-            n = D[e];
-            if (null != n) {
+            var n = D[e];
+            if (n) {
                 n.X();
             }
         }
         if (Ea) {
-            if (0 == m.length) {
+            if (!m.length) {
                 Oa(false);
             }
         }
@@ -2796,28 +2669,27 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function U() {
         /*new*/if(isGrazing){ doGrazing(); return; }
         /*new*/if(suspendMouseUpdates){return;}
-
         var a;
         if (S()) {
             a = ca - q / 2;
             var c = da - s$$0 / 2;
-            if (!(64 > a * a + c * c)) {
-                if (!(0.01 > Math.abs($a - fa) && 0.01 > Math.abs(ab - ga))) {
-                    $a = fa;
-                    ab = ga;
-                    a = L(13);
-                    a.setUint8(0, 16);
-                    a.setInt32(1, fa, true);
-                    a.setInt32(5, ga, true);
-                    a.setUint32(9, 0, true);
-                    M(a);
+            if (64 <= a * a + c * c) {
+                if (0.01 <= Math.abs($a - fa) || 0.01 <= Math.abs(ab - ga)) {
+                        $a = fa;
+                        ab = ga;
+                        a = L(13);
+                        a.setUint8(0, 16);
+                        a.setInt32(1, fa, true);
+                        a.setInt32(5, ga, true);
+                        a.setUint32(9, 0, true);
+                        M(a);
 
                 }
             }
         }
     }
     function Ya() {
-        if (S() && null != I) {
+        if (S() && I) {
             var a = L(1 + 2 * I.length);
             a.setUint8(0, 0);
             var c = 0;
@@ -2828,7 +2700,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }
     function S() {
-        return null != r && r.readyState == r.OPEN;
+        return r && r.readyState == r.OPEN;
     }
     function G(a) {
         if (S()) {
@@ -2838,7 +2710,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }
     function Va() {
-        if (S() && null != B) {
+        if (S() && B) {
             var a = L(1 + B.length);
             a.setUint8(0, 81);
             var c = 0;
@@ -2870,7 +2742,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         return a *= H;
     }
     function tb() {
-        if (0 != m.length) {
+        if (m.length) {
             var a = 0;
             var c = 0;
             for (;c < m.length;c++) {
@@ -2925,12 +2797,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         g.translate(q / 2, s$$0 / 2);
         g.scale(k, k);
         g.translate(-t, -u);
-        e = 0;
-        for (;e < P.length;e++) {
+        for (var e = 0;e < P.length;e++) {
             P[e].w(g);
         }
-        e = 0;
-        for (;e < v.length;e++) {
+        for (var e = 0;e < v.length;e++) {
             v[e].w(g);
         }
         /*new*/drawRescaledItems(zeach.ctx);
@@ -2962,21 +2832,20 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         Q = Math.max(Q, wb());
         /*new*//*remap*/ var extras = " " + getScoreBoardExtrasString(Q);
         if (0 != Q) {
-            if (null == ta) {
+            if (!ta) {
                 ta = new ua(24, "#FFFFFF");
             }
             ta.C(X("score") + ": " + ~~(Q / 100));
-            /*new*/ /*remap*/ ta.setValue("Score: " + zeach.mass ); //score = current score, not max + supress extra
-            b = ta.L();
+            /*new*/ /*remap*/ ta.setValue("Score: " + ~~(Q / 100) + extras);
+            var b = ta.L();
             a$$0 = b.width;
             g.globalAlpha = 0.2;
             g.fillStyle = "#000000";
             g.fillRect(10, s$$0 - 10 - 24 - 10, a$$0 + 10, 34);
             g.globalAlpha = 1;
             g.drawImage(b, 15, s$$0 - 10 - 24 - 5);
-            /*new*//*mikey*//*remap*/(zeach.myPoints&&zeach.myPoints[0]&&OnUpdateMass(wb()));
+            /*new*//*mikey*//*remap*/if(zeach.myPoints && zeach.myPoints[0]) { OnUpdateMass(wb()); }
         }
-
         xb();
         c$$0 = Date.now() - c$$0;
         if (c$$0 > 1E3 / 60) {
@@ -3016,7 +2885,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     function vb() {
         g.fillStyle = sa ? "#111111" : "#F2FBFF";
         g.fillRect(0, 0, q, s$$0);
-        /*new*/if(!nonPersistantUserOptions.gridLines){return;}
+        /*new*/if(!cobbler.gridLines){return;}
         g.save();
         g.strokeStyle = sa ? "#AAAAAA" : "#000000";
         g.globalAlpha = 0.2 * k;
@@ -3054,67 +2923,54 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     }
     function Wa() {
         y = null;
-        if (null != z || 0 != E.length) {
-            if (null != z || va) {
+        if (z || E.length) {
+            if (z || va) {
                 y = document.createElement("canvas");
-                var ctx = y.getContext("2d");
+                var a = y.getContext("2d");
                 var c = 60;
-                c = null == z ? c + 24 * E.length : c + 180;
+                c = !z ? c + 24 * E.length : c + 180;
                 var b = Math.min(200, 0.3 * q) / 200;
                 y.width = 200 * b;
                 y.height = c * b;
-                ctx.scale(b, b);
-                ctx.globalAlpha = 0.4;
-                ctx.fillStyle = "#000000";
-                ctx.fillRect(0, 0, 200, c);
-                ctx.globalAlpha = 1;
-                ctx.fillStyle = "#FFFFFF";
+                a.scale(b, b);
+                a.globalAlpha = 0.4;
+                a.fillStyle = "#000000";
+                a.fillRect(0, 0, 200, c);
+                a.globalAlpha = 1;
+                a.fillStyle = "#FFFFFF";
                 b = null;
                 b = X("leaderboard");
-                ctx.font = "30px Ubuntu";
-                ctx.fillText(b, 100 - ctx.measureText(b).width / 2, 40);
-                if (null == z) {
-                    ctx.font = "20px Ubuntu";
-                    rankFromZero = 0;
-                    var onLeaderBoard = false; // ilboued add
-                    for (;rankFromZero < E.length;++rankFromZero) {
-                        aTop10Name = E[rankFromZero].name || X("unnamed_cell");
+                a.font = "30px Ubuntu";
+                a.fillText(b, 100 - a.measureText(b).width / 2, 40);
+                if (!z) {
+                    a.font = "20px Ubuntu";
+                    c = 0;
+                    for (;c < E.length;++c) {
+                        b = E[c].name || X("unnamed_cell");
                         if (!va) {
-                            aTop10Name = X("unnamed_cell");
+                            b = X("unnamed_cell");
                         }
-                        if (-1 != K.indexOf(E[rankFromZero].id)) {
+                        if (-1 != K.indexOf(E[c].id)) {
                             if (m[0].name) {
-                                aTop10Name = m[0].name;
+                                b = m[0].name;
                             }
-                            ctx.fillStyle = "#FFAAAA";
-                            OnLeaderboard(rankFromZero+1);
-                            // ilboued add :
-                            onLeaderBoard = true;
-                            if (zeach.leaderBoard != (rankFromZero + 1)) {
-                                zeach.leaderBoard = rankFromZero + 1; 
-                            }
+                            a.fillStyle = "#FFAAAA";
+                            /*new*//*mikey*//*remap*/OnLeaderboard(c+1);
                         } else {
-                            ctx.fillStyle = "#FFFFFF";
+                            a.fillStyle = "#FFFFFF";
                         }
-                        aTop10Name = rankFromZero + 1 + ". " + aTop10Name;
-                        ctx.fillText(aTop10Name, 100 - ctx.measureText(aTop10Name).width / 2, 70 + 24 * rankFromZero);
+                        b = c + 1 + ". " + b;
+                        a.fillText(b, 100 - a.measureText(b).width / 2, 70 + 24 * c);
                     }
-                    if (!onLeaderBoard) {
-                        if (zeach.leaderBoard>0) {
-                            console.log('lost leaderbord from rank ' + zeach.leaderBoard);
-                        }
-                        zeach.leaderBoard = 0;
-                    }
-                         
                 } else {
                     c = b = 0;
                     for (;c < z.length;++c) {
                         var e = b + z[c] * Math.PI * 2;
-                        ctx.fillStyle = yb[c + 1];
-                        ctx.beginPath();
-                        ctx.moveTo(100, 140);
-                        ctx.arc(100, 140, 80, b, e, false);
-                        ctx.fill();
+                        a.fillStyle = yb[c + 1];
+                        a.beginPath();
+                        a.moveTo(100, 140);
+                        a.arc(100, 140, 80, b, e, false);
+                        a.fill();
                         b = e;
                     }
                 }
@@ -3152,11 +3008,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
     }
     function R(a, c) {
-        var b$$0 = "1" == f("#helloContainer").attr("data-has-account-data");
+        // var b$$0 = "1" == f("#helloContainer").attr("data-has-account-data");
         /*new*/var b$$0 = "1" == f("#ZCOverlay").attr("data-has-account-data");
 
         f("#helloContainer").attr("data-has-account-data", "1");
-        if (null == c && d.localStorage.loginCache) {
+        if (!c && d.localStorage.loginCache) {
             var e = JSON.parse(d.localStorage.loginCache);
             e.f = a.f;
             e.d = a.d;
@@ -3166,7 +3022,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         if (b$$0) {
             var l = +f(".agario-exp-bar .progress-bar-text").text().split("/")[0];
             b$$0 = +f(".agario-exp-bar .progress-bar-text").text().split("/")[1].split(" ")[0];
-            e = f(".agario-profile-panel .progress-bar-star").text();
+            var e = f(".agario-profile-panel .progress-bar-star").text();
             if (e != a.e) {
                 R({
                     f : b$$0,
@@ -3256,7 +3112,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 f(".agario-profile-picture").attr("src", a.data.url);
             });
             f("#helloContainer").attr("data-logged-in", "1");
-            if (null != B) {
+            if (B) {
                 f.ajax("https://m.agar.io/checkToken", {
                     error : function() {
                         B = null;
@@ -3353,10 +3209,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         var V = true;
         var za = 0;
         var Ma = "ontouchstart" in d && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        var Ga = new Image;
+        var Ga = new Image();
         Ga.src = "img/split.png";
         var ib = document.createElement("canvas");
-        if ("undefined" == typeof console || ("undefined" == typeof DataView || ("undefined" == typeof WebSocket || (null == ib || (null == ib.getContext || null == d.localStorage))))) {
+        if ("undefined" == typeof console || "undefined" == typeof DataView || "undefined" == typeof WebSocket || !ib || !ib.getContext || !d.localStorage) {
             alert("You browser does not support this game, we recommend you to use Firefox to play this");
         } else {
 
@@ -3366,9 +3222,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 I = a;
                 Ya();
                 Q = 0;
-                // GM_setValue("nick", a); // ilboued comment to avoid name conflict if multiple agar.io running simulatenously
-                // ilboued : store name
-                zeach.nickName = a;
+                /*new*/GM_setValue("nick", a);
+                /*new*/console.log("Storing '" + a + "' as nick");
             };
             d.setRegion = ea;
             d.setSkins = function(a) {
@@ -3405,8 +3260,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             d.setAcid = function(a) {
                 Fa = a;
             };
-            if (null != d.localStorage) {
-                if (null == d.localStorage.AB9) {
+            d.setLiteBrite = function(a) {
+                Fa = a;
+            };
+            if (d.localStorage) {
+                if (!d.localStorage.AB9) {
                     d.localStorage.AB9 = 0 + ~~(100 * Math.random());
                 }
                 hb = +d.localStorage.AB9;
@@ -3783,8 +3641,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     return Math.max(~~(0.3 * this.size), 24);
                 },
                 B : function(a) {
-                    if (this.name = a) {
-                        if (null == this.o) {
+                    if ((this.name = a)) { // apparently this is intentional
+                        if (!this.o) {
                             this.o = new ua(this.l(), "#FFFFFF", true, "#000000");
                         } else {
                             this.o.M(this.l());
@@ -3798,13 +3656,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         var c = ~~(Math.random() * this.a.length);
                         this.a.splice(c, 1);
                     }
-                    if (0 == this.a.length) {
+                    if (!this.a.length) {
                         if (0 < a) {
                             this.a.push(new Ha(this, this.x, this.y, this.size, Math.random() - 0.5));
                         }
                     }
                     for (;this.a.length < a;) {
-                        c = ~~(Math.random() * this.a.length);
+                        var c = ~~(Math.random() * this.a.length);
                         c = this.a[c];
                         this.a.push(new Ha(this, c.x, c.y, c.i, c.b));
                     }
@@ -3850,9 +3708,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     b = 0;
                     for (;b < c;++b) {
                         var d = a$$0[b].i;
-                        e = a$$0[(b - 1 + c) % c].i;
-                        l = a$$0[(b + 1) % c].i;
-                        if (15 < this.size && (null != W && (20 < this.size * k && 0 < this.id))) {
+                        var e = a$$0[(b - 1 + c) % c].i;
+                        var l = a$$0[(b + 1) % c].i;
+                        if (15 < this.size && (W && (20 < this.size * k && 0 < this.id))) {
                             var f = false;
                             var g = a$$0[b].x;
                             var m = a$$0[b].y;
@@ -3881,10 +3739,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         }
                         d = this.n ? (19 * d + this.size) / 20 : (12 * d + this.size) / 13;
                         a$$0[b].i = (e + l + 8 * d) / 10;
-                        e = 2 * Math.PI / c;
-                        l = this.a[b].i;
+                        var e = 2 * Math.PI / c;
+                        var l = this.a[b].i;
                         if (this.h) {
-                            if (0 == b % 2) {
+                            if (!(b % 2)) {
                                 l += 5;
                             }
                         }
@@ -3931,7 +3789,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         this.R = c;
                         a.save();
                         this.ha = A;
-                        b = this.P();
+                        var b = this.P();
                         if (this.G) {
                             a.globalAlpha *= 1 - b;
                         }
@@ -3961,11 +3819,11 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             }
                         }
                         a.closePath();
-                        e = this.name.toLowerCase();
+                        var e = this.name.toLowerCase();
                         //if (!this.n && (fb && ":teams" != O)) {
                         //    if (-1 != jb.indexOf(e)) {
                         //        if (!T.hasOwnProperty(e)) {
-                        //            T[e] = new Image;
+                        //            T[e] = new Image();
                         //            T[e].src = "skins/" + e + ".png";
                         //        }
                         //        b = 0 != T[e].width && T[e].complete ? T[e] : null;
@@ -3980,10 +3838,10 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         /*new*///if (!c) {
                         a.stroke();
                         /*new*///}}
-                        /*new*/if(!nonPersistantUserOptions.isLiteBrite)
+                        /*new*/if(!cobbler.isLiteBrite)
                             a.fill();
 
-                        if (!(null == d)) {
+                        if (d) {
                             if (!b) {
                                 a.save();
                                 /*new*/zeach.ctx.globalAlpha = (isSpecialSkin(this.name.toLowerCase()) || _.contains(zeach.myIDs, this.id)) ? 1 : 0.5;
@@ -4000,14 +3858,14 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             }
                         }
                         a.globalAlpha = 1;
-                        if (null != d) {
+                        if (d) {
                             if (b) {
                                 a.drawImage(d, this.x - 2 * this.size, this.y - 2 * this.size, 4 * this.size, 4 * this.size);
                             }
                         }
                         b = -1 != m.indexOf(this);
                         c = ~~this.y;
-                        //if (0 != this.id && ((va || b) && (this.name && (this.o && (null == d || -1 == Bb.indexOf(e)))))) {
+                        //if (0 != this.id && ((va || b) && (this.name && (this.o && (!d || -1 == Bb.indexOf(e)))))) {
                         //    d = this.o;
                         //    d.C(this.name);
                         //    d.M(this.l());
@@ -4022,7 +3880,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         //if (0 < this.id) {
                         //    if (gb) {
                         //        if (b || 0 == m.length && ((!this.h || this.n) && 20 < this.size)) {
-                        //            if (null == this.O) {
+                        //            if (!this.O) {
                         //                this.O = new ua(this.l() / 2, "#FFFFFF", true, "#000000");
                         //            }
                         //            b = this.O;
@@ -4037,10 +3895,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                         //        }
                         //    }
                         //}
-                        /*new*//*remap*/if(0 != this.id) {
+                        /*new*//*remap*/if(this.id) {
                             /*new*//*remap*/var vertical_offset = drawCellName.call(this,b,e,d);
                             /*new*//*remap*/ drawCellMass.call(this,vertical_offset,b);
-
                         }
                         a.restore();
                     }
@@ -4082,7 +3939,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                     }
                 },
                 L : function() {
-                    if (null == this.p) {
+                    if (!this.p) {
                         this.p = document.createElement("canvas");
                         this.T = this.p.getContext("2d");
                     }
@@ -4115,7 +3972,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             /*new*//*remap*/restoreCanvasElementObj(ua.prototype);
             if (!Date.now) {
                 Date.now = function() {
-                    return(new Date).getTime();
+                    return((new Date()).getTime());
                 };
             }
             (function() {
@@ -4163,7 +4020,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                                     return true;
                                 }
                             }
-                            if (0 != this.c.length) {
+                            if (this.c.length) {
                                 var d = this;
                                 return this.$(a, function(c) {
                                     return d.c[c].H(a);
@@ -4176,7 +4033,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             for (;b$$0 < this.items.length;++b$$0) {
                                 c(this.items[b$$0]);
                             }
-                            if (0 != this.c.length) {
+                            if (this.c.length) {
                                 var d = this;
                                 this.$(a, function(b) {
                                     d.c[b].A(a, c);
@@ -4184,7 +4041,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             }
                         },
                         m : function(a) {
-                            if (0 != this.c.length) {
+                            if (this.c.length) {
                                 this.c[this.Z(a)].m(a);
                             } else {
                                 if (this.items.length >= b$$1 && this.depth < e$$0) {
@@ -4355,7 +4212,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                             m.drawImage(d$$0, (0.1 * g + 80 * q) % (h + 140) - h / 2 - 70 - 35, k / 2 * Math.sin((0.001 * g + q) % Math.PI * 2) - 35, 70, 70);
                         }
                         m.restore();
-                        if (b = b.attr("data-itr")) {
+                        if ((b = b.attr("data-itr"))) { // the assignment is intentional
                             b = X(b);
                         }
                         a$$0(c$$0, this, b || "", +f(this).attr("data-size"), "#5bc0de");
@@ -4377,10 +4234,8 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
                 f.ajax(Ja + "//m.agar.io/getToken", {
                     error : function() {
                         f("#helloContainer").attr("data-party-state", "6");
-                        console.log("## join party :-(");
                     },
                     success : function(c) {
-                        console.log("## join party :-)");
                         c = c.split("\n");
                         f(".partyToken").val(a);
                         f("#helloContainer").attr("data-party-state", "5");
@@ -4406,43 +4261,13 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
             /*new*/d.onload = kb;
         }
     }
-})(unsafeWindow, unsafeWindow.jQuery);
+    /*new*/})(unsafeWindow, unsafeWindow.jQuery);
 
-
-
-
-
-// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-/// ========================================================================================
-// ========================================================================================
-// B = Stats Screen 
-// ========================================================================================
-// ========================================================================================
+// ====================================== Stats Screen ===========================================================
 
 var __STORAGE_PREFIX = "mikeyk730__";
 var chart_update_interval = 10;
 jQuery('body').append('<div id="chart-container" style="display:none; position:absolute; height:176px; width:300px; left:10px; bottom:44px"></div>');
-
-
-
-
-
-
 var checkbox_div = jQuery('#settings input[type=checkbox]').closest('div');
 
 // make sure player sees ads at least once so Zeach doesn't go medieval on me.
@@ -4454,95 +4279,106 @@ var PlayerHasSeenOfficialAds =_.once(function (){
 unsafeWindow.hideZCOverlay = function(){
     PlayerHasSeenOfficialAds();
     jQuery('#ZCOverlay').fadeOut();
-}
+};
 unsafeWindow.showZCOverlay = function (){
     jQuery('#ZCOverlay').fadeIn();
     OnShowOverlay(false);
 };
 jQuery('body').append('<div id="ZCOverlay" class="bs-example-modal-lg" style="position:relative;z-index: 300;">'+
-                      '<div class="modal-dialog modal-lg">'+
-                      '    <div class="modal-content">'+
-                      '    <div class="modal-header">'+
-                      '    <button type="button" class="close" onclick="hideZCOverlay();")><span>×</span></button>'+
-                      '<h4 class="modal-title">agar.io ilboued bot v' +GM_info.script.version + '</h4>'+ ' (based on Zeach Cobbler Bot)' +
-                      '</div>'+
-                      '<div id="ZCOverlayBody" class="modal-body" style="height:675px;">'+
-                      '    </div>'+
-                      '    <div class="modal-footer">'+
-                      '    <button type="button" id="ZCClose" class="btn btn-default" onclick="hideZCOverlay();">Let\'s Roll</button>'+
-                      '    <button type="button" id="ZCPlay" class="btn btn-primary" onclick="hideZCOverlay();setNick(document.getElementById(\'nick\').value); return false;">Play</button>'+
-                      '</div>'+
-                      '</div><!-- /.modal-content -->'+
-                      '</div><!-- /.modal-dialog -->'+
-                      '</div><!-- /.modal -->');
+'<div class="modal-dialog modal-lg">'+
+'    <div class="modal-content">'+
+'    <div class="modal-header">'+
+'    <button type="button" class="close" onclick="hideZCOverlay();")><span>×</span></button>'+
+'<h4 class="modal-title">Zeach Cobbler v' +GM_info.script.version + '</h4>'+
+'</div>'+
+'<div id="ZCOverlayBody" class="modal-body" style="height:675px;">'+
+'    </div>'+
+'    <div class="modal-footer">'+
+'    <button type="button" id="ZCClose" class="btn btn-default" onclick="hideZCOverlay();">Let\'s Roll</button>'+
+'    <button type="button" id="ZCPlay" class="btn btn-primary" onclick="hideZCOverlay();setNick(document.getElementById(\'nick\').value); return false;">Play</button>'+
+'</div>'+
+'</div><!-- /.modal-content -->'+
+'</div><!-- /.modal-dialog -->'+
+'</div><!-- /.modal -->');
 
 jQuery("#ZCPlay").hide();
 
+// <ilboued new>
+jQuery("#ZCOverlay").hide();
+// </ilboued new>
+
 jQuery("#agario-main-buttons")
-.append('<button type="button" class="btn btn-danger" id="opnZC" onclick="showZCOverlay()" style="margin-top:5px;position:relative;width:100%;">ZeachCobbler Options</button>');
+    .append('<button type="button" class="btn btn-danger" id="opnZC" onclick="showZCOverlay()" style="margin-top:5px;position:relative;width:100%;">ZeachCobbler Options</button>');
 jQuery("#agario-main-buttons")
-.append('<button type="button" id="opnBrowser" onclick="openServerbrowser();" style="margin-top:5px;position:relative;width:100%" class="btn btn-success">Agariomods Private Servers</button><br>');
+    .append('<button type="button" id="opnBrowser" onclick="openServerbrowser();" style="margin-top:5px;position:relative;width:100%" class="btn btn-success">Agariomods Private Servers</button><br>');
 
 jQuery('#ZCOverlayBody').append('<div id="ZCStats" style="position:relative;width:100%; background-color: #FFFFFF; border-radius: 15px; padding: 5px 15px 5px 15px;">'+
-                                '<ul class="nav nav-pills" role="tablist">' +
-                                '<li role="presentation" class="active" > <a href="#page0" id="newsTab"   role="tab" data-toggle="tab">News</a></li>' +
-                                '<li role="presentation">                 <a href="#page1" id="statsTab"  role="tab" data-toggle="tab">Stats</a></li>' +
-                                '<li role="presentation">                 <a href="#page2" id="configTab" role="tab" data-toggle="tab">Extended Options</a></li>' +
-                                '<li role="presentation">                 <a href="#page3" id="helpTab" role="tab" data-toggle="tab">Help</a></li>' +
-                                //'<li role="presentation"><a href="#page3" role="tab" data-toggle="tab">IP Connect</a></li>' +
-                                '</ul>'+
+    '<ul class="nav nav-pills" role="tablist">' +
+    '<li role="presentation" class="active" > <a href="#page0" id="newsTab"   role="tab" data-toggle="tab">News</a></li>' +
+    '<li role="presentation">                 <a href="#page1" id="statsTab"  role="tab" data-toggle="tab">Stats</a></li>' +
+    '<li role="presentation">                 <a href="#page2" id="configTab" role="tab" data-toggle="tab">Advanced Options</a></li>' +
+    '<li role="presentation">                 <a href="#page3" id="keysTab" role="tab" data-toggle="tab">Keyboard Binds</a></li>' +
+    '<li role="presentation">                 <a href="#page4" id="contribTab" role="tab" data-toggle="tab">Contributors</a></li>' +
+        //'<li role="presentation"><a href="#page3" role="tab" data-toggle="tab">IP Connect</a></li>' +
+    '</ul>'+
 
-                                '<div id="bigbox" class="tab-content">' +
-                                '<div id="page0" role="tabpanel" class="tab-pane active">'+ debugMonkeyReleaseMessage +'</div>' +
+    '<div id="bigbox" class="tab-content">' +
+    '<div id="page0" role="tabpanel" class="tab-pane active">'+ debugMonkeyReleaseMessage +'</div>' +
 
-                                '<div id="page1" role="tabpanel" class="tab-pane">' +
-                                '<div class="row">' +
-                                '<div id="statArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-                                '<div id="pieArea" class="col-sm-5" style="vertical-align: top; height:250px;"></div>' +
-                                '<div id="padder" class="col-sm-1"></div>' +
-                                '</div>' +
-                                '<div class="row">' +
-                                '<div id="gainArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-                                '<div id="lossArea" class="col-sm-6" style="vertical-align:top;"></div>' +
-                                '</div>' +
-                                '<div class="row">' +
-                                '<div id="chartArea" class="col-sm-8" ></div>' +
-                                '<div id="XPArea" class="col-sm-4"></div>' +
-                                '</div>' +
-                                '</div>' +
-                                '<div id="page2" role="tabpanel" class="tab-pane">' +
-                                '<div class="row">' +
-                                '<div id="col1" class="col-sm-4 checkbox" style="padding-left: 5%; padding-right: 1%;"></div>' +
-                                '<div id="col2" class="col-sm-4" style="padding-left: 2%; padding-right: 2%;"></div>' +
-                                '<div id="col3" class="col-sm-4" style="padding-left: 2%; padding-right: 5%;"></div>' +
-                                '</div>' +
-                                '</div>'+
-                                '<div id="page3" role="tabpanel" class="tab-pane">' +
-                                '<div class="row">' +
-                                '<div id="col1" class="col-sm-6" style="padding-left: 5%; padding-right: 1%;"><h3>Keys</h3><ul>' +
-                                '   <li><B>TAB</B> - When split switches selected blob</li>' +
-                                '   <li><B>A</B> - Toggle Acid mode</li>' +
-                                '   <li><B>C</B> - Toggle display of visual cues</li>' +
-                                '   <li><B>G</B> - Toggle new grazer (better overall)</li>' +
-                                '   <li><B>H</B> - Toggle old grazer (slightly better early on)' +
-                                '   <li><B>E</B> - Fire at virus near cursor</li>' +
-                                '   <li><B>R</B> - Fire at virus near selected blob (virus is highlighted in red)</li>' +
-                                '   <li><B>M</B> - Enables/Disables mouse input</li>' +
-                                '   <li><B>Z</B> - Zoom in/zoom out</li>' +
-                                '   <li><B>F</B> - toogle full screen</li>' +
-                                '   <li><B>1...7</B> - Selecte n-th blob sorted by size</li>' +
-                                '   <li><B>Click</B> - Lock currently selected blob (if blob locking enabled)</li>' +
-                                '   <li><B>S</B> - Unlock all blobs (if blob locking enabled)</li>' +
-                                '</ul></div>' +
-                                '<div id="col2" class="col-sm-6" style="padding-left: 5%; padding-right: 2%;"><h3></h3></div>' +
-                                '</div>' +
-                                '</div>');
+    '<div id="page1" role="tabpanel" class="tab-pane">' +
+    '<div class="row">' +
+    '<div id="statArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+    '<div id="pieArea" class="col-sm-5" style="vertical-align: top; height:250px;"></div>' +
+    '<div id="padder" class="col-sm-1"></div>' +
+    '</div>' +
+    '<div class="row">' +
+    '<div id="gainArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+    '<div id="lossArea" class="col-sm-6" style="vertical-align:top;"></div>' +
+    '</div>' +
+    '<div class="row">' +
+    '<div id="chartArea" class="col-sm-8" ></div>' +
+    '<div id="XPArea" class="col-sm-4"></div>' +
+    '</div>' +
+    '</div>' +
+    '<div id="page2" role="tabpanel" class="tab-pane">' +
+    '<div class="row">' +
+    '<div id="col1" class="col-sm-4 checkbox" style="padding-left: 5%; padding-right: 1%;"></div>' +
+    '<div id="col2" class="col-sm-4" style="padding-left: 2%; padding-right: 2%;"></div>' +
+    '<div id="col3" class="col-sm-4" style="padding-left: 2%; padding-right: 5%;"></div>' +
+    '</div>' +
+    '</div>'+
+    '<div id="page3" role="tabpanel" class="tab-pane">' +
+    '<div class="row">' +
+    '<div id="keysCol1" class="col-sm-4 checkbox" style="padding-left: 5%; padding-right: 1%;"></div>' +
+    '<div id="keysCol2" class="col-sm-4" style="padding-left: 2%; padding-right: 2%;"></div>' +
+    '<div id="keysCol3" class="col-sm-4" style="padding-left: 2%; padding-right: 5%;"></div>' +
+    '</div>' +
+    '</div>'+
+    '<div id="page4" role="tabpanel" class="tab-pane">' +
+    '<div class="row">' +
+    '<div id="col1" class="col-sm-10" style="padding-left: 5%; padding-right: 1%;"><h3>Contributors and used code</h3><ul>' +
+    '   <li><B>albel727</B> - For the complete rewrite of the grazer into what is now called the "new grazer"</li>' +
+    '   <li><B>Pepin</B> - Keyboard Binds Settings, Advanced zoom function</li>' +
+    '   <li><B>Angal</B> - For the original Server select UI (now unused), click-to-lock multiblob feature, and multiblob grazer feature</li>' +
+    '   <li><B>Apostolique</B> - debug text output derived from Apostoliques bot code</li>' +
+    '   <li><B>Electronoob</B> - Imgur skins, Agariomods.com skins, connect.agariomod.com skins</li>' +
+    '   <li><B>Ephemerality</B> - Code review</li>' +
+    '   <li><B>GamerLio</B> - Minimap from his awesome bot</li>' +
+    '   <li><B>Gjum</B> - Bug fixes</li>' +
+    '   <li><B>Incompetech</B> - For KSP soundtrack music</li>' +
+    '   <li><B>Mikeyk730</B> - stats screen code</li>' +
+    '   <li><B>posixphreak</B> - Advanced zoom function improvements</li>' +
+    '   <li><B>Smurfix</B> - Bug fixes</li>' +
+    '   <li><B>White Light</B> - Grazer concept and enemy avoidance code</li>' +
+    '</ul></div>' +
+    '<div id="col2" class="col-sm-6" style="padding-left: 5%; padding-right: 2%;"><h3></h3></div>' +
+    '</div>' +
+    '</div>');
 jQuery(".agario-profile-panel").appendTo("#XPArea");
 jQuery("#statsTab").click(function(){OnShowOverlay(false);});
-
 function LS_getValue(aKey, aDefault) {
     var val = localStorage.getItem(__STORAGE_PREFIX + aKey);
-    if (null === val && 'undefined' != typeof aDefault) return aDefault;
+    if (!val && 'undefined' != typeof aDefault) return aDefault;
     return val;
 }
 
@@ -4604,7 +4440,11 @@ function OnChangeDisplayChart(display)
 {
     LS_setValue('display_chart', display ? 'true' : 'false');
     display_chart = display;
-    display ? jQuery('#chart-container').show() : jQuery('#chart-container').hide();
+    if(display) {
+        jQuery('#chart-container').show();
+    } else {
+        jQuery('#chart-container').hide();
+    }
 }
 
 function OnChangeDisplayStats(display)
@@ -4723,21 +4563,19 @@ function OnGainMass(me, other)
         var key = other.name + ':' + other.color;
         stats.cells.num++;
         stats.cells.mass += mass;
-        if (stats.gains[key] == undefined)
+        if (undefined === stats.gains[key])
             stats.gains[key] = {num: 0, mass: 0};
         stats.gains[key].num++;
         stats.gains[key].mass += mass;
         sfx_event("eat");
     }
-
-
 }
 
 function OnLoseMass(me, other)
 {
     var mass = me.size * me.size;
     var key = other.name + ':' + other.color;
-    if (stats.losses[key] == undefined)
+    if (undefined === stats.losses[key])
         stats.losses[key] = {num: 0, mass: 0};
     stats.losses[key].num++;
     stats.losses[key].mass += mass;
@@ -4775,10 +4613,7 @@ function DrawPie(pellet, w, cells, viruses)
 
 function GetTopN(n, p){
     var r = [];
-    var a = Object.keys(stats[p]).sort(function(a, b) {
-        return -(stats[p][a].mass - stats[p][b].mass)
-    });
-
+    var a = Object.keys(stats[p]).sort(function(a, b) {return -(stats[p][a].mass - stats[p][b].mass)});
     for (var i = 0; i < n && i < a.length; ++i){
         var key = a[i];
         var mass = stats[p][key].mass;
@@ -4795,12 +4630,12 @@ function AppendTopN(n, p, list) {
     for (var i = 0; i < a.length; ++i){
         var text = a[i].name + ' (' + (p == 'gains' ? '+' : '-') + a[i].mass + ' mass)';
         list.append('<li style="font-size: 16px; "><div style="width: 16px; height: 16px; border-radius: 50%; margin-right:5px; background-color: ' + a[i].color + '; display: inline-block;"></div>' + text + '</li>');
-    };
+    }
     return a.length > 0;
 }
 
 function ShowZCStats(){
-    if(nonPersistantUserOptions.showZcStats){
+    if(cobbler.showZcStats){
         jQuery("#ZCOverlay").fadeIn();
         jQuery('#statsTab').tab('show');
     }
@@ -4821,11 +4656,8 @@ function DrawStats(game_over) {
         stats.time_of_death = Date.now();
         sfx_play(1);
         StopBGM();
-        if(window.nonPersistantUserOptions.autoRespawn && window.nonPersistantUserOptions.grazingMode){
-            setTimeout(function(){jQuery(".btn-play-guest").click();},3000);
-        } else {
-            ShowZCStats();
-        }
+        ShowZCStats();
+        if(window.cobbler.autoRespawn && window.cobbler.grazingMode){setTimeout(function(){jQuery(".btn-play-guest").click();},3000);}
     }
     var time = stats.time_of_death ? stats.time_of_death : Date.now();
     var seconds = (time - stats.birthday)/1000;
@@ -4984,37 +4816,11 @@ unsafeWindow.OnLeaderboard = function(position) {
     stats.top_slot = Math.min(stats.top_slot, position);
 };
 unsafeWindow.OnDraw = function(context) {
-    display_stats && stat_canvas && context.drawImage(stat_canvas, 10, 10);
+    if (display_stats && stat_canvas) { context.drawImage(stat_canvas, 10, 10); }
 };
 
-
-
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// ========================================================================================
-// C = Music & SFX System 
-// ========================================================================================
-// ========================================================================================
-
-// sfx play on event (only one of each sfx can play - for sfx that won't overlap with itself)
-
+// ====================== Music & SFX System ==============================================================
+//sfx play on event (only one of each sfx can play - for sfx that won't overlap with itself)
 var ssfxlist = [
     'spawn',
     'gameover'
@@ -5026,7 +4832,7 @@ for (i=0;i<ssfxlist.length;i++) {
     ssfxs.push(newsfx);
 }
 function sfx_play(id) {
-    if (document.getElementById("sfx").value==0) return;
+    if (!document.getElementById("sfx").value) return;
     var event = ssfxs[id];
     event.volume = document.getElementById("sfx").value;
     event.play();
@@ -5054,17 +4860,17 @@ for (i=0;i<sfxlist.length;i++) {
     sfxs[sfxlist[i]] = newsfx;
 }
 function sfx_event(id) {
-    if (document.getElementById("sfx").value==0) return;
+    if (!document.getElementById("sfx").value) return;
     var event = jQuery.clone(sfxs[id]);
     event.volume = document.getElementById("sfx").value;
     event.play();
 }
 
 var StartBGM = function () {
-    if (document.getElementById("bgm").value==0) return;
-    if (bgmusic.src == ""){
+    if (!document.getElementById("bgm").value) return;
+    if (bgmusic.src === ""){
         bgmusic.src = _.sample(tracks, 1);
-        bgmusic.load()
+        bgmusic.load();
     }
     bgmusic.volume = document.getElementById("bgm").value;
     bgmusic.play();
@@ -5072,31 +4878,27 @@ var StartBGM = function () {
 
 var StopBGM = function () {
     bgmusic.pause();
-    if (document.getElementById("bgm").value==0) return;
+    if (!document.getElementById("bgm").value) return;
     bgmusic.src = _.sample(tracks, 1);
-    bgmusic.load()
+    bgmusic.load();
 };
 
 volBGM = function (vol) {
-    console.log(vol.toString() + " - " + document.getElementById("bgm").value)
+    console.log(vol.toString() + " - " + document.getElementById("bgm").value);
     bgmusic.volume = document.getElementById("bgm").value;
-    window.nonPersistantUserOptions.bgmVol = document.getElementById("bgm").value;
+    window.cobbler.bgmVol = document.getElementById("bgm").value;
 };
 
 volSFX = function (vol) {
-    window.nonPersistantUserOptions.sfxVol = vol;
-}
-
-volVOICE = function (vol) {
-    window.nonPersistantUserOptions.voiceVol = vol;
+    window.cobbler.sfxVol = vol;
 };
 
 var tracks = ['http://incompetech.com/music/royalty-free/mp3-preview2/Frost%20Waltz.mp3',
-              'http://incompetech.com/music/royalty-free/mp3-preview2/Frozen%20Star.mp3',
-              'http://incompetech.com/music/royalty-free/mp3-preview2/Groove%20Grove.mp3',
-              'http://incompetech.com/music/royalty-free/mp3-preview2/Dreamy%20Flashback.mp3',
-              'http://incompetech.com/music/royalty-free/mp3-preview2/Impact%20Lento.mp3',
-              'http://incompetech.com/music/royalty-free/mp3-preview2/Wizardtorium.mp3'];
+    'http://incompetech.com/music/royalty-free/mp3-preview2/Frozen%20Star.mp3',
+    'http://incompetech.com/music/royalty-free/mp3-preview2/Groove%20Grove.mp3',
+    'http://incompetech.com/music/royalty-free/mp3-preview2/Dreamy%20Flashback.mp3',
+    'http://incompetech.com/music/royalty-free/mp3-preview2/Impact%20Lento.mp3',
+    'http://incompetech.com/music/royalty-free/mp3-preview2/Wizardtorium.mp3'];
 /*sfx*/
 var nodeAudio = document.createElement("audio");
 nodeAudio.id = 'audiotemplate';
@@ -5122,23 +4924,6 @@ function uiOnLoadTweaks(){
 
     $('#nick').val(GM_getValue("nick", ""));
 }
-
-
-
-
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
-//================================  AgarioMods Private Servers  ========================================================
 //================================  AgarioMods Private Servers  ========================================================
 unsafeWindow.openServerbrowser = function (a) {
     var b = unsafeWindow.openServerbrowser.loading;
@@ -5147,10 +4932,10 @@ unsafeWindow.openServerbrowser = function (a) {
     }
     b = true;
     jQuery("#rsb")
-    .prop("disabled", true);
+        .prop("disabled", true);
     if(!a) {
         jQuery("#serverBrowser")
-        .fadeIn();
+            .fadeIn();
     }
     getServers();
 };
@@ -5159,7 +4944,7 @@ function serverinfo(list, index) {
     if(index >= list.length) {
         unsafeWindow.openServerbrowser.loading = false;
         jQuery("#rsb")
-        .prop("disabled", false);
+            .prop("disabled", false);
         return;
     }
     value = list[index];
@@ -5170,34 +4955,34 @@ function serverinfo(list, index) {
         dataType: "json",
         success: function (data) {
             $("#" + (value[0] + value[1]) + " #player")
-            .text(data.current_players + "/" + data.max_players);
+                .text(data.current_players + "/" + data.max_players);
             latency = Date.now() - started;
             if(latency < 100) {
                 jQuery("#" + (value[0] + value[1]) + " #latency")
-                .css("color", "#19A652");
+                    .css("color", "#19A652");
             } else {
                 if(latency < 250) {
                     jQuery("#" + (value[0] + value[1]) + " #latency")
-                    .css("color", "#E1BD2C");
+                        .css("color", "#E1BD2C");
                 } else {
                     jQuery("#" + (value[0] + value[1]) + " #latency")
-                    .css("color", "#F00");
+                        .css("color", "#F00");
                 }
             }
             jQuery("#" + (value[0] + value[1]) + " #latencyres")
-            .text(latency + "ms");
+                .text(latency + "ms");
         },
         error: function (data) {
             jQuery("#" + (value[0] + value[1]) + " #player")
-            .text("No information");
+                .text("No information");
             jQuery("#" + (value[0] + value[1]) + " #latency")
-            .css("color", "#f00");
+                .css("color", "#f00");
             jQuery("#" + (value[0] + value[1]) + " #latency")
-            .text("Failed");
+                .text("Failed");
         },
         complete: function (data) {
-            if(!(document.getElementById("serverBrowser")
-                 .style.display == "none")) {
+            if(document.getElementById("serverBrowser")
+                    .style.display != "none") {
                 serverinfo(list, index + 1);
             }
         }
@@ -5205,7 +4990,7 @@ function serverinfo(list, index) {
 }
 unsafeWindow.connectPrivate = function (location, i) {
     var ip = location.toLowerCase()
-    .replace(" ", "") + ".iomods.com";
+            .replace(" ", "") + ".iomods.com";
     var port = 1500 + parseInt(i);
     //server.ip = ip;
     //server.i = i;
@@ -5219,7 +5004,7 @@ document.head.appendChild(st);
 
 unsafeWindow.closeServerbrowser = function () {
     jQuery("#serverBrowser")
-    .fadeOut();
+        .fadeOut();
 };
 var locations=new Array("Chicago Beta","Dallas Beta","Frankfurt Beta","London Beta","Los Angeles Beta","Miami Beta","New Jersey Beta","Paris Beta","Seattle Beta","Silicon Valley Beta","Sydney Beta","Amsterdam","Amsterdam Beta","Atlanta Beta","Frankfurt Alpha","Frankfurt","London","Quebec","Paris","Paris Gamma","Atlanta","Chicago","Dallas","Los Angeles","Miami","New Jersey","Seattle","Silicon Valley","Sydney","Tokyo");
 locations.sort();
@@ -5227,84 +5012,71 @@ locations[0] = [locations[1], locations[1] = locations[0]][0];
 
 function getServers() {
     jQuery("#serverlist1")
-    .empty();
+        .empty();
     jQuery("#serverlist2")
-    .empty();
+        .empty();
     var latencylist = Array();
     jQuery.each(locations, function (index, value) {
         var i = 1;
         for(; i <= 2; i++) {
             serverid = value.toLowerCase()
-            .replace(" ", "") + i;
+                    .replace(" ", "") + i;
             $("#serverlist" + i)
-            .append('<a href class="serveritem" id="' + serverid + '" onclick="connectPrivate(\'' + value + "', '" + i + '\');closeServerbrowser();return false;"><b style="color: #222">' + value + " #" + i + '</b><br>\t\t\t<i style="color: #999"><span id="player">fetching data...</span> <i style="color: #ccc" class="fa fa-users" /> | </i><span id="latency"><i class="fa fa-signal"></i> <span id="latencyres"></span></span></a>');
+                .append('<a href class="serveritem" id="' + serverid + '" onclick="connectPrivate(\'' + value + "', '" + i + '\');closeServerbrowser();return false;"><b style="color: #222">' + value + " #" + i + '</b><br>\t\t\t<i style="color: #999"><span id="player">fetching data...</span> <i style="color: #ccc" class="fa fa-users" /> | </i><span id="latency"><i class="fa fa-signal"></i> <span id="latencyres"></span></span></a>');
             latencylist.push(new Array(value.toLowerCase()
-                                       .replace(" ", ""), i));
+                .replace(" ", ""), i));
         }
     });
     serverinfo(latencylist, 0);
 }
 
 jQuery(document)
-.ready(function () {
-    jQuery("body")
-    .append('<div id="serverBrowser" class="overlay" style="display:none"><div class="valign"><div class="popupbox"><div class="popheader"><h3>Agariomods Ogar Server Browser</h3></div>\t<div class="scrollable"><center style="border-right:1px solid #e8e8e8;float:left;width:50%;"><div id="serverlist1"></div></center><center style="float:right;width:50%;"><div id="serverlist2"></div></center></div><div class="popupbuttons"><button onclick="closeServerbrowser()" type="button" style="transform:translateX(72%);margin:4px"\tclass="btn btn-danger">Back</button><button id="rsb" onclick="openServerbrowser(true)" class="btn btn-info" type="button" style="float:right;margin:4px;">Refresh <i class="glyphicon glyphicon-refresh"></i></button></div></div></div></div>');
-    jQuery("body")
-    .append('<div id="chat" style="display:none"><div id="chatlines"></div><div id="chatinput" style="display:none" class="input-group">\t<input type="text" id="chatinputfield" class="form-control" maxlength="120"><span class="input-group-btn">\t<button onclick="sendMSG()" class="btn btn-default" type="button">Send</button></span></div></div>');
-});
-
-
-
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
-// ===============================================================================================================
+    .ready(function () {
+        jQuery("body")
+            .append('<div id="serverBrowser" class="overlay" style="display:none"><div class="valign"><div class="popupbox"><div class="popheader"><h3>Agariomods Ogar Server Browser</h3></div>\t<div class="scrollable"><center style="border-right:1px solid #e8e8e8;float:left;width:50%;"><div id="serverlist1"></div></center><center style="float:right;width:50%;"><div id="serverlist2"></div></center></div><div class="popupbuttons"><button onclick="closeServerbrowser()" type="button" style="transform:translateX(72%);margin:4px"\tclass="btn btn-danger">Back</button><button id="rsb" onclick="openServerbrowser(true)" class="btn btn-info" type="button" style="float:right;margin:4px;">Refresh <i class="glyphicon glyphicon-refresh"></i></button></div></div></div></div>');
+        jQuery("body")
+            .append('<div id="chat" style="display:none"><div id="chatlines"></div><div id="chatinput" style="display:none" class="input-group">\t<input type="text" id="chatinputfield" class="form-control" maxlength="120"><span class="input-group-btn">\t<button onclick="sendMSG()" class="btn btn-default" type="button">Send</button></span></div></div>');
+    });
 // ===============================================================================================================
 uiOnLoadTweaks();
 
 var col1 = $("#col1");
 col1.append("<h4>Options</h4>");
-AppendCheckbox(col1, 'showZcStats-checkbox', ' Show ZC Stats On Death', window.nonPersistantUserOptions.showZcStats, function(val){window.nonPersistantUserOptions.showZcStats = val;});
+AppendCheckbox(col1, 'showZcStats-checkbox', ' Show ZC Stats On Death', window.cobbler.showZcStats, function(val){window.cobbler.showZcStats = val;});
 col1.append("<h4>Modes</h4>");
-AppendCheckbox(col1, 'isacid-checkbox', ' Enable Acid Mode', window.nonPersistantUserOptions.isAcid, function(val){window.nonPersistantUserOptions.isAcid = val;});
-AppendCheckbox(col1, 'litebrite-checkbox', ' Enable Lite Brite Mode', window.nonPersistantUserOptions.isLiteBrite, function(val){window.nonPersistantUserOptions.isLiteBrite = val;});
+AppendCheckbox(col1, 'isacid-checkbox', ' Enable Acid Mode', window.cobbler.isAcid, function(val){window.cobbler.isAcid = val;});
+AppendCheckbox(col1, 'litebrite-checkbox', ' Enable Lite Brite Mode', window.cobbler.isLiteBrite, function(val){window.cobbler.isLiteBrite = val;});
 col1.append("<h4>Visual</h4>");
-AppendCheckbox(col1, 'trailingtail-checkbox', ' Draw Trailing Tail', window.nonPersistantUserOptions.drawTail, function(val){window.nonPersistantUserOptions.drawTail = val;});
-AppendCheckbox(col1, 'splitguide-checkbox', ' Draw Split Guide', window.nonPersistantUserOptions.splitGuide, function(val){window.nonPersistantUserOptions.splitGuide = val;});
-AppendCheckbox(col1, 'rainbow-checkbox', ' Rainbow Pellets', window.nonPersistantUserOptions.rainbowPellets, function(val){window.nonPersistantUserOptions.rainbowPellets = val;});
-AppendCheckbox(col1, 'namesunder-checkbox', ' Names under blobs', window.nonPersistantUserOptions.namesUnderBlobs, function(val){window.nonPersistantUserOptions.namesUnderBlobs = val;});
-AppendCheckbox(col1, 'gridlines-checkbox', ' Show Gridlines', window.nonPersistantUserOptions.gridLines, function(val){window.nonPersistantUserOptions.gridLines = val;});
+AppendCheckbox(col1, 'trailingtail-checkbox', ' Draw Trailing Tail', window.cobbler.drawTail, function(val){window.cobbler.drawTail = val;});
+AppendCheckbox(col1, 'splitguide-checkbox', ' Draw Split Guide', window.cobbler.splitGuide, function(val){window.cobbler.splitGuide = val;});
+AppendCheckbox(col1, 'rainbow-checkbox', ' Rainbow Pellets', window.cobbler.rainbowPellets, function(val){window.cobbler.rainbowPellets = val;});
+AppendCheckbox(col1, 'namesunder-checkbox', ' Names under blobs', window.cobbler.namesUnderBlobs, function(val){window.cobbler.namesUnderBlobs = val;});
+AppendCheckbox(col1, 'gridlines-checkbox', ' Show Gridlines', window.cobbler.gridLines, function(val){window.cobbler.gridLines = val;});
 col1.append("<h4>Stats</h4>");
 AppendCheckbox(col1, 'chart-checkbox', ' Show in-game chart', display_chart, OnChangeDisplayChart);
 AppendCheckbox(col1, 'stats-checkbox', ' Show in-game stats', display_stats, OnChangeDisplayStats);
 col1.append("<h4>Features</h4>");
-AppendCheckbox(col1, 'feature-click-fire', ' Click to fire @ virus', window.nonPersistantUserOptions.rightClickFires, function(val) {window.nonPersistantUserOptions.rightClickFires = val;});
-AppendCheckbox(col1, 'feature-blob-lock', ' Click to lock blob', window.nonPersistantUserOptions.enableBlobLock, function(val) {window.nonPersistantUserOptions.enableBlobLock = val;});
-AppendCheckbox(col1, 'feature-blob-lock-next', ' Switch blob on lock', window.nonPersistantUserOptions.nextOnBlobLock, function(val) {window.nonPersistantUserOptions.nextOnBlobLock = val;});
+AppendCheckbox(col1, 'feature-click-fire', ' Click to fire @ virus', window.cobbler.rightClickFires, function(val) {window.cobbler.rightClickFires = val;});
+AppendCheckbox(col1, 'feature-blob-lock', ' Click to lock blob', window.cobbler.enableBlobLock, function(val) {window.cobbler.enableBlobLock = val;});
+AppendCheckbox(col1, 'feature-click-split', ' Click to split', window.cobbler.clickToSplit, function(val) {window.cobbler.clickToSplit = val;});
+AppendCheckbox(col1, 'feature-blob-lock-next', ' Switch blob on lock', window.cobbler.nextOnBlobLock, function(val) {window.cobbler.nextOnBlobLock = val;});
 
 var col2 = $("#col2");
 col2.append('<h4>Debug Level</h4><div class="btn-group-sm" role="group" data-toggle="buttons">' +
-            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugNone" autocomplete="off" value=0>None</label>' +
-            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugLow" autocomplete="off" value=1>Low</label>' +
-            '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugHigh" autocomplete="off" value=2>High</label>' +
-            '</div>');
-$('input[name="DebugLevel"]:radio[value='+window.nonPersistantUserOptions.debugLevel +']').parent().addClass("active");
-$('input[name="DebugLevel"]').change( function() {window.nonPersistantUserOptions.debugLevel = $(this).val();});
+    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugNone" autocomplete="off" value=0>None</label>' +
+    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugLow" autocomplete="off" value=1>Low</label>' +
+    '<label class="btn btn-primary"><input type="radio" name="DebugLevel" id="DebugHigh" autocomplete="off" value=2>High</label>' +
+    '</div>');
+$('input[name="DebugLevel"]:radio[value='+window.cobbler.debugLevel +']').parent().addClass("active");
+$('input[name="DebugLevel"]').change( function() {window.cobbler.debugLevel = $(this).val();});
 
 col2.append('<h4>Virus Popper</h4><h5>Milliseconds between shots</h5><div id="mspershot-group" class="input-group input-group-sm"> <input type="text" id="mspershot-textbox" class="form-control" placeholder="1-2000 (Default: 100)"' +
-            'value=' + nonPersistantUserOptions.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
+    'value=' + cobbler.msDelayBetweenShots.toString() + '><span class="input-group-addon">ms</span></div><h6>145ms = 7 shots per second. Lower values are faster but less stable.</h6>');
 $('#mspershot-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval) && newval > 0 && newval <= 2000) {
         $("#mspershot-group").removeClass('has-error');
-        nonPersistantUserOptions.msDelayBetweenShots = newval;
+        cobbler.msDelayBetweenShots = newval;
     }
     else{
         $("#mspershot-group").addClass('has-error');
@@ -5312,22 +5084,26 @@ $('#mspershot-textbox').on('input propertychange paste', function() {
 });
 
 col2.append('<h4>Minimap Scale</h4>' +
-            '<div id="minimap-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="minimap-checkbox" type="checkbox"></span>' +
-            '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ nonPersistantUserOptions.miniMapScaleValue +'></div>');
+    '<div id="minimap-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="minimap-checkbox" type="checkbox"></span>' +
+    '<input id="minimap-textbox" type="text" placeholder="64 = 1/64 scale" class="form-control" value='+ cobbler.miniMapScaleValue +'></div>');
 $('#minimap-checkbox').change(function(){
     if(!!this.checked){
         $('#minimap-textbox').removeAttr("disabled");
     } else {
-        $('#minimap-textbox').attr({disabled:"disabled"})
+        $('#minimap-textbox').attr({disabled:"disabled"});
     }
-    nonPersistantUserOptions.miniMapScale = !!this.checked;
+    cobbler.miniMapScale = !!this.checked;
 });
-if(nonPersistantUserOptions.miniMapScale){$('#minimap-checkbox').prop('checked', true);}else{ $('#minimap-textbox').attr({disabled:"disabled"})}
+if(cobbler.miniMapScale){
+    $('#minimap-checkbox').prop('checked', true);
+} else {
+    $('#minimap-textbox').attr({disabled:"disabled"});
+}
 $('#minimap-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval) && newval > 1 && newval < 999) {
         $("#minimap-group").removeClass('has-error');
-        nonPersistantUserOptions.miniMapScaleValue = newval;
+        cobbler.miniMapScaleValue = newval;
     }
     else{
         $("#minimap-group").addClass('has-error');
@@ -5336,28 +5112,32 @@ $('#minimap-textbox').on('input propertychange paste', function() {
 
 col2.append('<h4>Grazer</h4><div id="grazer-checks" class="checkbox" ></div>');
 var grazerChecks = $("#grazer-checks");
-AppendCheckbox(grazerChecks, 'autorespawn-checkbox', ' Grazer Auto-Respawns', window.nonPersistantUserOptions.autoRespawn, function(val){window.nonPersistantUserOptions.autoRespawn = val;});
-AppendCheckbox(grazerChecks, 'option5', ' Visualize Grazer', window.nonPersistantUserOptions.visualizeGrazing, function(val){window.nonPersistantUserOptions.visualizeGrazing = val;});
-AppendCheckbox(grazerChecks, 'grazer-multiBlob-checkbox', ' Grazer MultiBlob', window.nonPersistantUserOptions.grazerMultiBlob2, function(val){window.nonPersistantUserOptions.grazerMultiBlob2 = val;});
+AppendCheckbox(grazerChecks, 'autorespawn-checkbox', ' Grazer Auto-Respawns', window.cobbler.autoRespawn, function(val){window.cobbler.autoRespawn = val;});
+AppendCheckbox(grazerChecks, 'option5', ' Visualize Grazer', window.cobbler.visualizeGrazing, function(val){window.cobbler.visualizeGrazing = val;});
+AppendCheckbox(grazerChecks, 'grazer-multiBlob-checkbox', ' Grazer MultiBlob', window.cobbler.grazerMultiBlob2, function(val){window.cobbler.grazerMultiBlob2 = val;});
 
 col2.append('<h5>Hybrid Grazer</h5>' +
-            '<div id="hybrid-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="hybrid-checkbox" type="checkbox"></span>' +
-            '<input id="hybrid-textbox" type="text" class="form-control" value='+ nonPersistantUserOptions.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
-            '<h6>Starts with old grazer and at specified mass switches to new grazer</h6>');
+    '<div id="hybrid-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="hybrid-checkbox" type="checkbox"></span>' +
+    '<input id="hybrid-textbox" type="text" class="form-control" value='+ cobbler.grazerHybridSwitchMass +' placeholder="Default: 300"></div>' +
+    '<h6>Starts with old grazer and at specified mass switches to new grazer</h6>');
 $('#hybrid-checkbox').change(function(){
     if(!!this.checked){
         $('#hybrid-textbox').removeAttr("disabled");
     } else {
-        $('#hybrid-textbox').attr({disabled:"disabled"})
+        $('#hybrid-textbox').attr({disabled:"disabled"});
     }
-    nonPersistantUserOptions.grazerHybridSwitch = !!this.checked;
+    cobbler.grazerHybridSwitch = !!this.checked;
 });
-if(nonPersistantUserOptions.grazerHybridSwitch){$('#hybrid-checkbox').prop('checked', true);}else{ $('#hybrid-textbox').attr({disabled:"disabled"})}
+if(cobbler.grazerHybridSwitch) {
+    $('#hybrid-checkbox').prop('checked', true);
+} else {
+    $('#hybrid-textbox').attr({disabled:"disabled"});
+}
 $('#hybrid-textbox').on('input propertychange paste', function() {
     var newval = parseInt(this.value);
     if(!_.isNaN(newval)) {
         $("#hybrid-group").removeClass('has-error');
-        nonPersistantUserOptions.grazerHybridSwitchMass = newval;
+        cobbler.grazerHybridSwitchMass = newval;
     }
     else{
         $("#hybrid-group").addClass('has-error');
@@ -5367,20 +5147,478 @@ $('#hybrid-textbox').on('input propertychange paste', function() {
 
 var col3 = $("#col3");
 col3.append("<h4>Music/Sound</h4>");
-col3.append('<p>Soundeee Effects<input id="sfx" type="range" value=' + window.nonPersistantUserOptions.sfxVol + ' step=".1" min="0" max="1" oninput="volSFX(this.value);"></p>');
-col3.append('<p>Music<input type="range" id="bgm" value=' + window.nonPersistantUserOptions.bgmVol + ' step=".1" min="0" max="1" oninput="volBGM(this.value);"></p>');
-col3.append('<p>Voice<input type="range" id="bgm" value=' + window.nonPersistantUserOptions.voiceVol + ' step=".1" min="0" max="1" oninput="volVOICE(this.value);"></p>');
+col3.append('<p>Sound Effects<input id="sfx" type="range" value=' + window.cobbler.sfxVol + ' step=".1" min="0" max="1" oninput="volSFX(this.value);"></p>');
+col3.append('<p>Music<input type="range" id="bgm" value=' + window.cobbler.bgmVol + ' step=".1" min="0" max="1" oninput="volBGM(this.value);"></p>');
 col3.append('<h4>Skins Support</h4>');
-AppendCheckboxP(col3, 'amConnect-checkbox', ' AgarioMods Connect *skins', window.nonPersistantUserOptions.amConnectSkins, function(val){window.nonPersistantUserOptions.amConnectSkins = val;});
-AppendCheckboxP(col3, 'amExtended-checkbox', ' AgarioMods Extended skins', window.nonPersistantUserOptions.amExtendedSkins, function(val){window.nonPersistantUserOptions.amExtendedSkins = val;});
-AppendCheckboxP(col3, 'imgur-checkbox', ' Imgur.com  i/skins', window.nonPersistantUserOptions.imgurSkins, function(val){window.nonPersistantUserOptions.imgurSkins = val;});
+AppendCheckboxP(col3, 'amConnect-checkbox', ' AgarioMods Connect *skins', window.cobbler.amConnectSkins, function(val){window.cobbler.amConnectSkins = val;});
+AppendCheckboxP(col3, 'amExtended-checkbox', ' AgarioMods Extended skins', window.cobbler.amExtendedSkins, function(val){window.cobbler.amExtendedSkins = val;});
+AppendCheckboxP(col3, 'imgur-checkbox', ' Imgur.com  i/skins', window.cobbler.imgurSkins, function(val){window.cobbler.imgurSkins = val;});
+AppendCheckboxP(col3, 'gitHubSkins-checkbox', " GitHub  'skins", window.cobbler.gitHubSkins, function(val){window.cobbler.gitHubSkins = val;});
+
+var keysCol1 = $("#keysCol1");
+keysCol1.append('<h4>Keyboard Binds</h4>');
+keysCol1.append('<p>Here you can set your own keys to turn on/off Zeach Cobbler functions like Grazer, Acid Mode, Zoom, and many others!</p>');
+keysCol1.append('<p>Just click on the checkbox at text box and type here your custom key you want to use!</p>');
+keysCol1.append('<p><b>NOTE: Letters only!</b></p>');
+
+var keysCol2 = $("#keysCol2");
+keysCol2.append('<h4>Acid Mode</h4>' +
+    '<div id="AcidMode-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="AcidMode-checkbox" type="checkbox"></span>' +
+    '<input id="AcidMode-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyAcidMode +'></div>');
+$('#AcidMode-checkbox').change(function(){
+    if(!!this.checked){
+        $('#AcidMode-textbox').removeAttr("disabled");
+    } else {
+        $('#AcidMode-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuAcidMode = !!this.checked;
+});
+if(cobbler.MenuAcidMode) {
+    $('#AcidMode-checkbox').prop('checked', true);
+} else {
+    $('#AcidMode-textbox').attr({disabled:"disabled"});
+}
+$('#AcidMode-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#AcidMode-group").removeClass('has-error');
+        cobbler.KeyAcidMode = newval;
+    }
+    else{
+        $("#AcidMode-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Lite Brite Mode</h4>' +
+    '<div id="LiteBrite-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="LiteBrite-checkbox" type="checkbox"></span>' +
+    '<input id="LiteBrite-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyLiteBriteMode +'></div>');
+$('#LiteBrite-checkbox').change(function(){
+    if(!!this.checked){
+        $('#LiteBrite-textbox').removeAttr("disabled");
+    } else {
+        $('#LiteBrite-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuAcidMode = !!this.checked;
+});
+if(cobbler.MenuAcidMode) {
+    $('#LiteBrite-checkbox').prop('checked', true);
+} else {
+    $('#LiteBrite-textbox').attr({disabled:"disabled"});
+}
+$('#LiteBrite-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#LiteBrite-group").removeClass('has-error');
+        cobbler.KeyLiteBriteMode = newval;
+    }
+    else{
+        $("#LiteBrite-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Show Visual</h4>' +
+    '<div id="ShowVisual-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="ShowVisual-checkbox" type="checkbox"></span>' +
+    '<input id="ShowVisual-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyShowVisual +'></div>');
+$('#ShowVisual-checkbox').change(function(){
+    if(!!this.checked){
+        $('#ShowVisual-textbox').removeAttr("disabled");
+    } else {
+        $('#ShowVisual-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuShowVisual = !!this.checked;
+});
+if(cobbler.MenuShowVisual) {
+    $('#ShowVisual-checkbox').prop('checked', true);
+} else {
+    $('#ShowVisual-textbox').attr({disabled:"disabled"});
+}
+$('#ShowVisual-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#ShowVisual-group").removeClass('has-error');
+        cobbler.KeyShowVisual = newval;
+    }
+    else{
+        $("#ShowVisual-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Fire At Virus Near Cursor</h4>' +
+    '<div id="FireAtVirCur-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="FireAtVirCur-checkbox" type="checkbox"></span>' +
+    '<input id="FireAtVirCur-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyFireAtVirCur +'></div>');
+$('#FireAtVirCur-checkbox').change(function(){
+    if(!!this.checked){
+        $('#FireAtVirCur-textbox').removeAttr("disabled");
+    } else {
+        $('#FireAtVirCur-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuFireAtVirCur = !!this.checked;
+});
+if(cobbler.MenuFireAtVirCur) {
+    $('#FireAtVirCur-checkbox').prop('checked', true);
+} else {
+    $('#FireAtVirCur-textbox').attr({disabled:"disabled"});
+}
+$('#FireAtVirCur-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#FireAtVirCur-group").removeClass('has-error');
+        cobbler.KeyFireAtVirCur = newval;
+    }
+    else{
+        $("#FireAtVirCur-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Fire At Virus Near Blob</h4>' +
+    '<div id="FireAtVirBlob-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="FireAtVirBlob-checkbox" type="checkbox"></span>' +
+    '<input id="FireAtVirBlob-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyFireAtVirBlob +'></div>');
+$('#FireAtVirBlob-checkbox').change(function(){
+    if(!!this.checked){
+        $('#FireAtVirBlob-textbox').removeAttr("disabled");
+    } else {
+        $('#FireAtVirBlob-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuFireAtVirBlob = !!this.checked;
+});
+if(cobbler.MenuFireAtVirBlob) {
+    $('#FireAtVirBlob-checkbox').prop('checked', true);
+} else {
+    $('#FireAtVirBlob-textbox').attr({disabled:"disabled"});
+}
+$('#FireAtVirBlob-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#FireAtVirBlob-group").removeClass('has-error');
+        cobbler.KeyFireAtVirBlob = newval;
+    }
+    else{
+        $("#FireAtVirBlob-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>New Grazer</h4>' +
+    '<div id="NewGrazer-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="NewGrazer-checkbox" type="checkbox"></span>' +
+    '<input id="NewGrazer-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyNewGrazer +'></div>');
+$('#NewGrazer-checkbox').change(function(){
+    if(!!this.checked){
+        $('#NewGrazer-textbox').removeAttr("disabled");
+    } else {
+        $('#NewGrazer-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuNewGrazer = !!this.checked;
+});
+if(cobbler.MenuNewGrazer) {
+    $('#NewGrazer-checkbox').prop('checked', true);
+} else {
+    $('#NewGrazer-textbox').attr({disabled:"disabled"});
+}
+$('#NewGrazer-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#NewGrazer-group").removeClass('has-error');
+        cobbler.KeyNewGrazer = newval;
+    }
+    else{
+        $("#NewGrazer-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Old Grazer</h4>' +
+    '<div id="OldGrazer-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="OldGrazer-checkbox" type="checkbox"></span>' +
+    '<input id="OldGrazer-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyOldGrazer +'></div>');
+$('#OldGrazer-checkbox').change(function(){
+    if(!!this.checked){
+        $('#OldGrazer-textbox').removeAttr("disabled");
+    } else {
+        $('#OldGrazer-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuOldGrazer = !!this.checked;
+});
+if(cobbler.MenuOldGrazer) {
+    $('#OldGrazer-checkbox').prop('checked', true);
+} else {
+    $('#OldGrazer-textbox').attr({disabled:"disabled"});
+}
+$('#OldGrazer-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#OldGrazer-group").removeClass('has-error');
+        cobbler.KeyOldGrazer = newval;
+    }
+    else{
+        $("#OldGrazer-group").addClass('has-error');
+    }
+});
+
+keysCol2.append('<h4>Grazer Target Fixation</h4>' +
+    '<div id="GrazingFix-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="GrazingFix-checkbox" type="checkbox"></span>' +
+    '<input id="GrazingFix-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyGrazingFix +'></div>');
+$('#GrazingFix-checkbox').change(function(){
+    if(!!this.checked){
+        $('#GrazingFix-textbox').removeAttr("disabled");
+    } else {
+        $('#GrazingFix-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuGrazingFix = !!this.checked;
+});
+if(cobbler.MenuGrazingFix) {
+    $('#GrazingFix-checkbox').prop('checked', true);
+} else {
+    $('#GrazingFix-textbox').attr({disabled:"disabled"});
+}
+$('#GrazingFix-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#GrazingFix-group").removeClass('has-error');
+        cobbler.KeyGrazingFix = newval;
+    }
+    else{
+        $("#GrazingFix-group").addClass('has-error');
+    }
+});
+
+var keysCol3 = $("#keysCol3");
+keysCol3.append('<h4>Switch selected blob</h4>' +
+    '<div id="SwitchBlob-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="SwitchBlob-checkbox" type="checkbox"></span>' +
+    '<input id="SwitchBlob-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeySwitchBlob +'></div>');
+$('#SwitchBlob-checkbox').change(function(){
+    if(!!this.checked){
+        $('#SwitchBlob-textbox').removeAttr("disabled");
+    } else {
+        $('#SwitchBlob-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuSwitchBlob= !!this.checked;
+});
+if(cobbler.MenuSwitchBlob) {
+    $('#SwitchBlob-checkbox').prop('checked', true);
+} else {
+    $('#SwitchBlob-textbox').attr({disabled:"disabled"});
+}
+$('#SwitchBlob-textbox').on('input propertychange paste', function() {
+    var newval = this.value;
+    var TABKEY = 9;
+    var TABTEXT = "TAB";
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#SwitchBlob-group").removeClass('has-error');
+        cobbler.KeySwitchBlob = newval;
+    }
+    else{
+        $("#SwitchBlob-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Suspend Mouse</h4>' +
+    '<div id="SuspendMouse-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="SuspendMouse-checkbox" type="checkbox"></span>' +
+    '<input id="SuspendMouse-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeySuspendMouse +'></div>');
+$('#SuspendMouse-checkbox').change(function(){
+    if(!!this.checked){
+        $('#SuspendMouse-textbox').removeAttr("disabled");
+    } else {
+        $('#SuspendMouse-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuSuspendMouse = !!this.checked;
+});
+if(cobbler.MenuSuspendMouse) {
+    $('#SuspendMouse-checkbox').prop('checked', true);
+} else {
+    $('#SuspendMouse-textbox').attr({disabled:"disabled"});
+}
+$('#SuspendMouse-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#SuspendMouse-group").removeClass('has-error');
+        cobbler.KeySuspendMouse = newval;
+    }
+    else{
+        $("#SuspendMouse-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Mouse Right Click</h4>' +
+    '<div id="RightClick-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="RightClick-checkbox" type="checkbox"></span>' +
+    '<input id="RightClick-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyRightClick +'></div>');
+$('#RightClick-checkbox').change(function(){
+    if(!!this.checked){
+        $('#RightClick-textbox').removeAttr("disabled");
+    } else {
+        $('#RightClick-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuRightClick = !!this.checked;
+});
+if(cobbler.MenuRightClick) {
+    $('#RightClick-checkbox').prop('checked', true);
+} else {
+    $('#RightClick-textbox').attr({disabled:"disabled"});
+}
+$('#RightClick-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#RightClick-group").removeClass('has-error');
+        cobbler.KeyRightClick = newval;
+    }
+    else{
+        $("#RightClick-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Zoom</h4>' +
+    '<div id="ZoomFactor-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="ZoomFactor-checkbox" type="checkbox"></span>' +
+    '<input id="ZoomFactor-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyZoomFactor +'></div>');
+$('#ZoomFactor-checkbox').change(function(){
+    if(!!this.checked){
+        $('#ZoomFactor-textbox').removeAttr("disabled");
+    } else {
+        $('#ZoomFactor-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuZoomFactor = !!this.checked;
+});
+if(cobbler.MenuZoomFactor) {
+    $('#ZoomFactor-checkbox').prop('checked', true);
+} else {
+    $('#ZoomFactor-textbox').attr({disabled:"disabled"});
+}
+$('#ZoomFactor-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#ZoomFactor-group").removeClass('has-error');
+        cobbler.KeyZoomFactor = newval;
+    }
+    else{
+        $("#ZoomFactor-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Grazer Visual</h4>' +
+    '<div id="GrazingVisual-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="GrazingVisual-checkbox" type="checkbox"></span>' +
+    '<input id="GrazingVisual-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyGrazingVisual +'></div>');
+$('#GrazingVisual-checkbox').change(function(){
+    if(!!this.checked){
+        $('#GrazingVisual-textbox').removeAttr("disabled");
+    } else {
+        $('#GrazingVisual-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuGrazingVisual = !!this.checked;
+});
+if(cobbler.MenuGrazingVisual) {
+    $('#GrazingVisual-checkbox').prop('checked', true);
+} else {
+    $('#GrazingVisual-textbox').attr({disabled:"disabled"});
+}
+$('#GrazingVisual-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#GrazingVisual-group").removeClass('has-error');
+        cobbler.KeyGrazingVisual = newval;
+    }
+    else{
+        $("#GrazingVisual-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Grazer Target Reset</h4>' +
+    '<div id="GrazerReset-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="GrazerReset-checkbox" type="checkbox"></span>' +
+    '<input id="GrazerReset-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyGrazerReset +'></div>');
+$('#GrazerReset-checkbox').change(function(){
+    if(!!this.checked){
+        $('#GrazerReset-textbox').removeAttr("disabled");
+    } else {
+        $('#GrazerReset-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuGrazerReset = !!this.checked;
+});
+if(cobbler.MenuGrazerReset) {
+    $('#GrazerReset-checkbox').prop('checked', true);
+} else {
+    $('#GrazerReset-textbox').attr({disabled:"disabled"});
+}
+$('#GrazerReset-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#GrazerReset-group").removeClass('has-error');
+        cobbler.KeyGrazerReset = newval;
+    }
+    else{
+        $("#GrazerReset-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Unlock all blobs</h4>' +
+    '<div id="PointLock-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="PointLock-checkbox" type="checkbox"></span>' +
+    '<input id="PointLock-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyPointLock +'></div>');
+$('#PointLock-checkbox').change(function(){
+    if(!!this.checked){
+        $('#PointLock-textbox').removeAttr("disabled");
+    } else {
+        $('#PointLock-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuPointLock = !!this.checked;
+});
+if(cobbler.MenuPointLock) {
+    $('#PointLock-checkbox').prop('checked', true);
+} else {
+    $('#PointLock-textbox').attr({disabled:"disabled"});
+}
+$('#PointLock-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#PointLock-group").removeClass('has-error');
+        cobbler.KeyPointLock = newval;
+    }
+    else{
+        $("#PointLock-group").addClass('has-error');
+    }
+});
+
+keysCol3.append('<h4>Click To Split</h4>' +
+    '<div id="ClickToSplit-group" class="input-group input-group-sm"><span class="input-group-addon"><input id="ClickToSplit-checkbox" type="checkbox"></span>' +
+    '<input id="ClickToSplit-textbox" type="text" placeholder="Type any key" class="form-control" value='+ cobbler.KeyClickToSplit +'></div>');
+$('#ClickToSplit-checkbox').change(function(){
+    if(!!this.checked){
+        $('#ClickToSplit-textbox').removeAttr("disabled");
+    } else {
+        $('#ClickToSplit-textbox').attr({disabled:"disabled"});
+    }
+    cobbler.MenuClickToSplit = !!this.checked;
+});
+if(cobbler.MenuClickToSplit) {
+    $('#ClickToSplit-checkbox').prop('checked', true);
+} else {
+    $('#ClickToSplit-textbox').attr({disabled:"disabled"});
+}
+$('#ClickToSplit-textbox').on('input propertychange paste', function() {
+    var newval = this.value.charAt(0);
+    if(newval.toUpperCase() != newval.toLowerCase()) {
+        newval = newval.toUpperCase();
+        $("#ClickToSplit").removeClass('has-error');
+        cobbler.KeyClickToSplit = newval;
+    }
+    else{
+        $("#ClickToSplit-group").addClass('has-error');
+    }
+});
 
 // ---- Tooltips
 $("#rainbow-checkbox").attr({"data-toggle": "tooltip", "data-placement": "right",
-                             "title": "Allow food pellets to be rainbow colored rather than purple. Combines well with Lite Brite Mode"});
+    "title": "Allow food pellets to be rainbow colored rather than purple. Combines well with Lite Brite Mode"});
 $("#litebrite-checkbox").attr({"data-toggle": "tooltip", "data-placement": "right",
-                               "title": "Leaves blob centers empty except for skins."});
-setTimeout(function(){$(function () { $('[data-toggle="tooltip"]').tooltip()})}, 5000); // turn on all tooltips.
+    "title": "Leaves blob centers empty except for skins."});
+setTimeout(function(){$(function () { $('[data-toggle="tooltip"]').tooltip();});}, 5000); // turn on all tooltips.
 
 // Ugly ass hack to fix effects of official code loading before mod
 //$("#canvas").remove();
@@ -5389,15 +5627,9 @@ setTimeout(function(){$(function () { $('[data-toggle="tooltip"]').tooltip()})},
 
 
 
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
-//================================  Skins from skins.AgarioMods.com  ===================================================
+//================================  Contrib and skins.AgarioMods.com skins ===================================================
 
 var agariomodsSkins = ("0chan;18-25;1up;360nati0n;8ball;UmguwJ0;aa9skillz;ace;adamzonetopmarks;advertisingmz;agariomods.com;al sahim;alaska;albania;alchestbreach;alexelcapo;algeria;am3nlc;amoodiesqueezie;amway921wot;amyleethirty3;anarchy;android;angrybirdsnest;angryjoeshow;animebromii;anonymous;antvenom;aperture;apple;arcadego;assassinscreed;atari;athenewins;authenticgames;avatar;aviatorgaming;awesome;awwmuffin;aypierre;baka;balenaproductions;bandaid;bane;baseball;bashurverse;basketball;bateson87;batman;battlefield;bdoubleo100;beats;bebopvox;belarus;belgium;bender;benderchat;bereghostgames;bert;bestcodcomedy;bielarus;bitcoin;bjacau1;bjacau2;black widow;blackiegonth;blitzwinger;blobfish;bluexephos;bluh;blunty3000;bobross;bobsaget;bodil30;bodil40;bohemianeagle;boo;boogie2988;borg;bowserbikejustdance;bp;breakfast;breizh;brksedu;buckballs;burgundy;butters;buzzbean11;bystaxx;byzantium;calfreezy;callofduty;captainsparklez;casaldenerd;catalonia;catalunya;catman;cavemanfilms;celopand;chaboyyhd;chaika;chaosxsilencer;chaoticmonki;charlie615119;charmander;chechenya;checkpointplus;cheese;chickfila;chimneyswift11;chocolate;chrisandthemike;chrisarchieprods;chrome;chucknorris;chuggaaconroy;cicciogamer89;cinnamontoastken;cirno;cj;ckaikd0021;clanlec;clashofclansstrats;cling on;cobanermani456;coca cola;codqg;coisadenerd;cokacola;colombia;colombiaa;commanderkrieger;communitygame;concrafter;consolesejogosbrasil;controless ;converse;cookie;coolifegame;coookie;cornella;cornellà;coruja;craftbattleduty;creeper;creepydoll;criken2;criousgamers;cristian4games;csfb;cuba;cubex55;cyberman65;cypriengaming;cyprus;czech;czechia;czechrepublic;d7297ut;d7oomy999;dagelijkshaadee;daithidenogla;darduinmymenlon;darksideofmoon;darksydephil;darkzerotv;dashiegames;day9tv;deadloxmc;deadpool;deal with it;deathly hallows;deathstar;debitorlp;deigamer;demon;derp;desu;dhole;diabl0x9;dickbutt;dilleron;dilleronplay;direwolf20;dissidiuswastaken;dnb;dnermc;doge;doggie;dolan;domo;domokun;donald;dong;donut;doraemon;dotacinema;douglby;dpjsc08;dreamcast;drift0r;drunken;dspgaming;dusdavidgames;dykgaming;ea;easports;easportsfootball;eatmydiction1;eavision;ebin;eeoneguy;egg;egoraptor;eguri89games;egypt;eksi;electrokitty;electronicartsde;elementanimation;elezwarface;eligorko;elrubiusomg;enzoknol;eowjdfudshrghk;epicface;ethoslab;exetrizegamer;expand;eye;facebook;fantabobgames;fast forward;fastforward;favijtv;fazeclan;fbi;fer0m0nas;fernanfloo;fgteev;fidel;fiji;finn;fir4sgamer;firefox;fishies;flash;florida;fnatic;fnaticc;foe;folagor03;forcesc2strategy;forocoches;frankieonpcin1080p;freeman;freemason;friesland;frigiel;frogout;fuckfacebook;fullhdvideos4me;funkyblackcat;gaben;gabenn;gagatunfeed;gamebombru;gamefails;gamegrumps;gamehelper;gameloft;gamenewsofficial;gameplayrj;gamerspawn;games;gameshqmedia;gamespot;gamestarde;gametrailers;gametube;gamexplain;garenavietnam;garfield;gassymexican;gaston;geilkind;generikb;germanletsfail;getinmybelly;getinthebox;ghostrobo;giancarloparimango11;gimper;gimperr;github;giygas;gizzy14gazza;gnomechild;gocalibergaming;godsoncoc;gogomantv;gokoutv;goldglovetv;gommehd;gona89;gonzo;gonzossm;grammar nazi;grayhat;grima;gronkh;grumpy;gtamissions;gtaseriesvideos;guccinoheya;guilhermegamer;guilhermeoss;gurren lagann;h2odelirious;haatfilms;hagrid;halflife;halflife3;halo;handicapped;hap;hassanalhajry;hatty;hawaii;hawkeye;hdluh;hdstarcraft;heartrockerchannel;hebrew;heisenburg;helix;helldogmadness;hikakingames;hikeplays;hipsterwhale;hispachan;hitler;homestuck;honeycomb;hosokawa;hue;huskymudkipz;huskystarcraft;hydro;iballisticsquid;iceland;ie;igameplay1337;ignentertainment;ihascupquake;illuminati;illuminatiii;ilvostrocarodexter;imaqtpie;imgur;immortalhdfilms;imperial japan;imperialists;imperialjapan;imvuinc;insanegaz;insidegaming;insidersnetwork;instagram;instalok;inthelittlewood;ipodmail;iron man;isaac;isamuxpompa;isis;isreal;itchyfeetleech;itsjerryandharry;itsonbtv;iulitm;ivysaur;izuniy;jackfrags;jacksepticeye;jahovaswitniss;jahrein;jaidefinichon;james bond;jamesnintendonerd;jamonymow;java;jellyyt;jeromeasf;jew;jewnose;jibanyan;jimmies;jjayjoker;joeygraceffagames;johnsju;jontronshow;josemicod5;joueurdugrenier;juegagerman;jumpinthepack;jupiter;kalmar union;kame;kappa;karamba728;kenny;keralis;kiloomobile;kingdomoffrance;kingjoffrey;kinnpatuhikaru;kirby;kitty;kjragaming;klingon;knekrogamer;knights templar;knightstemplar;knowyourmeme;kootra;kripparrian;ksiolajidebt;ksiolajidebthd;kuplinovplay;kurdistan;kwebbelkop;kyle;kyokushin4;kyrsp33dy;ladle;laggerfeed;lazuritnyignom;ldshadowlady;le snake;lenny;letsplay;letsplayshik;letstaddl;level5ch;levelcapgaming;lgbt;liberland;libertyy;liechtenstien;lifesimmer;linux;lisbug;littlelizardgaming;llessur;loadingreadyrun;loki;lolchampseries;lonniedos;love;lpmitkev;luigi;luke4316;m3rkmus1c;macedonia;machinimarealm;machinimarespawn;magdalenamariamonika;mahalovideogames;malena010102;malta;mario;mario11168;markipliergame;mars;maryland;masterball;mastercheif;mateiformiga;matroix;matthdgamer;matthewpatrick13;mattshea;maxmoefoegames;mcdonalds;meatboy;meatwad;meatwagon22;megamilk;messyourself;mickey;mike tyson;mike;miles923;minecraftblow;minecraftfinest;minecraftuniverse;miniladdd;miniminter;minnesotaburns;minnie;mkiceandfire;mlg;mm7games;mmohut;mmoxreview;mod3rnst3pny;moldova;morealia;mortalkombat;mr burns;mr.bean;mr.popo;mrchesterccj;mrdalekjd;mredxwx;mrlev12;mrlololoshka;mrvertez;mrwoofless;multirawen;munchingorange;n64;naga;namcobandaigameseu;nasa;natusvinceretv;nauru;nazi;nbgi;needforspeed;nepenthez;nextgentactics;nextgenwalkthroughs;ngtzombies;nick fury;nick;nickelodeon;niichts;nintendo;nintendocaprisun;nintendowiimovies;nipple;nislt;nobodyepic;node;noobfromua;northbrabant;northernlion;norunine;nosmoking;notch;nsa;obama;obey;officialclashofclans;officialnerdcubed;oficialmundocanibal;olafvids;omfgcata;onlyvgvids;opticnade;osu;ouch;outsidexbox;p3rvduxa;packattack04082;palau;paluten;pandaexpress;paulsoaresjr;pauseunpause;pazudoraya;pdkfilms;peanutbuttergamer;pedo;pedobear;peinto1008;peka;penguin;penguinz0;pepe;pepsi;perpetuumworld;pewdiepie;pi;pietsmittie;pig;piggy;pika;pimpnite;pinkfloyd;pinkstylist;pirate;piratebay;pizza;pizzaa;plagasrz;plantsvszombies;playclashofclans;playcomedyclub;playscopetrailers;playstation;playstation3gaminghd;pockysweets;poketlwewt;pooh;poop;popularmmos;potato;prestonplayz;protatomonster;prowrestlingshibatar;pt;pur3pamaj;quantum leap;question;rageface;rajmangaminghd;retard smile;rewind;rewinside;rezendeevil;reziplaygamesagain;rfm767;riffer333;robbaz;rockalone2k;rockbandprincess1;rockstar;rockstargames;rojov13;rolfharris;roomba;roosterteeth;roviomobile;rspproductionz;rss;rusgametactics;ryukyu;s.h.e.i.l.d;sah4rshow;samoa;sara12031986;sarazarlp;satan;saudi arabia;scream;screwattack;seal;seananners;serbia;serbiangamesbl;sethbling;sharingan;shell;shine;shofu;shrek;shufflelp;shurikworld;shuuya007;sinistar;siphano13;sir;skillgaming;skinspotlights;skkf;skull;skydoesminecraft;skylandersgame;skype;skyrim;slack;slovakia;slovenia;slowpoke;smash;smikesmike05;smoothmcgroove;smoove7182954;smoshgames;snafu;snapchat;snoop dogg;soccer;soliare;solomid;somalia;sp4zie;space ace;space;sparklesproduction;sparkofphoenix;spawn;speedyw03;speirstheamazinghd;spiderman;spongegar;spore;spqr;spy;squareenix;squirtle;ssohpkc;sssniperwolf;ssundee;stalinjr;stampylonghead;star wars rebel;starbucks;starchild;starrynight;staxxcraft;stitch;stupid;summit1g;sunface;superevgexa;superman;superskarmory;swiftor;swimmingbird941;syria;t3ddygames;tackle4826;taco;taltigolt;tasselfoot;tazercraft;tbnrfrags;tctngaming;teamfortress;teamgarrymoviethai;teammojang;terrorgamesbionic;tetraninja;tgn;the8bittheater;thealvaro845;theatlanticcraft;thebajancanadian;thebraindit;thecraftanos;thedanirep;thedeluxe4;thediamondminecart;theescapistmagazine;thefantasio974;thegaminglemon;thegrefg;thejoves;thejwittz;themasterov;themaxmurai;themediacows;themrsark;thepolishpenguinpl;theradbrad;therelaxingend;therpgminx;therunawayguys;thesims;theskylanderboy;thesw1tcher;thesyndicateproject;theuselessmouth;thewillyrex;thnxcya;thor;tintin;tmartn;tmartn2;tobygames;tomo0723sw;tonga;topbestappsforkids;totalhalibut;touchgameplay;transformer;transformers;trickshotting;triforce;trollarchoffice;trollface;trumpsc;tubbymcfatfuck;turkey;tv;tvddotty;tvongamenet;twitch;twitter;twosyncfifa;typicalgamer;uberdanger;uberhaxornova;ubisoft;uguu;ukip;ungespielt;uppercase;uruguay;utorrent;vanossgaming;vatican;venomextreme;venturiantale;videogamedunkey;videogames;vietnam;vikkstar123;vikkstar123hd;vintagebeef;virus;vladnext3;voat;voyager;vsauce3;w1ldc4t43;wakawaka;wales;walrus;wazowski;wewlad;white  light;whiteboy7thst;whoyourenemy;wiiriketopray;willyrex;windows;wingsofredemption;wit my woes;woodysgamertag;worldgamingshows;worldoftanks;worldofwarcraft;wowcrendor;wqlfy;wroetoshaw;wwf;wykop;xalexby11;xbox;xboxviewtv;xbulletgtx;xcalizorz;xcvii007r1;xjawz;xmandzio;xpertthief;xrpmx13;xsk;yamimash;yarikpawgames;ycm;yfrosta;yinyang;ylilauta;ylilautaa;yoba;yobaa;yobaaa;yogscast2;yogscastlalna;yogscastsips;yogscastsjin;yoteslaya;youalwayswin;yourheroes;yourmom;youtube;zackscottgames;zangado;zazinombies;zeecrazyatheist;zeon;zerkaahd;zerkaaplays;zexyzek;zimbabwe;zng;zoella;zoidberg;zombey;zoomingames").split(";");
+var contribSkins = ("pepincz;realdebugmonkey;albel727;angal;apostolique;electronoob;heyitsleo;gjum;posixphreak").split(";");
+var zeachCobblerSkin = ("zeach cobbler;zeachcobbler").split(";");
+
