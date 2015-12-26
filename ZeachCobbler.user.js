@@ -1,13 +1,11 @@
 // ==UserScript==
-// @name         Zeach Cobbler
-// @namespace    https://github.com/RealDebugMonkey/ZeachCobbler
+// @name         Teko Cobbler
+// @namespace    https://github.com/corando98/ZeachCobbler
 // @updateURL    http://bit.do/ZeachCobblerJS2
 // @downloadURL  http://bit.do/ZeachCobblerJS2
-// @contributer  See full list at https://github.com/RealDebugMonkey/ZeachCobbler#contributors-and-used-code
-// @supportURL   https://github.com/RealDebugMonkey/ZeachCobbler/issues
 // @version      0.31.5
 // @description  Agario powerups
-// @author       DebugMonkey
+// @author       Daigo
 // @match        http://agar.io/*
 // @match        https://agar.io/*
 // @icon         https://raw.github.com/RealDebugMonkey/ZeachCobbler/master/icons/zeachcobbler_icon48.png
