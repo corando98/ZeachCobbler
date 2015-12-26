@@ -164,7 +164,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         _isAcid : false,
         set isAcid(val)         {this._isAcid = val; setAcid(val);},
         get isAcid()            {return this._isAcid;},
-        minimapScaleCurrentValue : 1,
+        minimapScaleCurrentValue : 11,
         "displayMiniMap" : true,
 
     };
@@ -253,7 +253,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     var zeach = {
     
     // <ilboued new>
-        nickName :          'ilboued',
+        nickName :          'Tekio',
         get mass()          {return ~~(wb()/100);},
     // </ilboued new>
 
@@ -692,7 +692,7 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
              var vec = {id: target.id, x: me.nx - target.nx, y: me.ny - target.ny};
              var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
              dist += target.nSize - me.nSize;
-             return dist < 500; // FIXME: doesn't sound right
+             return dist < 60; // FIXME: doesn't sound right
          }
  
          function worthSplittingFor(target) {
