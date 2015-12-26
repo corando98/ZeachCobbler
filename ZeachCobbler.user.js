@@ -556,6 +556,9 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
     var throttledResetGrazingTargetId = null;
 
     function doGrazing() {
+    	      
+ +        doSplitting();
+ 
         var i;
         if(!isPlayerAlive()) {
             //isGrazing = false;
@@ -652,6 +655,85 @@ jQuery("#connecting").after('<canvas id="canvas" width="800" height="600"></canv
         }
 
     }
+        function doSplitting() {
+ +        if (!isPlayerAlive())
+ +            return;
+ +            
+ +		// only split once - /c0dedeaf
+ +        if (zeach.myPoints.length !== 1)
+ +            return;
+ +
+ +        var me = zeach.myPoints[0];
+ +
+ +		// careful of the big boys - /c0dedeaf
+ +        if (bigGuysAround())
+ +            return;
+ +
+ +        var bestTarget = undefined;
+ +
+ +        zeach.allItems.forEach(function (target) {
+ +            if (isFood(target)) return;
+ +            if (!edible(target)) return;
+ +            if (!closeEnough(target)) return;
+ +            if (!worthSplittingFor(target)) return;
+ +            if (target.name === me.name) return;
+ +            if (!bestTarget || target.size > bestTarget.size)
+ +                bestTarget = target;
+ +        });
+ +
+ +        if (bestTarget)
+ +            splitAgainst(bestTarget);
+ +
+ +        function edible(target) {
+ +            return !target.isVirus &&
+ +                target.name !== me.name &&
+ +                getMass(me.size) * Tiny > getMass(target.size);
+ +        }
+ +
+ +        function closeEnough(target) {
+ +            var vec = {id: target.id, x: me.nx - target.nx, y: me.ny - target.ny};
+ +            var dist = Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+ +            dist += target.nSize - me.nSize;
+ +            return dist < 500; // FIXME: doesn't sound right
+ +        }
+ +
+ +        function worthSplittingFor(target) {
+ +            return getMass(target.size) > getMass(me.size) * Tiny * Tiny;
+ +        }
+ +
+ +        function bigGuysAround() {
+ +            return zeach.allItems.some(function (threat) {
+ +                return !threat.isVirus && getMass(threat.size) > getMass(me.size);
+ +            });
+ +        }
+ +
+ +        function splitAgainst(target) {
+ +            // Split at most once a second
+ +            if (lastSplitTime + 1000 > +new Date)
+ +                return;
+ +
+ +            console.log('splittingAgainst', target);
+ +
+ +            lastSplitTime = +new Date;
+ +            lastSplittedForBlob = target;
+ +
+ +            suspendMouseUpdates = true;
+ +            // two mouse updates in a row to make sure new position is locked in.
+ +            sendMouseUpdate(zeach.webSocket, target.x, target.y);
+ +            window.setTimeout(function () {
+ +                sendMouseUpdate(zeach.webSocket, target.x, target.y);
+ +            }, 10);
+ +
+ +            window.setTimeout(function () {
+ +                sendMouseUpdate(zeach.webSocket, target.x, target.y);
+ +                zeach.fireFunction(17);
+ +            }, 20);
+ +
+ +            window.setTimeout(function () {
+ +                suspendMouseUpdates = false;
+ +            }, 500);
+ +        }
+ +    }
 
     function dasMouseSpeedFunction(id, cx, cy, radius, nx, ny) {
         this.cx = cx; this.cy = cy; this.radius = radius; this.nx = nx; this.ny = ny;
